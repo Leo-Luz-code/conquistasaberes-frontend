@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+ <q-page padding class="max-w-9xl animate-fade-in-down">
     <CtiCard :title="define_title" iconName="person_add">
       <FormUser
         :userId="id ? id : null"
@@ -58,7 +58,7 @@ async function updateUser(data) {
     if (data.senha === '') {
       delete data.senha;
     }
-    const { status } = await api.put(`usuarios/${id}`, data);
+    const { status } = await api.patch(`usuarios/${id}`, data);
     if (status == 200) {
       showNotification('positive', 'Usuário atualizado com sucesso!', 'top');
       router.push('/usuarios');

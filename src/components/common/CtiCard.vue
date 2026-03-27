@@ -1,6 +1,6 @@
 <template>
   <div class="w-full mx-auto animate-fade-in-down">
-      <div class="mb-6 mt-6 flex items-center justify-between gap-3">
+      <div class="mb-6 flex items-center justify-between gap-3">
         <div
           class="row items-center gap-3"
         >

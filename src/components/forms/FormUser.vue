@@ -52,6 +52,8 @@
             dense
             v-model="form.nivel"
             :options="level_access_options"
+            map-options
+            emit-value
             placeholder="Selecione o nível"
             class="bg-white"
             color="blue-grey-10"
@@ -73,6 +75,8 @@
             outlined
             v-model="form.situacao"
             :options="situation_options"
+            map-options
+            emit-value
             placeholder="Status do usuário"
             class="bg-white"
             color="blue-grey-10"

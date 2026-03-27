@@ -14,7 +14,12 @@ export default [
      *
      * ESLint requires "ignores" key to be the only one in this object
      */
-    // ignores: []
+    ignores: [
+      'node_modules',
+      'dist',
+      'build',
+      '*.min.js'
+    ]
   },
 
   ...pluginQuasar.configs.recommended(),
@@ -56,7 +61,14 @@ export default [
       'prefer-promise-reject-errors': 'off',
 
       // allow debugger during development only
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      'no-unused-vars': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      'no-extra-boolean-cast': 'off',
+      
+      'vue/multi-word-component-names': 'off',
+      'vue/no-extra-boolean-cast': 'off',
+      'vue/no-multiple-template-root': 'off',
+      'vue/no-v-model-argument': 'off'
     }
   },
 

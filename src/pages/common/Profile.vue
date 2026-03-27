@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page padding class="max-w-9xl animate-fade-in-down">
     <CtiCard iconName="manage_accounts" title="Perfil">
       <FormUser
         :userId="id"
@@ -32,7 +32,7 @@ async function updateData(dados) {
     if (data.senha === '') {
       delete data.senha;
     }
-    const { status } = await api.put(`usuarios/${id}`, data);
+    const { status } = await api.patch(`usuarios/${id}`, data);
 
     const define_route = administrador ? '/admin/' : '/usuario/';
 

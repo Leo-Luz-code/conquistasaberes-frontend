@@ -82,7 +82,7 @@
               dense
               icon="power_settings_new"
               class="text-red-500 hover:bg-red-50 transition-colors"
-              @click="logout"
+              @click="requestLogout"
             >
               <q-tooltip class="bg-pmvc-blue text-white text-xs"
                 >Sair do Sistema</q-tooltip
@@ -124,7 +124,10 @@
         </q-list>
       </div>
     </q-drawer>
-    <q-page-container class="bg-slate-50 md:ml-4 px-4">
+     
+    <LogoutModal v-model="showModal" @confirm="logout" />
+
+    <q-page-container class="bg-slate-50">
       <router-view />
     </q-page-container>
     <q-footer class="bg-white border-t border-slate-200 py-3 text-center">
@@ -140,6 +143,13 @@
 import { onMounted, computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/authStore';
+import LogoutModal from 'src/components/modals/ConfirmLogout.vue';
+
+const props = defineProps({
+  isOpen: Boolean,
+});
+
+const emit = defineEmits(['update:isOpen']);
 
 const router = useRouter();
 const route = useRoute();
@@ -203,9 +213,28 @@ const configurarMenu = () => {
   }
 };
 
+const modelValue = computed({
+  get: () => props.isOpen,
+  set: (val) => {
+    if (val === false) {
+      requestLogout();
+    } else {
+      emit('update:isOpen', val);
+    }
+  },
+})
+
 const profile = () => {
   router.push('/perfil');
 };
+
+function requestLogout() {
+  showModal.value = true;
+}
+
+function confirmClose() {
+  emit('update:isOpen', false);
+}
 
 const logout = () => {
   authStore.logout();

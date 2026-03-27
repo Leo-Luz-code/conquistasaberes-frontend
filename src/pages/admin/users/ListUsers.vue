@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page padding class="max-w-9xl animate-fade-in-down">
     <CtiCard icon="people" title="Usuários do Sistema">
       <TableList
         title="Lista de usuários"
@@ -58,8 +58,8 @@ const filters = ref([
     model: modelsFilters.value.situacao,
     options: [
       { label: 'Todos', value: '' },
-      { label: 'Ativo', value: 'Ativo' },
-      { label: 'Inativo', value: 'Inativo' },
+      { label: 'Ativo', value: 'ATIVO' },
+      { label: 'Inativo', value: 'INATIVO' },
     ],
     actions: (val) => {
       modelsFilters.value.situacao = val || '';
@@ -149,7 +149,7 @@ async function getUsers(pesquisa = '', page) {
         page ? page : 1
       }&itensPorPagina=${10}&busca=${pesquisa}&filtro=nivel,situacao&valor=${
         filtros.nivel
-      },${filtros.situacao}`,
+      }${filtros.situacao}`,
     );
     rows.value = data.data;
     max_pages.value = data.maxPag;
