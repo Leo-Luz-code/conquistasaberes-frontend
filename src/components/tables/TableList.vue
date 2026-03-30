@@ -129,6 +129,12 @@
         </q-tr>
       </template>
 
+      <template v-slot:body-cell-nivel="props">
+        <q-td :props="props">
+          {{ formatNivel(props.value) }}
+        </q-td>
+      </template>
+
       <template v-slot:body-cell-situacao="props">
         <q-td :props="props">
           <q-badge
@@ -315,6 +321,14 @@ const acaoHoverClass = (color) => {
     warning: 'text-amber-600 hover:bg-amber-50',
   };
   return map[color] || 'text-pmvc-blue hover:bg-blue-50';
+};
+
+const formatNivel = (v) => {
+  const map = {
+    ADMIN: 'Administrador',
+    USUARIO: 'Usuário',
+  };
+  return map[v] || v;
 };
 
 const formatLabel = (v) =>

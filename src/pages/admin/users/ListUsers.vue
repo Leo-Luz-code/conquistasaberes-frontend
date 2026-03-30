@@ -137,25 +137,39 @@ async function getUsers(pesquisa = '', page) {
   $q.loading.show({
     message: 'Buscando informações no servidor...',
   });
+
   rows.value = [];
+
   const filtros = {
     nivel: modelsFilters.value.nivel,
     situacao: modelsFilters.value.situacao,
   };
 
   try {
-    const { data } = await api.get(
-      `usuarios?pagina=${
-        page ? page : 1
-      }&itensPorPagina=${10}&busca=${pesquisa}&filtro=nivel,situacao&valor=${
-        filtros.nivel
-      }${filtros.situacao}`,
-    );
+    let url = `usuarios?pagina=${page || 1}&itensPorPagina=10&busca=${pesquisa}`;
+
+    const filtrosAtivos = [];
+    const valoresAtivos = [];
+
+    if (filtros.nivel) {
+      filtrosAtivos.push('nivel');
+      valoresAtivos.push(filtros.nivel);
+    }
+
+    if (filtros.situacao) {
+      filtrosAtivos.push('situacao');
+      valoresAtivos.push(filtros.situacao);
+    }
+
+    if (filtrosAtivos.length > 0) {
+      url += `&filtro=${filtrosAtivos.join(',')}&valor=${valoresAtivos.join(',')}`;
+    }
+
+    const { data } = await api.get(url);
+
     rows.value = data.data;
     max_pages.value = data.maxPag;
-    $q.loading.hide();
-  } catch (erro) {
-    console.log(erro);
+  } finally {
     $q.loading.hide();
   }
 }
