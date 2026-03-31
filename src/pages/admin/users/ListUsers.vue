@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="max-w-9xl animate-fade-in-down">
-    <CtiCard icon="people" title="Usuários do Sistema">
+    <CetiCard icon="people" title="Usuários do Sistema">
       <TableList
         title="Lista de usuários"
         :column="columns"
@@ -15,7 +15,7 @@
         @clearFilters="clearFilters"
       >
       </TableList>
-    </CtiCard>
+    </CetiCard>
   </q-page>
 </template>
 
@@ -23,7 +23,7 @@
 import { onMounted, ref } from 'vue';
 import { api } from 'src/boot/axios';
 import showNotification from 'src/utils/quasarPlugins/notifyMessage';
-import CtiCard from '../../../components/common/CtiCard.vue';
+import CetiCard from '../../../components/common/CetiCard.vue';
 import TableList from 'src/components/tables/TableList.vue';
 import showModal from 'src/utils/quasarPlugins/dialogMessage';
 import { useQuasar } from 'quasar';

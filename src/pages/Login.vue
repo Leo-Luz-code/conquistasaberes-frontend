@@ -18,7 +18,7 @@
         <div class="flex items-center justify-center gap-2 mt-3">
           <div class="h-[1px] w-6 sm:w-10 bg-pmvc-blue/30"></div>
           <span class="text-pmvc-gray text-xs sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em]">
-            Acesso Administrativo
+            Modelo do Ceti
           </span>
           <div class="h-[1px] w-6 sm:w-10 bg-pmvc-blue/30"></div>
         </div>

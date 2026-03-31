@@ -30,7 +30,7 @@
               <span
                 class="text-[8px] md:text-[10px] text-pmvc-gray tracking-widest uppercase whitespace-nowrap"
               >
-                Modelo Front-End CTI
+                Modelo Front-End CETI
               </span>
             </div>
           </div>
@@ -133,7 +133,7 @@
     <q-footer class="bg-white border-t border-slate-200 py-3 text-center">
       <p class="text-xs text-pmvc-gray m-0 px-4">
         Prefeitura Municipal de Vitória da Conquista - Desenvolvido por
-        <span class="font-bold text-pmvc-blue">CTI</span>
+        <span class="font-bold text-pmvc-blue">CETI</span>
       </p>
     </q-footer>
   </q-layout>

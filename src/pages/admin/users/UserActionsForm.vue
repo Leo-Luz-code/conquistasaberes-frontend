@@ -1,6 +1,6 @@
 <template>
  <q-page padding class="max-w-9xl animate-fade-in-down">
-    <CtiCard :title="define_title" iconName="person_add">
+    <CetiCard :title="define_title" iconName="person_add">
       <FormUser
         :userId="id ? id : null"
         :administrator="level_access === 'ADMIN' ? true : false"
@@ -8,12 +8,12 @@
         :showBackButton="true"
         @submitData="submitData"
       />
-    </CtiCard>
+    </CetiCard>
   </q-page>
 </template>
 
 <script setup>
-import CtiCard from 'src/components/common/CtiCard.vue';
+import CetiCard from 'src/components/common/CetiCard.vue';
 import FormUser from 'src/components/forms/FormUser.vue';
 import showNotification from '../../../utils/quasarPlugins/notifyMessage';
 import { api } from 'boot/axios';
