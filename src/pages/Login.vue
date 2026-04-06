@@ -5,19 +5,19 @@
     <div class="absolute top-[-15%] right-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-pmvc-lightBlue rounded-full filter blur-[100px] sm:blur-[140px] opacity-[0.12] -pulse-slow"></div>
     <div class="absolute bottom-[-15%] left-[-10%] w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-pmvc-blue rounded-full filter blur-[100px] sm:blur-[140px] opacity-[0.08] -pulse-slow"></div>
 
-    <div class="w-full max-w-[500px] p-4 z-10">
+    <div class="w-full max-w-[460px] p-4 z-10">
       <div class="text-center mb-8 sm:mb-10 animate-fade-in-down">
         <img
           src="~assets/images/brasao-pmvc-2025.png"
           alt="Brasão PMVC"
-          class="h-20 sm:h-24 mx-auto drop-shadow-lg mb-4 sm:mb-5 hover:scale-105 transition-transform duration-500"
+          class="h-20 sm:h-22 mx-auto drop-shadow-lg sm:mb-5 hover:scale-105 transition-transform duration-500"
         />
-        <h1 class="text-pmvc-dark !text-2xl sm:!text-3xl uppercase !font-bold !tracking-tight">
+        <h1 class="text-pmvc-dark !text-2xl sm:!text-[26px] uppercase !font-bold !tracking-tight">
           {{ app_name }}
         </h1>
         <div class="flex items-center justify-center gap-2 mt-3">
           <div class="h-[1px] w-6 sm:w-10 bg-pmvc-blue/30"></div>
-          <span class="text-pmvc-gray text-xs sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em]">
+          <span class="text-pmvc-gray text-xs sm:text-[12px] font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em]">
             Modelo do Ceti
           </span>
           <div class="h-[1px] w-6 sm:w-10 bg-pmvc-blue/30"></div>
@@ -28,13 +28,14 @@
         <div class="h-1.5 w-full bg-gradient-to-r from-pmvc-lightBlue via-pmvc-blue to-pmvc-blue"></div>
 
         <div class="p-6 sm:p-10">
-          <q-form ref="form" @submit.prevent.stop="login" class="flex flex-col gap-6 sm:gap-8">
+          <q-form ref="form" @submit.prevent.stop="login" class="flex flex-col gap-6">
             <div>
               <label class="block text-xs sm:text-sm font-bold text-pmvc-gray uppercase mb-1 sm:mb-2 pl-1">
                 Usuário do Sistema
               </label>
               <q-input
                 outlined
+                dense
                 v-model="data.login"
                 placeholder="ex: nome.sobrenome"
                 bg-color="white"
@@ -55,6 +56,7 @@
               </label>
               <q-input
                 outlined
+                dense
                 v-model="data.senha"
                 :type="isPwdVisible ? 'text' : 'password'"
                 placeholder="Insira sua senha"
