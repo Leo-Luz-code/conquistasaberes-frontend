@@ -10,7 +10,7 @@
         <img
           src="~assets/images/brasao-pmvc-2025.png"
           alt="Brasão PMVC"
-          class="h-20 sm:h-22 mx-auto drop-shadow-lg sm:mb-5 hover:scale-105 transition-transform duration-500"
+          class="h-20 sm:h-22 mx-auto drop-shadow-lg mb-3 sm:mb-5 hover:scale-105 transition-transform duration-500"
         />
         <h1 class="text-pmvc-dark !text-2xl sm:!text-[26px] uppercase !font-bold !tracking-tight">
           {{ app_name }}
