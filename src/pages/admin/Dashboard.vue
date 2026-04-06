@@ -27,13 +27,16 @@
           :icon-color="card.iconColor"
         />
       </div>
-
     </div>
+
+    <ChartsDashboard />
+
   </q-page>
 </template>
 
 <script setup>
 import CardDashboard from 'src/components/dashboard/CardDashboard.vue';
+import ChartsDashboard from 'src/components/dashboard/ChartsDashboard.vue';
 import { ref } from 'vue';
 
 const infoDashboard = ref([
