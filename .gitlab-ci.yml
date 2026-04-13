@@ -4,7 +4,7 @@ stages:
   - deploy
 
 default:
-  image: node:18
+  image: node:22
 
 # -------
 #  JOBS
