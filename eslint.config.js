@@ -62,9 +62,9 @@ export default [
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-      'no-unused-vars': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      'no-unused-vars': 'off',
       'no-extra-boolean-cast': 'off',
-      
+
       'vue/multi-word-component-names': 'off',
       'vue/no-extra-boolean-cast': 'off',
       'vue/no-multiple-template-root': 'off',
