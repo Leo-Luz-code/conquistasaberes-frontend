@@ -25,12 +25,12 @@
               <span
                 class="font-bold text-pmvc-blue tracking-tighter whitespace-nowrap transition-all duration-300 text-xs sm:text-xl"
               >
-                MODELO
+                CONQUISTA SABERES
               </span>
               <span
                 class="text-[8px] md:text-[10px] text-pmvc-gray tracking-widest uppercase whitespace-nowrap"
               >
-                Modelo Front-End CETI
+                AVA Municipal • PMVC
               </span>
             </div>
           </div>
@@ -185,32 +185,17 @@ const isActivePath = (link) => {
 };
 
 const configurarMenu = () => {
-  const nameFromStore = authStore.nameUser;
-  const nameFromStorage = window.sessionStorage.getItem('name_user');
-  
-  const levelFromStore = authStore.isAdmin;
-  const levelFromStorage = window.sessionStorage.getItem('access_level');
-  
-  userName.value = getFirstName(nameFromStore || nameFromStorage || 'Usuário');
-  
-  const isAdmin = levelFromStore || levelFromStorage === 'ADMIN';
-  
-  acesso.value = isAdmin ? 'Administrador' : 'Usuário';
+  userName.value = authStore.firstName || 'Servidor';
+  acesso.value = authStore.roleLabel || 'Servidor Municipal';
 
-  links.value = [];
-
-  if (isAdmin) {
-    links.value = [
-      { title: 'Início', icon: ICONS.INICIO, link: '/admin/' },
-      { title: 'Perfil', icon: ICONS.PERFIL, link: '/perfil' },
-      { title: 'Usuários', icon: ICONS.USUARIOS, link: '/usuarios' },
-    ];
-  } else {
-    links.value = [
-      { title: 'Início', icon: ICONS.INICIO, link: '/usuario/' },
-      { title: 'Perfil', icon: ICONS.PERFIL, link: '/perfil' },
-    ];
-  }
+  links.value = [
+    { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
+    { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+    { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+    { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
+    { title: 'Fórum Colaborativo', icon: 'forum', link: '/servidor/forum' },
+    { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+  ];
 };
 
 const modelValue = computed({
