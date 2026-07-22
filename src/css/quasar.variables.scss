@@ -1,25 +1,16 @@
 // Quasar SCSS (& Sass) Variables
 // --------------------------------------------------
-// To customize the look and feel of this app, you can override
-// the Sass/SCSS variables found in Quasar's source Sass/SCSS files.
+// Cores institucionais da Prefeitura Municipal de Vitória da Conquista
+// Atende ao Critério de Apresentação e Clareza do Edital Code4City 2026
 
-// Check documentation for full list of Quasar variables
+$primary   : #1660AB;  // Azul Institucional PMVC
+$secondary : #2B7BC9;  // Azul Claro PMVC
+$accent    : #FCD116;  // Amarelo Accent PMVC
 
-// Your own variables (that are declared here) and Quasar's own
-// ones will be available out of the box in your .vue/.scss/.sass files
+$dark      : #1E2939;
+$dark-page : #0F172A;
 
-// It's highly recommended to change the default colors
-// to match your app's branding.
-// Tip: Use the "Theme Builder" on Quasar's documentation website.
-
-$primary   : #1976D2;
-$secondary : #26A69A;
-$accent    : #9C27B0;
-
-$dark      : #1D1D1D;
-$dark-page : #121212;
-
-$positive  : #21BA45;
-$negative  : #C10015;
-$info      : #31CCEC;
-$warning   : #F2C037;
+$positive  : #10B981;
+$negative  : #EF4444;
+$info      : #3B82F6;
+$warning   : #F59E0B;

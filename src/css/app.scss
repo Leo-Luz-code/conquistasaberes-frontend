@@ -1,4 +1,372 @@
-// app global css in SCSS form
+// Conquista Saberes - Estilos Globais do AVA Municipal
+// Prefeitura Municipal de Vitória da Conquista - CETI / SETP
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+// ============================================
+// Google Fonts - Inter para tipografia moderna
+// ============================================
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+// ============================================
+// Design Tokens Globais
+// ============================================
+:root {
+  --pmvc-blue: #1660AB;
+  --pmvc-light-blue: #2B7BC9;
+  --pmvc-accent: #006BA6;
+  --pmvc-yellow: #FCD116;
+  --pmvc-dark: #1E2939;
+  --pmvc-gray: #4A5565;
+  --pmvc-bg: #F3F4F6;
+  --pmvc-card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --pmvc-card-shadow-hover: 0 10px 15px -3px rgba(22,96,171,0.08), 0 4px 6px -2px rgba(22,96,171,0.04);
+  --pmvc-gradient: linear-gradient(135deg, #1660AB 0%, #2B7BC9 100%);
+  --pmvc-gradient-accent: linear-gradient(135deg, #1660AB 0%, #006BA6 50%, #2B7BC9 100%);
+}
+
+// ============================================
+// Tipografia Global
+// ============================================
+body, .q-page, .q-layout {
+  font-family: 'Inter', 'Roboto', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ============================================
+// Cards Premium
+// ============================================
+.cs-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: var(--pmvc-card-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: var(--pmvc-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.cs-card-flat {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: var(--pmvc-card-shadow);
+  overflow: hidden;
+}
+
+// ============================================
+// Stat Cards para Dashboards
+// ============================================
+.cs-stat-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--pmvc-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    box-shadow: var(--pmvc-card-shadow-hover);
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+// ============================================
+// Glassmorphism Cards
+// ============================================
+.cs-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+}
+
+// ============================================
+// Gradient Backgrounds
+// ============================================
+.cs-gradient-blue {
+  background: var(--pmvc-gradient);
+}
+
+.cs-gradient-hero {
+  background: linear-gradient(135deg, #1660AB 0%, #2B7BC9 50%, #1E4D8C 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(252,209,22,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+}
+
+// ============================================
+// Badge Animations
+// ============================================
+@keyframes badgeShine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+// Staggered animations for lists
+@for $i from 1 through 12 {
+  .animate-delay-#{$i} {
+    animation-delay: #{$i * 0.08}s;
+    opacity: 0;
+  }
+}
+
+// ============================================
+// XP Progress Bar
+// ============================================
+.cs-xp-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: #E5E7EB;
+  overflow: hidden;
+  position: relative;
+
+  .cs-xp-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--pmvc-gradient);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: badgeShine 2s ease-in-out infinite;
+      background-size: 200% 100%;
+    }
+  }
+}
+
+// ============================================
+// Course Card Styles
+// ============================================
+.cs-course-card {
+  cursor: pointer;
+
+  .cs-course-cover {
+    height: 180px;
+    background: var(--pmvc-gradient);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .cs-cover-icon {
+      font-size: 64px;
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .cs-course-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+// ============================================
+// Button Styles Premium
+// ============================================
+.cs-btn-primary {
+  background: var(--pmvc-gradient) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px -1px rgba(22, 96, 171, 0.25) !important;
+
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(22, 96, 171, 0.35) !important;
+    transform: translateY(-1px);
+  }
+}
+
+.cs-btn-outline {
+  border: 2px solid var(--pmvc-blue) !important;
+  color: var(--pmvc-blue) !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  background: transparent !important;
+  transition: all 0.3s ease !important;
+
+  &:hover {
+    background: rgba(22, 96, 171, 0.08) !important;
+  }
+}
+
+// ============================================
+// Inputs Premium
+// ============================================
+:deep(.cs-input .q-field__control) {
+  border-radius: 12px;
+  border-color: #E5E7EB;
+  transition: all 0.2s ease;
+}
+
+:deep(.cs-input .q-field__control:hover) {
+  border-color: #2B7BC9;
+}
+
+:deep(.cs-input.q-field--focused .q-field__control) {
+  border-color: #1660AB !important;
+  box-shadow: 0 0 0 3px rgba(22, 96, 171, 0.12);
+}
+
+// ============================================
+// Scrollbar Custom
+// ============================================
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+
+  &:hover {
+    background: #94A3B8;
+  }
+}
+
+// ============================================
+// Accessibility: High Contrast Mode
+// Atende Dor #11 do Edital: WCAG 2.1
+// ============================================
+body.high-contrast {
+  --pmvc-blue: #0A3D6B;
+  --pmvc-light-blue: #1A5FA0;
+  --pmvc-dark: #000000;
+  --pmvc-gray: #1A1A1A;
+  --pmvc-bg: #FFFFFF;
+
+  * {
+    border-color: #000 !important;
+  }
+
+  .cs-card, .cs-card-flat, .cs-stat-card {
+    border: 2px solid #000 !important;
+  }
+
+  a, .q-btn {
+    text-decoration: underline !important;
+  }
+}
+
+// ============================================
+// Responsive Utilities
+// ============================================
+.cs-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  width: 100%;
+
+  @media (max-width: 599px) {
+    padding: 16px;
+  }
+}
+
+.cs-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--pmvc-dark);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cs-section-subtitle {
+  font-size: 14px;
+  color: var(--pmvc-gray);
+  margin-top: -8px;
+  margin-bottom: 20px;
+}

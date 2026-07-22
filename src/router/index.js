@@ -1,3 +1,8 @@
+// =============================================================================
+// Conquista Saberes - Router com Navigation Guards RBAC
+// Atende Dor #9: SSO Municipal
+// Atende Dor #11: Verificação de aceite LGPD antes de navegar
+// =============================================================================
 import { route } from 'quasar/wrappers';
 import {
   createRouter,
@@ -8,7 +13,7 @@ import {
 import routes from './routes';
 import { useAuthStore } from 'src/stores/authStore';
 
-export default route(function (/*{ store, ssrContext }*/) {
+export default route(function () {
   const authStore = useAuthStore();
 
   const createHistory = process.env.SERVER
@@ -25,39 +30,36 @@ export default route(function (/*{ store, ssrContext }*/) {
 
   Router.beforeEach(async (to, from, next) => {
     try {
-      //verifica a autenticação do usuário
-      if (to.meta.requiredLogin && !authStore.$state.isAuthenticated) {
-        next({ name: 'login' });
+      // Rotas públicas: sem restrição
+      if (to.meta.public) {
+        next();
         return;
       }
 
-      //verifica os níveis de acesso
-      if (to.path !== '/login' && to.path !== '/' && to.meta.requiredLogin) {
-        const id = window.sessionStorage.getItem('user_id');
-        const token = window.sessionStorage.getItem('token');
-
-        if (!id || !token) {
-          next({ name: 'login' });
-          return;
-        }
-
-        await authStore.getUserAccessLevel(id, token);
-
-        const accessLevel = window.sessionStorage.getItem('access_level');
-
-        if (
-          to.meta.requiredAdminLevel &&
-          accessLevel !== 'ADMIN'
-          // || ((to?.meta.requiredOutroNivelDeAcesso) && accessLevel !== "OutroNivelDeAcesso")
-        ) {
-          next({
-            name: 'error',
-          });
-          return;
-        }
+      // Verificar autenticação
+      if (to.meta.requiredLogin && !authStore.isAuthenticated) {
+        next({ name: 'login', query: { to: to.fullPath } });
+        return;
       }
 
-      //se passar por todas as verificações, segue a navegação
+      // Verificar aceite LGPD (exceto na própria página de LGPD)
+      if (
+        authStore.isAuthenticated &&
+        authStore.user &&
+        !authStore.lgpdAccepted &&
+        to.name !== 'lgpd' &&
+        to.name !== 'login'
+      ) {
+        next({ name: 'lgpd' });
+        return;
+      }
+
+      // Verificar nível Gestor/Admin
+      if (to.meta.requiredGestorLevel && !authStore.isGestorOrAdmin) {
+        next({ name: 'error' });
+        return;
+      }
+
       next();
     } catch (error) {
       console.error('Erro no router guard:', error);
