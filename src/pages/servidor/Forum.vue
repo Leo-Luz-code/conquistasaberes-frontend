@@ -14,7 +14,7 @@
         class="!py-2.5 !px-5 bg-pmvc-blue text-white font-bold"
         unelevated
         no-caps
-        @click="showModal = true"
+        @click="openCreateModal"
       />
     </div>
 
@@ -32,16 +32,26 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-pmvc-blue text-white rounded-full flex items-center justify-center font-bold text-sm">
-              {{ post.user?.nome?.charAt(0) || 'U' }}
+              {{ (post.autor || post.user?.nome || 'U').charAt(0).toUpperCase() }}
             </div>
             <div>
-              <h4 class="font-bold text-slate-900 text-sm leading-none">{{ post.user?.nome }}</h4>
+              <h4 class="font-bold text-slate-900 text-sm leading-none">
+                {{ post.autor || post.user?.nome || 'Servidor Municipal' }}
+              </h4>
               <span class="text-[10px] text-slate-400">
-                {{ post.user?.secretaria?.sigla || 'PMVC' }} • {{ post.user?.cargo }}
+                {{ post.secretariaSigla || post.user?.secretaria?.sigla || 'PMVC' }}
+                <template v-if="post.cargo || post.user?.cargo">
+                  • {{ post.cargo || post.user?.cargo }}
+                </template>
               </span>
             </div>
           </div>
-          <span class="text-[10px] text-slate-400 font-semibold">{{ formatDate(post.createdAt) }}</span>
+
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-slate-400 font-semibold mr-2">{{ formatDate(post.createdAt) }}</span>
+            <q-btn flat round dense icon="edit" color="primary" size="sm" @click="openEditModal(post)" />
+            <q-btn flat round dense icon="delete" color="negative" size="sm" @click="handleDelete(post.id)" />
+          </div>
         </div>
 
         <div class="space-y-1">
@@ -49,8 +59,53 @@
           <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{{ post.conteudo }}</p>
         </div>
 
-        <div v-if="post.course" class="pt-2 border-t border-slate-100 flex items-center gap-2 text-[10px] text-pmvc-blue font-bold">
-          <q-icon name="school" /> Curso: {{ post.course.titulo }}
+        <!-- 💬 Seção de Respostas -->
+        <div class="pt-3 border-t border-slate-100 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <q-icon name="chat_bubble_outline" size="16px" />
+              Respostas ({{ post.comments?.length || 0 }})
+            </span>
+          </div>
+
+          <!-- Lista de Respostas Existentes -->
+          <div v-if="post.comments && post.comments.length > 0" class="space-y-2 pl-4 border-l-2 border-pmvc-blue/20">
+            <div
+              v-for="comment in post.comments"
+              :key="comment.id"
+              class="bg-slate-50 rounded-xl p-3 text-xs space-y-1"
+            >
+              <div class="flex items-center justify-between font-bold text-slate-800">
+                <span>{{ comment.autor }} ({{ comment.secretariaSigla }})</span>
+                <span class="text-[9px] text-slate-400 font-normal">{{ formatDate(comment.createdAt) }}</span>
+              </div>
+              <p class="text-slate-600 whitespace-pre-line">{{ comment.conteudo }}</p>
+            </div>
+          </div>
+
+          <!-- Campo para Responder -->
+          <div class="flex gap-2 pt-1">
+            <q-input
+              dense
+              outlined
+              v-model="replyText[post.id]"
+              placeholder="Escreva uma resposta para este tópico..."
+              class="flex-1 text-xs"
+              bg-color="slate-50"
+              @keyup.enter="handleSendReply(post.id)"
+            />
+            <q-btn
+              icon="send"
+              color="primary"
+              unelevated
+              dense
+              class="px-3"
+              :loading="replySubmitting[post.id]"
+              @click="handleSendReply(post.id)"
+            >
+              <q-tooltip>Enviar Resposta</q-tooltip>
+            </q-btn>
+          </div>
         </div>
       </div>
     </div>
@@ -62,11 +117,13 @@
       <p class="text-xs text-slate-500 max-w-md mx-auto">Seja o primeiro a publicar uma dúvida ou compartilhar um aprendizado com os demais servidores!</p>
     </div>
 
-    <!-- Modal Nova Publicacao -->
+    <!-- Modal Nova/Editar Publicacao -->
     <q-dialog v-model="showModal">
       <q-card style="min-width: 350px; max-width: 550px" class="rounded-2xl p-4">
         <q-card-section class="flex items-center justify-between">
-          <h3 class="font-bold text-slate-900 text-lg">Publicar Nova Dúvida</h3>
+          <h3 class="font-bold text-slate-900 text-lg">
+            {{ isEditing ? 'Editar Dúvida' : 'Publicar Nova Dúvida' }}
+          </h3>
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
@@ -74,7 +131,7 @@
           <q-input
             outlined
             dense
-            v-model="newPost.titulo"
+            v-model="postForm.titulo"
             label="Título da Dúvida ou Tópico"
             placeholder="Ex: Como aplicar a LGPD em cadastros presenciais?"
             hide-bottom-space
@@ -82,9 +139,9 @@
           <q-input
             outlined
             type="textarea"
-            v-model="newPost.conteudo"
+            v-model="postForm.conteudo"
             label="Detalhamento"
-            placeholder="Descreva sua dúvida com mais detalhes para que outros servidores possam ajudar..."
+            placeholder="Descreva sua dúvida com mais detalhes..."
             rows="4"
             hide-bottom-space
           />
@@ -93,7 +150,7 @@
         <q-card-actions align="right" class="p-4">
           <q-btn flat label="Cancelar" color="grey" v-close-popup />
           <q-btn
-            label="PUBLICAR"
+            :label="isEditing ? 'SALVAR' : 'PUBLICAR'"
             color="primary"
             class="bg-pmvc-blue font-bold px-6"
             unelevated
@@ -110,30 +167,83 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useForumStore } from 'src/stores/forumStore';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const forumStore = useForumStore();
 const showModal = ref(false);
 const submitting = ref(false);
+const isEditing = ref(false);
+const editingPostId = ref(null);
 
-const newPost = ref({
+const postForm = ref({
   titulo: '',
   conteudo: '',
 });
+
+const replyText = ref({});
+const replySubmitting = ref({});
 
 onMounted(() => {
   forumStore.fetchPosts();
 });
 
+function openCreateModal() {
+  isEditing.value = false;
+  editingPostId.value = null;
+  postForm.value = { titulo: '', conteudo: '' };
+  showModal.value = true;
+}
+
+function openEditModal(post) {
+  isEditing.value = true;
+  editingPostId.value = post.id;
+  postForm.value = {
+    titulo: post.titulo,
+    conteudo: post.conteudo,
+  };
+  showModal.value = true;
+}
+
 async function handleSubmit() {
-  if (!newPost.value.titulo || !newPost.value.conteudo) return;
+  if (!postForm.value.titulo || !postForm.value.conteudo) return;
   submitting.value = true;
   try {
-    await forumStore.createPost(newPost.value);
-    newPost.value = { titulo: '', conteudo: '' };
+    if (isEditing.value) {
+      await forumStore.updatePost(editingPostId.value, postForm.value);
+    } else {
+      await forumStore.createPost(postForm.value);
+    }
+    postForm.value = { titulo: '', conteudo: '' };
     showModal.value = false;
   } finally {
     submitting.value = false;
   }
+}
+
+async function handleSendReply(postId) {
+  const content = replyText.value[postId];
+  if (!content || !content.trim()) return;
+
+  replySubmitting.value[postId] = true;
+  try {
+    await forumStore.addComment(postId, content);
+    replyText.value[postId] = '';
+  } finally {
+    replySubmitting.value[postId] = false;
+  }
+}
+
+function handleDelete(postId) {
+  $q.dialog({
+    title: 'Excluir Publicação',
+    message: 'Tem certeza que deseja excluir esta publicação do fórum?',
+    cancel: { label: 'Cancelar', flat: true },
+    ok: { label: 'Excluir', color: 'negative', unelevated: true },
+    persistent: true,
+  }).onOk(async () => {
+    await forumStore.deletePost(postId);
+  });
 }
 
 function formatDate(dateStr) {
