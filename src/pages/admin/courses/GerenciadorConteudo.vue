@@ -97,7 +97,8 @@
                   v-for="(mod, index) in modules"
                   :key="mod.id"
                   group="modules"
-                  default-opened
+                  :model-value="expandedModuleId === mod.id"
+                  @update:model-value="(val) => handleModuleToggle(mod.id, val)"
                   header-class="bg-grey-2 text-weight-bold text-grey-9"
                   expand-icon-class="text-primary"
                 >
@@ -524,6 +525,26 @@ const savingLesson = ref(false);
 const uploadingPdf = ref(false);
 const pdfFile = ref(null);
 
+// Estado reativo para módulo expandido (inicializado de forma determinística)
+const expandedModuleId = ref(null);
+
+const initExpandedModule = () => {
+  if (modules.value && modules.value.length > 0) {
+    // Define explicitamente APENAS o último módulo como expandido
+    expandedModuleId.value = modules.value[modules.value.length - 1].id;
+  } else {
+    expandedModuleId.value = null;
+  }
+};
+
+const handleModuleToggle = (modId, isOpening) => {
+  if (isOpening) {
+    expandedModuleId.value = modId;
+  } else if (expandedModuleId.value === modId) {
+    expandedModuleId.value = null;
+  }
+};
+
 // Módulo Modal State
 const showModuleModal = ref(false);
 const isEditingModule = ref(false);
@@ -567,6 +588,7 @@ onMounted(async () => {
     loading.value = true;
     try {
       await courseStore.fetchCourseDetail(courseId.value);
+      initExpandedModule();
     } catch (err) {
       $q.notify({
         color: 'negative',
@@ -602,12 +624,21 @@ const openModuleModal = (mod = null) => {
 const saveModule = async () => {
   savingModule.value = true;
   try {
+    let result = null;
     if (isEditingModule.value) {
-      await courseStore.updateModule(currentModuleId.value, moduleForm.value);
+      result = await courseStore.updateModule(currentModuleId.value, moduleForm.value);
     } else {
-      await courseStore.createModule(courseId.value, moduleForm.value);
+      result = await courseStore.createModule(courseId.value, moduleForm.value);
     }
     await courseStore.fetchCourseDetail(courseId.value);
+    
+    // Se foi um módulo novo, abre o novo módulo
+    if (!isEditingModule.value && result && result.id) {
+      expandedModuleId.value = result.id;
+    } else {
+      initExpandedModule();
+    }
+
     showModuleModal.value = false;
   } catch (err) {
     console.error('Erro ao salvar módulo:', err);
@@ -626,6 +657,7 @@ const confirmDeleteModule = (mod) => {
     try {
       await courseStore.deleteModule(mod.id);
       await courseStore.fetchCourseDetail(courseId.value);
+      initExpandedModule();
     } catch (err) {
       console.error(err);
     }

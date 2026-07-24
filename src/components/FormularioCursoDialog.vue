@@ -3,9 +3,9 @@
     :model-value="modelValue"
     @update:model-value="(val) => $emit('update:modelValue', val)"
     persistent
-    max-width="720px"
+    max-width="760px"
   >
-    <q-card style="width: 720px; max-width: 95vw" class="rounded-borders shadow-3">
+    <q-card style="width: 760px; max-width: 95vw" class="rounded-borders shadow-3">
       <!-- Cabeçalho do Modal -->
       <q-card-section
         class="bg-primary text-white row items-center justify-between q-py-sm q-px-md"
@@ -54,10 +54,10 @@
             </div>
 
             <!-- Carga Horária -->
-            <div class="col-12 col-sm-6">
+            <div class="col-12 col-sm-4">
               <q-input
                 v-model.number="form.cargaHoraria"
-                label="Carga Horária (em horas) *"
+                label="Carga Horária (horas) *"
                 type="number"
                 outlined
                 dense
@@ -71,7 +71,7 @@
             </div>
 
             <!-- Categoria -->
-            <div class="col-12 col-sm-6">
+            <div class="col-12 col-sm-4">
               <q-select
                 v-model="form.categoria"
                 :options="categorias"
@@ -83,6 +83,23 @@
               >
                 <template v-slot:prepend>
                   <q-icon name="category" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Público-Alvo / Secretaria -->
+            <div class="col-12 col-sm-4">
+              <q-select
+                v-model="form.secretariaId"
+                :options="secretariaOptions"
+                label="Público-Alvo (Destino) *"
+                outlined
+                dense
+                emit-value
+                map-options
+              >
+                <template v-slot:prepend>
+                  <q-icon name="account_balance" color="primary" />
                 </template>
               </q-select>
             </div>
@@ -205,20 +222,35 @@ const categorias = [
   'LGPD & Transparência',
 ]
 
+const secretariaOptions = computed(() => {
+  const options = [{ label: '🏛️ Toda a Prefeitura (Curso Geral)', value: null }]
+  if (courseStore.secretarias && courseStore.secretarias.length > 0) {
+    courseStore.secretarias.forEach((s) => {
+      options.push({
+        label: `${s.sigla} - ${s.nome}`,
+        value: s.id,
+      })
+    })
+  }
+  return options
+})
+
 const form = ref({
   titulo: '',
   descricao: '',
   cargaHoraria: 10,
   categoria: 'Geral',
   capaUrl: '',
+  secretariaId: null,
   isPublished: true,
 })
 
 // Atualizar o formulário quando a prop course mudar ou o modal abrir
 watch(
   () => props.modelValue,
-  (isOpen) => {
+  async (isOpen) => {
     if (isOpen) {
+      courseStore.fetchSecretarias()
       capaFile.value = null
       if (props.course) {
         form.value = {
@@ -227,6 +259,7 @@ watch(
           cargaHoraria: props.course.cargaHoraria || 10,
           categoria: props.course.categoria || 'Geral',
           capaUrl: props.course.capaUrl || '',
+          secretariaId: props.course.secretariaId || null,
           isPublished: props.course.isPublished !== undefined ? props.course.isPublished : true,
         }
       } else {
@@ -236,6 +269,7 @@ watch(
           cargaHoraria: 10,
           categoria: 'Geral',
           capaUrl: '',
+          secretariaId: null,
           isPublished: true,
         }
       }

@@ -10,6 +10,7 @@ import { Notify } from 'quasar';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: [],
+    secretarias: [],
     currentCourse: null,
     enrollments: [],
     recommendations: [],
@@ -175,6 +176,17 @@ export const useCourseStore = defineStore('course', {
     // =========================================================================
     // AÇÕES ADMINISTRATIVAS (CRUD CURSOS, MÓDULOS, AULAS, UPLOAD)
     // =========================================================================
+
+    async fetchSecretarias() {
+      try {
+        const { data } = await api.get('/courses/secretarias');
+        this.secretarias = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar secretarias:', error);
+        return [];
+      }
+    },
 
     async fetchAllAdminCourses() {
       this.loading = true;
