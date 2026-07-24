@@ -102,6 +102,20 @@ const routes = [
         component: () => import('pages/gestor/DashboardGestor.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+
+      // ---------- ADMIN: Gestão de Cursos e Conteúdos ----------
+      {
+        name: 'admin-cursos',
+        path: '/admin/cursos',
+        component: () => import('pages/admin/courses/AdminCursosList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      {
+        name: 'admin-curso-conteudo',
+        path: '/admin/cursos/:id/conteudo',
+        component: () => import('pages/admin/courses/GerenciadorConteudo.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
     ],
   },
 
