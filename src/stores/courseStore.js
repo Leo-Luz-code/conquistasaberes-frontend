@@ -10,8 +10,13 @@ import { Notify } from 'quasar';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: [],
+<<<<<<< HEAD
+    myCourses: [],
+=======
     secretarias: [],
+>>>>>>> origin/main
     currentCourse: null,
+    courseRatings: null, // <-- novo
     enrollments: [],
     recommendations: [],
     learningPaths: [],
@@ -25,6 +30,30 @@ export const useCourseStore = defineStore('course', {
   },
 
   actions: {
+    async fetchMyCourses() {
+      try {
+        const { data } = await api.get('/courses/my-courses');
+        console.log(data);
+        this.myCourses = Array.isArray(data) ? data : [];
+        return this.myCourses;
+      } catch (error) {
+        console.error('Erro ao buscar meus cursos:', error);
+        this.myCourses = [];
+        return [];
+      }
+    },
+    async fetchCourseRatings(courseId) {
+      try {
+        const { data } = await api.get(`/courses/${courseId}/ratings`);
+        this.courseRatings = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar avaliações do curso:', error);
+        this.courseRatings = null;
+        return null;
+      }
+    },
+
     // Listar cursos com filtros opcionais
     async fetchCourses(filters = {}) {
       this.loading = true;
@@ -87,6 +116,25 @@ export const useCourseStore = defineStore('course', {
           icon: 'error',
           position: 'top',
           message: 'Erro ao se inscrever no curso.',
+        });
+        throw error;
+      }
+    },
+
+    async rateCourse(courseId, { rating, comment }) {
+      try {
+        await api.post(`/courses/${courseId}/rate`, { rating, comment });
+        Notify.create({
+          color: 'positive',
+          icon: 'star',
+          position: 'top',
+          message: 'Obrigado pelo seu feedback!',
+        });
+        await this.fetchMyCourses();
+      } catch (error) {
+        Notify.create({
+          color: 'negative',
+          message: 'Erro ao salvar avaliação.',
         });
         throw error;
       }

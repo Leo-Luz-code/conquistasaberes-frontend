@@ -51,40 +51,101 @@
 
       <!-- Layout Principal do AVA: Syllabus (Esquerda) + Player/Conteudo (Direita) -->
       <div v-if="course.isEnrolled" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Syllabus / Lista de Modulos (1 Coluna) -->
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden space-y-2 p-4 h-fit">
-          <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider mb-2 px-2">
-            Plano de Aulas
-          </h3>
+        <!-- Coluna Esquerda: Plano de Aulas + Avaliações -->
+        <div class="space-y-6">
+          <!-- Syllabus / Lista de Modulos -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden space-y-2 p-4 h-fit">
+            <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider mb-2 px-2">
+              Plano de Aulas
+            </h3>
 
-          <div v-for="module in course.modules" :key="module.id" class="space-y-1">
-            <div class="px-3 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-700 uppercase flex items-center justify-between">
-              <span>Módulo {{ module.ordem }}: {{ module.titulo }}</span>
+            <div v-for="module in course.modules" :key="module.id" class="space-y-1">
+              <div class="px-3 py-2 bg-slate-100 rounded-lg text-xs font-bold text-slate-700 uppercase flex items-center justify-between">
+                <span>Módulo {{ module.ordem }}: {{ module.titulo }}</span>
+              </div>
+
+              <div class="pl-2 space-y-1">
+                <button
+                  v-for="lesson in module.lessons"
+                  :key="lesson.id"
+                  @click="selectLesson(lesson)"
+                  class="w-full text-left p-2.5 rounded-lg text-xs font-medium transition-all flex items-center justify-between gap-2"
+                  :class="currentLesson?.id === lesson.id ? 'bg-blue-50 text-pmvc-blue font-bold border-l-4 border-pmvc-blue' : 'hover:bg-slate-50 text-slate-600'"
+                >
+                  <div class="flex items-center gap-2 truncate">
+                    <q-icon
+                      :name="lesson.tipo === 'VIDEO' ? 'play_circle' : lesson.tipo === 'QUIZ' ? 'quiz' : 'description'"
+                      size="16px"
+                      class="shrink-0 text-slate-400"
+                    />
+                    <span class="truncate">{{ lesson.titulo }}</span>
+                  </div>
+                  <q-icon
+                    v-if="lesson.completed"
+                    name="check_circle"
+                    class="text-emerald-500 shrink-0"
+                    size="16px"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avaliações e Comentários -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2 px-1">
+              <h3 class="font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <q-icon name="reviews" color="primary" size="16px" />
+                Avaliações
+              </h3>
+
+              <div class="flex items-center gap-1.5">
+                <q-rating
+                  :model-value="courseStore.courseRatings?.mediaAvaliacoes || 0"
+                  readonly
+                  size="14px"
+                  color="amber-8"
+                  icon="star_border"
+                  icon-selected="star"
+                  :max="5"
+                />
+                <span v-if="courseStore.courseRatings?.totalAvaliacoes" class="text-[11px] font-semibold text-slate-600">
+                  {{ Number(courseStore.courseRatings.mediaAvaliacoes).toFixed(1) }}
+                  ({{ courseStore.courseRatings.totalAvaliacoes }})
+                </span>
+              </div>
             </div>
 
-            <div class="pl-2 space-y-1">
-              <button
-                v-for="lesson in module.lessons"
-                :key="lesson.id"
-                @click="selectLesson(lesson)"
-                class="w-full text-left p-2.5 rounded-lg text-xs font-medium transition-all flex items-center justify-between gap-2"
-                :class="currentLesson?.id === lesson.id ? 'bg-blue-50 text-pmvc-blue font-bold border-l-4 border-pmvc-blue' : 'hover:bg-slate-50 text-slate-600'"
+            <div v-if="courseStore.courseRatings?.avaliacoes?.length" class="max-h-64 overflow-y-auto pr-1 space-y-2">
+              <div
+                v-for="avaliacao in courseStore.courseRatings.avaliacoes"
+                :key="avaliacao.id"
+                class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 space-y-1"
               >
-                <div class="flex items-center gap-2 truncate">
-                  <q-icon
-                    :name="lesson.tipo === 'VIDEO' ? 'play_circle' : lesson.tipo === 'QUIZ' ? 'quiz' : 'description'"
-                    size="16px"
-                    class="shrink-0 text-slate-400"
-                  />
-                  <span class="truncate">{{ lesson.titulo }}</span>
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-slate-700 truncate">
+                    {{ avaliacao.user?.nome || 'Servidor(a)' }}
+                  </span>
+                  <span class="text-[10px] text-slate-400 shrink-0 ml-2">{{ new Date(avaliacao.createdAt).toLocaleDateString('pt-BR') }}</span>
                 </div>
-                <q-icon
-                  v-if="lesson.completed"
-                  name="check_circle"
-                  class="text-emerald-500 shrink-0"
-                  size="16px"
+                <q-rating
+                  :model-value="avaliacao.rating"
+                  readonly
+                  size="12px"
+                  color="amber-8"
+                  icon="star_border"
+                  icon-selected="star"
+                  :max="5"
                 />
-              </button>
+                <p v-if="avaliacao.comment" class="text-[11px] text-slate-600 leading-relaxed">
+                  {{ avaliacao.comment }}
+                </p>
+              </div>
+            </div>
+
+            <div v-else class="text-center py-4 space-y-1">
+              <q-icon name="rate_review" size="24px" class="text-slate-300" />
+              <p class="text-[11px] text-slate-400">Nenhum comentário ainda.</p>
             </div>
           </div>
         </div>
@@ -284,6 +345,7 @@ watch(currentLesson, () => {
 onMounted(async () => {
   const courseId = route.params.id;
   const data = await courseStore.fetchCourseDetail(courseId);
+  await courseStore.fetchCourseRatings(courseId); // <-- estava faltando
   if (data?.modules?.[0]?.lessons?.[0]) {
     currentLesson.value = data.modules[0].lessons[0];
   }
