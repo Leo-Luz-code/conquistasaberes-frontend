@@ -193,25 +193,46 @@
                 </div>
               </div>
 
-              <!-- Quiz -->
+              <!-- Quiz Dinâmico -->
               <div v-else-if="currentLesson.tipo === 'QUIZ'" class="space-y-4">
                 <div class="flex items-center gap-2 text-amber-700 font-bold text-sm">
-                  <q-icon name="help" /> Avaliação de Aprendizagem
+                  <q-icon name="help" size="20px" /> Avaliação de Aprendizagem
                 </div>
-                <p class="text-xs text-slate-600">Responda à questão para validar a retenção de conhecimento desta aula:</p>
+                <p class="text-xs text-slate-600">Responda à avaliação para validar o conhecimento adquirido nesta aula:</p>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3 text-xs">
-                  <p class="font-bold text-slate-800">1. Qual a principal diretriz de conformidade da LGPD no serviço público?</p>
-                  <div class="space-y-2">
-                    <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer">
-                      <input type="radio" name="quiz" class="text-pmvc-blue" checked />
-                      <span>Transparência, finalidade pública e consentimento/base legal adequada.</span>
-                    </label>
-                    <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer">
-                      <input type="radio" name="quiz" class="text-pmvc-blue" />
-                      <span>Compartilhamento irrestrito de dados com terceiros.</span>
-                    </label>
+                <!-- Se o Quiz possui perguntas válidas -->
+                <div v-if="parsedQuiz && parsedQuiz.length > 0" class="space-y-4">
+                  <div
+                    v-for="(qItem, qIdx) in parsedQuiz"
+                    :key="qItem.id"
+                    class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3"
+                  >
+                    <p class="font-bold text-slate-900 text-xs sm:text-sm">
+                      {{ qIdx + 1 }}. {{ qItem.pergunta }}
+                    </p>
+
+                    <div class="space-y-2">
+                      <div
+                        v-for="(opcao, optIdx) in qItem.opcoes"
+                        :key="optIdx"
+                        class="flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer"
+                        :class="userAnswers[qItem.id] === optIdx ? 'bg-blue-50 border-pmvc-blue text-pmvc-blue font-bold shadow-xs' : 'border-slate-200 hover:bg-slate-50 text-slate-700'"
+                        @click="userAnswers[qItem.id] = optIdx"
+                      >
+                        <q-radio v-model="userAnswers[qItem.id]" :val="optIdx" color="primary" dense />
+                        <span class="text-xs leading-relaxed">
+                          <strong class="mr-1">{{ String.fromCharCode(65 + optIdx) }})</strong> {{ opcao }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                </div>
+
+                <!-- Se o Quiz estiver vazio ou inválido -->
+                <div v-else class="p-6 bg-amber-50 border border-amber-200 rounded-xl text-center space-y-2">
+                  <q-icon name="warning" size="36px" color="amber-8" />
+                  <p class="font-bold text-slate-800 text-sm">Nenhuma pergunta encontrada</p>
+                  <p class="text-xs text-slate-600">Este quiz ainda não possui perguntas cadastradas ou os dados estão em formato incompleto.</p>
                 </div>
               </div>
             </div>
@@ -219,7 +240,7 @@
             <!-- Botao Concluir Aula -->
             <div class="flex justify-end pt-2">
               <q-btn
-                :label="currentLesson.completed ? 'AULA JA CONCLUIDA' : 'CONCLUIR AULA & GANHAR XP'"
+                :label="currentLesson.completed ? 'AULA JÁ CONCLUÍDA' : 'CONCLUIR AULA & GANHAR XP'"
                 :color="currentLesson.completed ? 'grey-7' : 'positive'"
                 icon="check_circle"
                 class="!py-3 !px-6 font-bold"
@@ -237,15 +258,89 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCourseStore } from 'src/stores/courseStore';
 
 const route = useRoute();
 const courseStore = useCourseStore();
 const currentLesson = ref(null);
+const userAnswers = ref({});
 
 const course = computed(() => courseStore.currentCourse);
+
+// Parser dinâmico que converte qualquer formato de quizData em uma lista padronizada de perguntas
+const parsedQuiz = computed(() => {
+  if (!currentLesson.value || currentLesson.value.tipo !== 'QUIZ' || !currentLesson.value.quizData) {
+    return null;
+  }
+
+  let raw = currentLesson.value.quizData;
+
+  if (typeof raw === 'string') {
+    try {
+      raw = JSON.parse(raw);
+    } catch (e) {
+      console.error('Erro ao interpretar o JSON do quizData:', e);
+      return null;
+    }
+  }
+
+  if (!raw) return null;
+
+  const questionsList = [];
+
+  // Formato 1: { questions: [...] } (Utilizado nos seeds)
+  if (raw.questions && Array.isArray(raw.questions)) {
+    raw.questions.forEach((q, idx) => {
+      const questionText = q.question || q.pergunta || `Pergunta ${idx + 1}`;
+      const optionsList = q.options || q.opcoes || [];
+      const correctIdx = q.correctIndex !== undefined ? q.correctIndex : (q.respostaCorreta !== undefined ? q.respostaCorreta : 0);
+
+      questionsList.push({
+        id: q.id || idx + 1,
+        pergunta: questionText,
+        opcoes: optionsList,
+        respostaCorreta: correctIdx,
+      });
+    });
+  }
+  // Formato 2: { pergunta: "...", opcoes: [...], respostaCorreta: 0 } (Criado via formulário Admin)
+  else if (raw.pergunta || raw.question) {
+    const questionText = raw.pergunta || raw.question;
+    const optionsList = raw.opcoes || raw.options || [];
+    const correctIdx = raw.respostaCorreta !== undefined ? raw.respostaCorreta : (raw.correctIndex !== undefined ? raw.correctIndex : 0);
+
+    questionsList.push({
+      id: 1,
+      pergunta: questionText,
+      opcoes: optionsList,
+      respostaCorreta: correctIdx,
+    });
+  }
+  // Formato 3: Array direto [...]
+  else if (Array.isArray(raw)) {
+    raw.forEach((q, idx) => {
+      const questionText = q.question || q.pergunta || `Pergunta ${idx + 1}`;
+      const optionsList = q.options || q.opcoes || [];
+      const correctIdx = q.correctIndex !== undefined ? q.correctIndex : (q.respostaCorreta !== undefined ? q.respostaCorreta : 0);
+
+      questionsList.push({
+        id: q.id || idx + 1,
+        pergunta: questionText,
+        opcoes: optionsList,
+        respostaCorreta: correctIdx,
+      });
+    });
+  }
+
+  return questionsList.length > 0 ? questionsList : null;
+});
+
+// Limpar respostas ao trocar de aula
+watch(currentLesson, () => {
+  userAnswers.value = {};
+});
 
 onMounted(async () => {
   const courseId = route.params.id;
