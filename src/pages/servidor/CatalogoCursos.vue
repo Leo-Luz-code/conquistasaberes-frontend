@@ -107,6 +107,13 @@
           </router-link>
         </div>
       </div>
+
+      <!-- Empty State Meus Cursos -->
+      <div v-else class="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-2">
+        <q-icon name="menu_book" size="40px" class="text-slate-400" />
+        <h4 class="font-bold text-slate-700 text-sm">Você ainda não se inscreveu em nenhum curso</h4>
+        <p class="text-xs text-slate-500">Explore o catálogo abaixo e faça sua matrícula para começar a pontuar XP!</p>
+      </div>
     </div>
 
     <!-- Empty State -->
