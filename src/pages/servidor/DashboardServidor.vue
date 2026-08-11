@@ -1,139 +1,319 @@
 <template>
-  <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-8 font-sans">
-    <!-- Boas-vindas & Perfil Banner -->
-    <div class="relative overflow-hidden bg-gradient-to-r from-pmvc-blue via-blue-800 to-indigo-900 rounded-3xl text-white p-6 sm:p-10 shadow-xl">
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+  <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans">
+    <!-- Top Header: Boas-vindas + Data + Botão de Continuar Curso -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium">
+          {{ dataAtualFormatada }}
+        </p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+          Olá, <span class="text-[#0F4C81]">{{ authStore.firstName || 'Maria' }}</span>. Bem-vinda à UniVC.
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500">
+          Continue sua jornada de aprendizagem hoje.
+        </p>
+      </div>
+
+      <div>
+        <router-link
+          to="/servidor/cursos/1"
+          class="inline-flex items-center gap-2 px-5 py-3 bg-[#0F4C81] hover:bg-[#0C3B66] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md hover:shadow-lg"
+        >
+          <span>Continuar curso atual</span>
+          <q-icon name="arrow_forward" size="18px" />
+        </router-link>
+      </div>
+    </div>
+
+    <!-- Banner 1: Destaque Institucional (Gradient Blue Card) -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-[#0F4C81] via-[#0D5B96] to-[#0B7C9E] rounded-3xl text-white p-6 sm:p-10 shadow-xl">
+      <div class="relative z-10 max-w-3xl space-y-4">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-400 text-slate-900 text-xs font-bold rounded-full shadow-sm">
+          <q-icon name="auto_awesome" size="14px" />
+          <span>Destaque institucional</span>
+        </div>
+
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+          Desenvolva suas competências e fortaleça o serviço público municipal.
+        </h2>
+
+        <p class="text-xs sm:text-base text-blue-100 leading-relaxed max-w-2xl">
+          Trilhas, cursos e materiais selecionados para você atuar com excelência no atendimento ao cidadão.
+        </p>
+
+        <div class="pt-2 flex flex-wrap items-center gap-3">
+          <router-link
+            to="/servidor/trilhas"
+            class="px-5 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-xs sm:text-sm rounded-xl transition-colors shadow-md"
+          >
+            Explorar trilhas
+          </router-link>
+
+          <router-link
+            to="/servidor/cursos"
+            class="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/40 text-white font-bold text-xs sm:text-sm rounded-xl transition-colors backdrop-blur-sm"
+          >
+            Ver cursos
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner 2: Norminha, Embaixadora do Conhecimento da UniVC -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row items-stretch relative">
+      <!-- Imagem da Norminha no lado esquerdo -->
+      <div class="relative md:w-64 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 min-h-[200px]">
+        <div class="absolute top-3 left-3 z-10 px-2.5 py-0.5 bg-[#0F4C81] text-white text-[10px] font-extrabold uppercase rounded-md tracking-wider shadow">
+          EMBAIXADORA IA
+        </div>
+        <img
+          src="~assets/images/norminha_avatar.jpg"
+          alt="Norminha, Embaixadora do Conhecimento"
+          class="w-full h-full object-cover object-top"
+        />
+      </div>
+
+      <!-- Conteúdo de Apoio da Norminha -->
+      <div class="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
         <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold uppercase tracking-wider text-blue-200">
-            <q-icon name="apartment" /> {{ authStore.userSecretaria || 'PMVC' }} • {{ authStore.userCargo || 'Servidor Público' }}
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0F4C81] text-white text-xs font-bold rounded-full">
+            <q-icon name="auto_awesome" size="14px" />
+            <span>Norminha, Embaixadora do Conhecimento da UniVC</span>
           </div>
-          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
-            Olá, {{ authStore.firstName }}! 👋
-          </h1>
-          <p class="text-sm sm:text-base text-blue-100 max-w-xl">
-            Bem-vindo ao seu portal de desenvolvimento contínuo. Explore novas trilhas, acumule XP e potencialize sua carreira no serviço público municipal.
+
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+            Sua referência de apoio ao aprendizado dentro da UniVC.
+          </h3>
+
+          <p class="text-xs sm:text-sm text-slate-600 italic leading-relaxed pt-1">
+            "Olá, eu sou a Norminha, Embaixadora do Conhecimento da UniVC. Estou aqui para apoiar sua jornada de aprendizagem, orientar seus estudos e ajudar você a encontrar respostas sobre cursos, trilhas, conteúdos e desenvolvimento de competências na Prefeitura de Vitória da Conquista."
           </p>
         </div>
 
-        <!-- Widget de Gamificacao Rápido -->
-        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 flex items-center gap-5 min-w-[280px]">
-          <div class="w-14 h-14 bg-amber-400 text-slate-900 rounded-xl flex items-center justify-center font-extrabold text-2xl shadow-lg shrink-0">
-            {{ gamificationStore.level }}
-          </div>
-          <div class="flex-1 space-y-1">
-            <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
-              <span>{{ gamificationStore.levelTitle }}</span>
-              <span class="text-amber-300 font-extrabold">{{ gamificationStore.xpPoints }} XP</span>
-            </div>
-            <q-linear-progress
-              :value="gamificationStore.xpProgress / 100"
-              color="amber"
-              track-color="white-3"
-              class="h-3 rounded-full"
-            />
-            <span class="text-[10px] text-blue-200 block text-right">
-              {{ gamificationStore.xpProgress }}% para o próximo nível
-            </span>
+        <!-- Avatar badge no canto inferior direito -->
+        <div class="flex justify-end pt-2">
+          <div class="relative w-10 h-10 rounded-full border-2 border-amber-400 overflow-hidden shadow">
+            <span class="absolute -top-0.5 -left-0.5 px-1 bg-[#0F4C81] text-white text-[8px] font-extrabold rounded-full z-10">IA</span>
+            <img src="~assets/images/norminha_avatar.jpg" alt="Norminha IA" class="w-full h-full object-cover" />
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Seção 2 Colunas: Cursos em Andamento & Sugestões de IA -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Cursos em Andamento (2 Colunas) -->
-      <div class="lg:col-span-2 space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <q-icon name="play_circle" class="text-pmvc-blue" /> Meus Cursos em Andamento
-          </h2>
-          <router-link to="/servidor/cursos" class="text-xs font-bold text-pmvc-blue hover:underline">
-            Ver catálogo completo →
-          </router-link>
+    <!-- Cards de Métricas e Indicadores (4 cards em linha) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Metric Card 1: Cursos disponíveis -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#0F4C81] flex items-center justify-center shrink-0">
+          <q-icon name="menu_book" size="24px" />
         </div>
-
-        <div v-if="courseStore.loading" class="flex justify-center py-12">
-          <q-spinner-dots color="primary" size="40px" />
+        <div>
+          <p class="text-xs font-medium text-slate-500">Cursos disponíveis</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none my-0.5">48</p>
+          <p class="text-[11px] text-slate-400">6 novos este mês</p>
         </div>
+      </div>
 
-        <div v-else-if="enrolledCourses.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            v-for="course in enrolledCourses"
-            :key="course.id"
-            class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all flex flex-col justify-between"
-          >
+      <!-- Metric Card 2: Em andamento -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <q-icon name="school" size="24px" />
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500">Em andamento</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none my-0.5">3</p>
+          <p class="text-[11px] text-slate-400">continue de onde parou</p>
+        </div>
+      </div>
+
+      <!-- Metric Card 3: Concluídos -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <q-icon name="emoji_events" size="24px" />
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500">Concluídos</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none my-0.5">7</p>
+          <p class="text-[11px] text-slate-400">parabéns pela dedicação</p>
+        </div>
+      </div>
+
+      <!-- Metric Card 4: Certificados -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+          <q-icon name="workspace_premium" size="24px" />
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500">Certificados</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none my-0.5">5</p>
+          <p class="text-[11px] text-slate-400">emitidos no AVA</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 2 Colunas: Progresso Geral da Jornada & Atalhos Rápidos -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Coluna Esquerda (2 Colunas LG): Progresso Geral da Jornada -->
+      <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-4">
             <div>
-              <div class="flex justify-between items-start mb-2">
-                <span class="px-2 py-0.5 bg-blue-50 text-pmvc-blue rounded text-[10px] font-bold uppercase">
-                  {{ course.categoria || 'Geral' }}
-                </span>
-                <span class="text-xs text-slate-400 font-semibold flex items-center gap-1">
-                  <q-icon name="schedule" /> {{ course.cargaHoraria }}h
-                </span>
+              <h3 class="text-lg font-extrabold text-slate-900">Progresso geral da jornada</h3>
+              <p class="text-xs text-slate-500">Sua evolução nas trilhas e cursos ativos.</p>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <q-icon name="trending_up" size="22px" />
+            </div>
+          </div>
+
+          <!-- Lista de Itens de Progresso -->
+          <div class="space-y-5 pt-2">
+            <!-- Item 1 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-800">Trilha de Integração ao Serviço Público</span>
+                <span class="text-[#0F4C81]">45%</span>
               </div>
-              <h3 class="font-bold text-slate-900 text-base line-clamp-2 mb-2">{{ course.titulo }}</h3>
-              <p class="text-xs text-slate-500 line-clamp-2 mb-4">{{ course.descricao }}</p>
+              <div class="w-full bg-emerald-500 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-[#0F4C81] h-2.5 rounded-full" style="width: 45%;"></div>
+              </div>
             </div>
 
-            <div class="space-y-3 pt-3 border-t border-slate-100">
-              <div class="flex justify-between text-xs text-slate-600 font-bold">
-                <span>Progresso</span>
-                <span class="text-pmvc-blue">{{ course.userProgress || 0 }}%</span>
+            <!-- Item 2 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-800">Trilha de Gestão e Liderança</span>
+                <span class="text-[#0F4C81]">20%</span>
               </div>
-              <q-linear-progress :value="(course.userProgress || 0) / 100" color="primary" class="h-2 rounded-full" />
-              <router-link
-                :to="`/servidor/cursos/${course.id}`"
-                class="block text-center py-2 px-4 bg-pmvc-blue hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors"
-              >
-                CONTINUAR ESTUDANDO
-              </router-link>
+              <div class="w-full bg-emerald-500 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-[#0F4C81] h-2.5 rounded-full" style="width: 20%;"></div>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-800">Curso: Ética e Conduta no Serviço Público</span>
+                <span class="text-[#0F4C81]">75%</span>
+              </div>
+              <div class="w-full bg-emerald-500 rounded-full h-2.5 overflow-hidden">
+                <div class="bg-[#0F4C81] h-2.5 rounded-full" style="width: 75%;"></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div v-else class="bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-3">
-          <q-icon name="school" size="48px" class="text-slate-300" />
-          <h3 class="font-bold text-slate-700">Você ainda não se inscreveu em nenhum curso</h3>
-          <p class="text-xs text-slate-500 max-w-md mx-auto">Explore nosso catálogo unificado de capacitações e inscreva-se para começar a pontuar XP!</p>
+        <!-- Rodapé do Card de Progresso -->
+        <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p class="text-[11px] font-medium text-slate-400">Pontuação de aprendizagem</p>
+            <p class="text-xl font-extrabold text-[#0F4C81]">
+              1.240 <span class="text-xs text-slate-500 font-normal">pts</span>
+            </p>
+          </div>
+
           <router-link
-            to="/servidor/cursos"
-            class="inline-block py-2.5 px-6 bg-pmvc-blue text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow"
+            to="/servidor/ranking"
+            class="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-colors text-center"
           >
-            Explorar Cursos
+            Ver Passaporte Digital
           </router-link>
         </div>
       </div>
 
-      <!-- Recomendações Inteligentes IA (1 Coluna) -->
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <q-icon name="auto_awesome" class="text-amber-500" /> Sugestões por IA
-          </h2>
-        </div>
+      <!-- Coluna Direita (1 Coluna LG): Atalhos Rápidos -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between relative">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900 mb-5">Atalhos rápidos</h3>
 
-        <div class="bg-gradient-to-b from-amber-500/5 to-white rounded-2xl border border-amber-200/60 p-5 space-y-4">
-          <p class="text-xs text-slate-600">
-            Cursos sugeridos com base no seu cargo de <strong>{{ authStore.userCargo }}</strong> e demandas da sua secretaria:
-          </p>
-
-          <div class="space-y-3">
-            <div
-              v-for="rec in recommendations"
-              :key="rec.id"
-              class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm hover:border-amber-400 transition-all flex flex-col justify-between gap-2"
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Minhas Trilhas -->
+            <router-link
+              to="/servidor/trilhas"
+              class="p-4 bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
             >
-              <div class="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
-                <q-icon name="psychology" /> {{ rec.matchReason || 'Recomendado para sua Carreira' }}
+              <div class="w-10 h-10 rounded-xl bg-blue-100/60 text-[#0F4C81] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="alt_route" size="22px" />
               </div>
-              <h4 class="font-bold text-slate-900 text-sm leading-tight">{{ rec.titulo }}</h4>
-              <div class="flex items-center justify-between pt-2 text-xs">
-                <span class="text-slate-500 font-semibold">{{ rec.cargaHoraria }}h</span>
-                <router-link :to="`/servidor/cursos/${rec.id}`" class="text-pmvc-blue font-bold hover:underline">
-                  Ver Detalhes →
-                </router-link>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-[#0F4C81]">Minhas Trilhas</span>
+            </router-link>
+
+            <!-- Meus Cursos -->
+            <router-link
+              to="/servidor/cursos"
+              class="p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-emerald-100/60 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="menu_book" size="22px" />
+              </div>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-emerald-700">Meus Cursos</span>
+            </router-link>
+
+            <!-- Biblioteca -->
+            <router-link
+              to="/servidor/cursos"
+              class="p-4 bg-slate-50 hover:bg-amber-50 border border-slate-100 hover:border-amber-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-amber-100/60 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="auto_stories" size="22px" />
+              </div>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-amber-600">Biblioteca</span>
+            </router-link>
+
+            <!-- Fórum -->
+            <router-link
+              to="/servidor/forum"
+              class="p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-indigo-100/60 text-indigo-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="chat" size="22px" />
+              </div>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-indigo-700">Fórum</span>
+            </router-link>
+
+            <!-- Passaporte Digital -->
+            <router-link
+              to="/servidor/ranking"
+              class="p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-emerald-100/60 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="badge" size="22px" />
+              </div>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-emerald-600">Passaporte Digital</span>
+            </router-link>
+
+            <!-- Certificados -->
+            <router-link
+              to="/servidor/certificados"
+              class="p-4 bg-slate-50 hover:bg-amber-50 border border-slate-100 hover:border-amber-200 rounded-2xl flex flex-col items-start space-y-2 transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-amber-100/60 text-amber-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <q-icon name="workspace_premium" size="22px" />
+              </div>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-amber-500">Certificados</span>
+            </router-link>
+
+            <!-- Norminha IA (Full Width ou Card Especial) -->
+            <div
+              @click="abrirNorminha"
+              class="col-span-2 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 rounded-2xl flex items-center gap-3 cursor-pointer transition-all group"
+            >
+              <div class="w-10 h-10 rounded-xl bg-[#0F4C81] text-white flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <q-icon name="smart_toy" size="22px" />
+              </div>
+              <div>
+                <span class="block text-xs font-bold text-slate-900 group-hover:text-[#0F4C81]">Norminha IA</span>
+                <span class="text-[10px] text-slate-500">Tire dúvidas com a embaixadora</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Avatar Norminha Flutuante no canto inferior direito -->
+        <div class="flex justify-end pt-4">
+          <div class="relative w-10 h-10 rounded-full border-2 border-amber-400 overflow-hidden shadow">
+            <span class="absolute -top-0.5 -left-0.5 px-1 bg-[#0F4C81] text-white text-[8px] font-extrabold rounded-full z-10">IA</span>
+            <img src="~assets/images/norminha_avatar.jpg" alt="Norminha IA" class="w-full h-full object-cover" />
           </div>
         </div>
       </div>
@@ -142,30 +322,19 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
+import { computed } from 'vue';
 import { useAuthStore } from 'src/stores/authStore';
-import { useCourseStore } from 'src/stores/courseStore';
-import { useGamificationStore } from 'src/stores/gamificationStore';
 
 const authStore = useAuthStore();
-const courseStore = useCourseStore();
-const gamificationStore = useGamificationStore();
 
-const enrolledCourses = computed(() => {
-  return courseStore.courses.filter(c => c.isEnrolled || c.userProgress > 0);
+const dataAtualFormatada = computed(() => {
+  const data = new Date();
+  const opcoes = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
+  const str = data.toLocaleDateString('pt-BR', opcoes);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 });
 
-const recommendations = computed(() => {
-  return courseStore.recommendations.length > 0
-    ? courseStore.recommendations
-    : courseStore.courses.slice(0, 2);
-});
-
-onMounted(async () => {
-  await Promise.all([
-    courseStore.fetchCourses(),
-    courseStore.fetchRecommendations(),
-    gamificationStore.fetchMyStatus(),
-  ]);
-});
+function abrirNorminha() {
+  // Triggers Norminha widget event or dialog if needed
+}
 </script>
