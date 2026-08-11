@@ -202,9 +202,11 @@ const configurarMenu = () => {
     { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
     ...(authStore.isGestorOrAdmin ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }] : []),
     { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
-    { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+    { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
+    { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
+    { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+    { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-    { title: 'Fórum Colaborativo', icon: 'forum', link: '/servidor/forum' },
     { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
     { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
   ];

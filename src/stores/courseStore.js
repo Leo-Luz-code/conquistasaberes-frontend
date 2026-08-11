@@ -10,13 +10,10 @@ import { Notify } from 'quasar';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: [],
-<<<<<<< HEAD
     myCourses: [],
-=======
     secretarias: [],
->>>>>>> origin/main
     currentCourse: null,
-    courseRatings: null, // <-- novo
+    courseRatings: null,
     enrollments: [],
     recommendations: [],
     learningPaths: [],

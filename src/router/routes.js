@@ -94,12 +94,28 @@ const routes = [
         component: () => import('pages/servidor/Ranking.vue'),
         meta: { requiredLogin: true },
       },
-
+      
+      // ---------- SERVIDOR: Biblioteca -----------------
+      {
+        name: 'biblioteca',
+        path: '/servidor/biblioteca',
+        component: () => import('pages/servidor/Biblioteca.vue'),
+        meta: { requiredLogin: true },
+      },
+      
       // ---------- SERVIDOR: Fórum Comunitário ----------
       {
         name: 'forum',
         path: '/servidor/forum',
         component: () => import('pages/servidor/Forum.vue'),
+        meta: { requiredLogin: true },
+      },
+      
+      // ---------- SERVIDOR: Passaporte Digital -------
+      {
+        name: 'passaporte-digital',
+        path: '/servidor/passaporte',
+        component: () => import('pages/servidor/PassaporteDigital.vue'),
         meta: { requiredLogin: true },
       },
 
