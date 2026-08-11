@@ -11,11 +11,10 @@
     >
       <div
         v-if="isOpen"
-        class="mb-4 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
-        style="max-height: 500px;"
+        class="mb-4 w-80 sm:w-96 h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
       >
-        <!-- Header do Chat -->
-        <div class="bg-gradient-to-r from-[#0F4C81] to-[#0A3459] p-4 text-white flex items-center justify-between">
+        <!-- Header do Chat (fixed height, shrink-0) -->
+        <div class="bg-gradient-to-r from-[#0F4C81] to-[#0A3459] p-4 text-white flex items-center justify-between shrink-0 shadow-sm">
           <div class="flex items-center gap-3">
             <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-amber-400 bg-white shrink-0">
               <img
@@ -34,65 +33,70 @@
           </div>
           <button
             @click="isOpen = false"
-            class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             <q-icon name="close" size="20px" />
           </button>
         </div>
 
-        <!-- Conteúdo / Mensagens -->
-        <div class="p-4 space-y-3 overflow-y-auto flex-1 bg-slate-50 text-xs">
-          <!-- Mensagem de Boas-Vindas da Norminha -->
-          <div class="flex gap-2.5 items-start">
-            <div class="w-7 h-7 rounded-full overflow-hidden border border-amber-400 bg-white shrink-0">
-              <img src="~assets/images/norminha_avatar.jpg" alt="Norminha" class="w-full h-full object-cover" />
+        <!-- Conteúdo do Chat / Lista de Mensagens (flex-1 min-h-0 overflow-y-auto) -->
+        <div
+          ref="chatContainer"
+          class="p-4 space-y-3 overflow-y-auto flex-1 min-h-0 bg-slate-50 text-xs scroll-smooth"
+        >
+          <!-- Loop de Mensagens do Histórico -->
+          <div
+            v-for="(msg, idx) in historicoMensagens"
+            :key="idx"
+            class="flex flex-col"
+          >
+            <!-- Mensagem enviada pelo Usuário -->
+            <div v-if="msg.sender === 'user'" class="flex justify-end mb-2">
+              <div class="bg-[#0F4C81] text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[85%] leading-relaxed">
+                {{ msg.text }}
+              </div>
             </div>
-            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-slate-700 space-y-1.5 max-w-[85%]">
-              <p class="font-bold text-slate-900 text-xs">Olá, Servidor! 👋</p>
-              <p>Eu sou a Norminha, sua assistente virtual de aprendizagem na UniVC.</p>
-              <p>Como posso apoiar seu desenvolvimento profissional hoje?</p>
-            </div>
-          </div>
 
-          <!-- Sugestões Rápidas -->
-          <div class="pt-2 space-y-1.5">
-            <p class="text-[11px] text-slate-400 font-semibold px-1">Perguntas frequentes:</p>
-            <button
-              v-for="(sug, idx) in sugestoes"
-              :key="idx"
-              @click="selecionarSugestao(sug)"
-              class="w-full text-left p-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl text-xs font-semibold text-slate-700 transition-colors"
-            >
-              🔹 {{ sug.pergunta }}
-            </button>
-          </div>
-
-          <!-- Mensagem Selecionada (Resposta) -->
-          <div v-if="respostaAtual" class="pt-2 space-y-2">
-            <div class="flex gap-2.5 items-start">
+            <!-- Mensagem enviada pela Norminha -->
+            <div v-else class="flex gap-2.5 items-start mb-2">
               <div class="w-7 h-7 rounded-full overflow-hidden border border-amber-400 bg-white shrink-0">
                 <img src="~assets/images/norminha_avatar.jpg" alt="Norminha" class="w-full h-full object-cover" />
               </div>
-              <div class="bg-blue-50 border border-blue-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-slate-800 text-xs space-y-1">
-                <p class="font-bold text-[#0F4C81]">{{ respostaAtual.pergunta }}</p>
-                <p>{{ respostaAtual.resposta }}</p>
+              <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-slate-700 space-y-1.5 max-w-[85%] leading-relaxed">
+                <p v-if="idx === 0" class="font-bold text-slate-900 text-xs">Olá, Servidor! 👋</p>
+                <p>{{ msg.text }}</p>
               </div>
+            </div>
+          </div>
+
+          <!-- Sugestões Rápidas (Pills/Botões) -->
+          <div class="pt-2 space-y-1.5 shrink-0">
+            <p class="text-[11px] text-slate-400 font-semibold px-1">Perguntas frequentes:</p>
+            <div class="space-y-1.5">
+              <button
+                v-for="(sug, idx) in sugestoes"
+                :key="idx"
+                @click="selecionarSugestao(sug)"
+                class="w-full text-left p-2.5 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl text-xs font-semibold text-slate-700 transition-colors shadow-xs cursor-pointer block leading-snug"
+              >
+                🔹 {{ sug.pergunta }}
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Input Footer -->
-        <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+        <!-- Footer do Input (fixed height, shrink-0) -->
+        <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
           <input
             v-model="inputMsg"
             type="text"
             placeholder="Digite sua dúvida para a Norminha..."
-            class="flex-1 bg-slate-100 text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 border border-transparent"
+            class="flex-1 bg-slate-100 text-xs rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 border border-transparent"
             @keyup.enter="enviarMensagem"
           />
           <button
             @click="enviarMensagem"
-            class="p-2 bg-[#0F4C81] hover:bg-[#0C3B66] text-white rounded-xl transition-colors shrink-0"
+            class="p-2.5 bg-[#0F4C81] hover:bg-[#0C3B66] text-white rounded-xl transition-colors shrink-0 cursor-pointer"
           >
             <q-icon name="send" size="16px" />
           </button>
@@ -102,7 +106,7 @@
 
     <!-- Botão Flutuante Circular da Norminha -->
     <button
-      @click="isOpen = !isOpen"
+      @click="toggleOpen"
       class="group relative flex items-center justify-center w-14 h-14 rounded-full bg-white border-2 border-amber-400 shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-200 cursor-pointer overflow-visible"
       title="Norminha IA - Assistente de Conhecimento"
     >
@@ -129,11 +133,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 
 const isOpen = ref(false);
 const inputMsg = ref('');
-const respostaAtual = ref(null);
+const chatContainer = ref(null);
+
+const historicoMensagens = ref([
+  {
+    sender: 'norminha',
+    text: 'Eu sou a Norminha, sua assistente virtual de aprendizagem na UniVC. Como posso apoiar seu desenvolvimento profissional hoje?',
+  },
+]);
 
 const sugestoes = [
   {
@@ -150,16 +161,53 @@ const sugestoes = [
   },
 ];
 
+function toggleOpen() {
+  isOpen.value = !isOpen.value;
+  if (isOpen.value) {
+    scrollToBottom();
+  }
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    }
+  });
+}
+
 function selecionarSugestao(sug) {
-  respostaAtual.value = sug;
+  historicoMensagens.value.push({
+    sender: 'user',
+    text: sug.pergunta,
+  });
+
+  historicoMensagens.value.push({
+    sender: 'norminha',
+    text: sug.resposta,
+  });
+
+  scrollToBottom();
 }
 
 function enviarMensagem() {
-  if (!inputMsg.value.trim()) return;
-  respostaAtual.value = {
-    pergunta: inputMsg.value,
-    resposta: 'Estou processando sua pergunta com base nas diretrizes da Prefeitura de Vitória da Conquista. Para mais detalhes, confira a aba de Cursos ou Trilhas!',
-  };
+  const txt = inputMsg.value.trim();
+  if (!txt) return;
+
+  historicoMensagens.value.push({
+    sender: 'user',
+    text: txt,
+  });
+
   inputMsg.value = '';
+  scrollToBottom();
+
+  setTimeout(() => {
+    historicoMensagens.value.push({
+      sender: 'norminha',
+      text: 'Estou processando sua pergunta com base nas diretrizes da Prefeitura de Vitória da Conquista. Para mais detalhes, consulte o menu de Cursos e Trilhas de Aprendizagem!',
+    });
+    scrollToBottom();
+  }, 400);
 }
 </script>
