@@ -140,6 +140,10 @@
         </q-btn>
       </q-page-sticky>
     </q-page-container>
+    
+    <!-- Assistente Flutuante da Norminha IA -->
+    <NorminhaFloating />
+
     <q-footer class="bg-white border-t border-slate-200 py-3 text-center">
       <p class="text-xs text-pmvc-gray m-0 px-4">
         Prefeitura Municipal de Vitória da Conquista - Desenvolvido por
@@ -154,6 +158,7 @@ import { onMounted, computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/authStore';
 import LogoutModal from 'src/components/modals/ConfirmLogout.vue';
+import NorminhaFloating from 'src/components/NorminhaFloating.vue';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -172,20 +177,8 @@ const acesso = ref('');
 const userName = ref('');
 const links = ref([]);
 
-const ICONS = {
-  INICIO: 'home',
-  PERFIL: 'account_circle',
-  USUARIOS: 'group',
-};
-
 const getUserInitial = (name) => {
   return name ? name.charAt(0).toUpperCase() : 'U';
-};
-
-const getFirstName = (fullName) => {
-  if (!fullName) return '';
-  const firstName = fullName.trim().split(' ')[0];
-  return firstName;
 };
 
 const isActivePath = (link) => {
@@ -202,10 +195,6 @@ const configurarMenu = () => {
     { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
     ...(authStore.isGestorOrAdmin ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }] : []),
     { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
-    { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
-    { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
-    { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-    { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
     { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
     { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
@@ -213,6 +202,27 @@ const configurarMenu = () => {
 
   if (authStore.isAdmin) {
     links.value.push({ title: 'Administração', icon: 'admin_panel_settings', link: '/admin/dashboard' });
+  if (authStore.isGestorOrAdmin) {
+    links.value = [
+      { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ];
+  } else {
+    links.value = [
+      { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
+      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
+      { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
+      { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
+      { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
+      { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+      { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ];
   }
 };
 

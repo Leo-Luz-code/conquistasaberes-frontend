@@ -1,162 +1,110 @@
 <template>
-  <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-10 font-sans">
-    <!-- Cabecalho Principal -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Portal de Cursos & Capacitação</h1>
-        <p class="text-xs sm:text-sm text-slate-500">Capacitações oficiais da Prefeitura Municipal de Vitória da Conquista</p>
+  <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans relative pb-20">
+    <!-- Cabeçalho da Página -->
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mb-1">
+        Cursos
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500">
+        Catálogo de cursos disponíveis na Universidade do Servidor Público.
+      </p>
+    </div>
+
+    <!-- Barra de Busca e Filtros por Status -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- Input de Busca -->
+      <div class="relative flex-1 max-w-md">
+        <q-icon name="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size="20px" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Buscar cursos..."
+          class="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+        />
       </div>
 
-      <!-- Busca e Filtros -->
-      <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-        <q-input
-          outlined
-          dense
-          v-model="searchQuery"
-          placeholder="Buscar por título ou tema..."
-          class="w-full sm:w-64 bg-white"
-          hide-bottom-space
-          @update:model-value="onSearch"
+      <!-- Pills de Filtro por Status -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          v-for="filtro in filtros"
+          :key="filtro.value"
+          @click="filtroAtivo = filtro.value"
+          class="px-4 py-2 text-xs font-bold rounded-xl transition-all border"
+          :class="filtroAtivo === filtro.value
+            ? 'bg-[#0F4C81] text-white border-[#0F4C81] shadow-sm'
+            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
         >
-          <template v-slot:prepend>
-            <q-icon name="search" class="text-pmvc-blue" />
-          </template>
-        </q-input>
-
-        <q-select
-          outlined
-          dense
-          v-model="selectedCategory"
-          :options="categories"
-          label="Categoria"
-          class="w-full sm:w-44 bg-white"
-          hide-bottom-space
-            @update:model-value="onSearch"
-        />
+          {{ filtro.label }}
+        </button>
       </div>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- SEÇÃO 1: MEUS CURSOS (Cursos Matriculados + Progresso + Avaliacao) -->
-    <!-- =================================================================== -->
-    <div class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <q-icon name="school" color="primary" size="24px" />
-          Meus Cursos em Andamento ({{ courseStore.myCourses.length }})
-        </h2>
-      </div>
+    <!-- Grid de Cursos (3 Colunas) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        v-for="curso in cursosFiltrados"
+        :key="curso.id"
+        class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+      >
+        <!-- Banner Superior Azul Escuro -->
+        <div class="bg-[#0F4C81] p-6 text-white relative flex items-start justify-between min-h-[110px] overflow-hidden">
+          <span class="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold backdrop-blur-sm relative z-10">
+            {{ curso.categoria }}
+          </span>
 
-      <div v-if="courseStore.myCourses.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="myCourse in courseStore.myCourses"
-          :key="myCourse.id"
-          class="bg-white rounded-2xl border-2 border-pmvc-blue/20 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-        >
-          <div class="p-5 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 bg-green-50 text-green-700 font-bold text-[10px] uppercase rounded-md">
-                Matriculado
-              </span>
-              <!-- Botão de Avaliar Curso -->
-              <q-btn
-                flat
-                dense
-                no-caps
-                size="sm"
-                color="amber-9"
-                icon="star_rate"
-                :label="myCourse.myRating ? `${myCourse.myRating}/5 ★` : 'Avaliar'"
-                @click="openRatingModal(myCourse)"
-              >
-                <q-tooltip>Avaliar este curso</q-tooltip>
-              </q-btn>
-            </div>
+          <!-- Marca d'água de Livro Aberto -->
+          <q-icon
+            name="menu_book"
+            size="72px"
+            class="text-white/10 absolute -right-2 -bottom-3 pointer-events-none"
+          />
+        </div>
 
-            <h3 class="font-bold text-slate-900 text-base leading-snug line-clamp-2">
-              {{ myCourse.titulo }}
+        <!-- Conteúdo do Card -->
+        <div class="p-6 flex-1 flex flex-col justify-between space-y-5">
+          <div class="space-y-3">
+            <h3 class="font-extrabold text-slate-900 text-lg leading-snug">
+              {{ curso.titulo }}
             </h3>
 
-            <div class="flex items-center gap-2 pt-1">
-              <q-rating
-                :model-value="myCourse.mediaAvaliacoes"
-                readonly
-                size="16px"
-                color="amber-8"
-                icon="star_border"
-                icon-selected="star"
-                :max="5"
-              />
-
-              <span
-                v-if="myCourse.totalAvaliacoes > 0"
-                class="text-xs font-semibold text-slate-600"
-              >
-                {{ Number(myCourse.mediaAvaliacoes).toFixed(1) }}
-                ({{ myCourse.totalAvaliacoes }}
-                {{ myCourse.totalAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
+            <div class="flex items-center justify-between text-xs pt-1">
+              <span class="text-slate-400 font-semibold flex items-center gap-1">
+                <q-icon name="schedule" size="16px" /> {{ curso.cargaHoraria }}h
               </span>
 
               <span
-                v-else
-                class="text-xs text-slate-400"
+                class="px-3 py-0.5 font-bold rounded-full text-[11px]"
+                :class="statusBadgeClass(curso.status)"
               >
-                Ainda sem avaliações
+                {{ statusText(curso.status) }}
               </span>
             </div>
 
-            <div
-              v-if="myCourse.myRating"
-              class="flex items-center gap-2 text-[11px] text-amber-700 font-semibold"
-            >
-              <q-icon
-                name="verified"
-                size="14px"
-              />
-
-              <span>
-                Sua avaliação:
-              </span>
-
-              <q-rating
-                :model-value="myCourse.myRating"
-                readonly
-                size="14px"
-                color="amber-8"
-                icon="star_border"
-                icon-selected="star"
-                :max="5"
-              />
-            </div>
-
-            <!-- Barra de Progresso do Aluno -->
-            <div class="space-y-1 pt-1">
-              <div class="flex justify-between text-[11px] font-bold text-slate-600">
-                <span>Progresso</span>
-                <span>{{ myCourse.progresso || 0 }}%</span>
+            <!-- Progresso -->
+            <div class="space-y-1.5 pt-2">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-500">Progresso</span>
+                <span class="text-[#0F4C81]">{{ curso.progresso }}%</span>
               </div>
-              <q-linear-progress
-                :value="(myCourse.progresso || 0) / 100"
-                color="primary"
-                track-color="slate-200"
-                size="8px"
-                class="rounded-full"
-              />
+              <div class="w-full bg-emerald-500 rounded-full h-2.5 overflow-hidden">
+                <div
+                  class="bg-[#0F4C81] h-2.5 rounded-full transition-all duration-500"
+                  :style="{ width: curso.progresso + '%' }"
+                ></div>
+              </div>
             </div>
           </div>
 
-          <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-500">
-              <q-icon name="schedule" /> {{ myCourse.cargaHoraria }}h
-            </span>
-
-            <router-link
-              :to="`/servidor/cursos/${myCourse.id}`"
-              class="py-2 px-4 bg-pmvc-blue hover:bg-blue-700 text-white font-bold rounded-lg text-xs uppercase transition-colors"
-            >
-              CONTINUAR CURSO
-            </router-link>
-          </div>
+          <!-- Botão de Ação -->
+          <router-link
+            :to="`/servidor/cursos/${curso.id}`"
+            class="block w-full py-3 text-center text-xs font-bold rounded-xl transition-colors shadow-sm"
+            :class="curso.status === 'em_andamento'
+              ? 'bg-[#0F4C81] hover:bg-[#0C3B66] text-white'
+              : 'bg-white hover:bg-slate-50 border border-slate-300 text-slate-700'"
+          >
+            {{ curso.status === 'em_andamento' ? 'Continuar' : (curso.status === 'concluido' ? 'Refazer curso' : 'Acessar curso') }}
+          </router-link>
         </div>
       </div>
 
@@ -168,213 +116,101 @@
       </div>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- SEÇÃO 2: CATÁLOGO GERAL DE CURSOS -->
-    <!-- =================================================================== -->
-    <div class="space-y-4 pt-4">
-      <div class="border-b border-slate-200 pb-3">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <q-icon name="grid_view" color="primary" size="24px" />
-          Catálogo Geral de Cursos
-        </h2>
-      </div>
-
-      <div v-if="courseStore.loading" class="flex justify-center py-12">
-        <q-spinner-dots color="primary" size="50px" />
-      </div>
-
-      <div v-else-if="courseStore.courses.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="course in courseStore.courses"
-          :key="course.id"
-          class="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-        >
-          <div class="p-6 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 bg-blue-50 text-pmvc-blue font-bold text-[10px] uppercase rounded-md tracking-wider">
-                {{ course.categoria || 'Geral' }}
-              </span>
-
-              <span class="text-xs font-bold text-slate-400 flex items-center gap-1">
-                <q-icon name="schedule" />
-                {{ course.cargaHoraria }}h
-              </span>
-            </div>
-
-            <h3 class="font-bold text-slate-900 text-lg leading-snug line-clamp-2">
-              {{ course.titulo }}
-            </h3>
-
-            <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">
-              {{ course.descricao }}
-            </p>
-
-            <!-- Avaliação -->
-            <div class="flex items-center gap-2 pt-1">
-              <q-rating
-                :model-value="course.mediaAvaliacoes"
-                readonly
-                size="18px"
-                color="amber-8"
-                icon="star_border"
-                icon-selected="star"
-                :max="5"
-              />
-
-              <span
-                v-if="course.totalAvaliacoes"
-                class="text-xs font-semibold text-slate-600"
-              >
-                {{ course.mediaAvaliacoes.toFixed(1) }}
-                ({{ course.totalAvaliacoes }}
-                {{ course.totalAvaliacoes === 1 ? 'avaliação' : 'avaliações' }})
-              </span>
-
-              <span
-                v-else
-                class="text-xs text-slate-400"
-              >
-                Ainda sem avaliações
-              </span>
-            </div>
-
-            <div
-              v-if="course.secretaria"
-              class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold pt-2"
-            >
-              <q-icon name="account_balance" class="text-pmvc-blue" />
-              <span>Exclusivo: {{ course.secretaria.nome }}</span>
-            </div>
-          </div> 
-
-          <div class="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-4">
-            <div>
-              <span class="block text-[10px] uppercase font-bold text-slate-400">Recompensa</span>
-              <span class="text-xs font-extrabold text-amber-600 flex items-center gap-1">
-                <q-icon name="emoji_events" /> +{{ (course.cargaHoraria || 10) * 10 }} XP
-              </span>
-            </div>
-
-            <router-link
-              :to="`/servidor/cursos/${course.id}`"
-              class="py-2.5 px-5 bg-pmvc-blue hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-colors shadow"
-            >
-              ACESSAR CURSO
-            </router-link>
-          </div>
-        </div>
-      </div>
-
-      <div v-else class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center space-y-3">
-        <q-icon name="search_off" size="56px" class="text-slate-300" />
-        <h3 class="font-bold text-slate-700 text-lg">Nenhum curso encontrado</h3>
-        <p class="text-xs text-slate-500">Tente ajustar os filtros de busca ou categoria acima.</p>
-      </div>
+    <!-- Empty State -->
+    <div
+      v-if="cursosFiltrados.length === 0"
+      class="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3"
+    >
+      <q-icon name="search_off" size="56px" class="text-slate-300" />
+      <h3 class="font-bold text-slate-700 text-lg">Nenhum curso encontrado</h3>
+      <p class="text-xs text-slate-500">Tente ajustar a busca ou o filtro de status selecionado.</p>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- MODAL DE AVALIAÇÃO DO CURSO (ESTRELAS + FEEDBACK) -->
-    <!-- =================================================================== -->
-    <q-dialog v-model="showRatingModal">
-      <q-card style="min-width: 320px; max-width: 480px" class="rounded-2xl p-4">
-        <q-card-section class="flex items-center justify-between">
-          <h3 class="font-bold text-slate-900 text-base">Avaliar Curso</h3>
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
 
-        <q-card-section class="space-y-4 text-center">
-          <p class="text-xs text-slate-600">
-            Como foi sua experiência com o curso <strong>{{ selectedCourseForRating?.titulo }}</strong>?
-          </p>
-
-          <!-- Componente de Estrelas -->
-          <div class="flex justify-center py-2">
-            <q-rating
-              v-model="ratingForm.rating"
-              size="2.5em"
-              color="amber-8"
-              icon="star_border"
-              icon-selected="star"
-              :max="5"
-            />
-          </div>
-
-          <q-input
-            outlined
-            type="textarea"
-            v-model="ratingForm.comment"
-            label="Seu feedback / comentário (opcional)"
-            placeholder="Conte o que achou das aulas, didática ou sugestões de melhoria..."
-            rows="3"
-            hide-bottom-space
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="p-3">
-          <q-btn flat label="Cancelar" color="grey" v-close-popup />
-          <q-btn
-            label="ENVIAR AVALIAÇÃO"
-            color="primary"
-            class="bg-pmvc-blue font-bold px-5"
-            unelevated
-            no-caps
-            :loading="ratingSubmitting"
-            @click="handleSendRating"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useCourseStore } from 'src/stores/courseStore';
+import { ref, computed } from 'vue';
 
-const courseStore = useCourseStore();
 const searchQuery = ref('');
-const selectedCategory = ref('Todas');
+const filtroAtivo = ref('todos');
 
-const categories = ['Todas', 'Geral', 'Tecnologia', 'Saúde', 'Educação', 'Gestão Pública', 'LGPD'];
+const filtros = [
+  { label: 'Todos', value: 'todos' },
+  { label: 'Em andamento', value: 'em_andamento' },
+  { label: 'Concluídos', value: 'concluido' },
+  { label: 'Não iniciados', value: 'nao_iniciado' },
+];
 
-const showRatingModal = ref(false);
-const ratingSubmitting = ref(false);
-const selectedCourseForRating = ref(null);
+const cursos = ref([
+  {
+    id: '1',
+    categoria: 'Integração',
+    titulo: 'Ética e Conduta no Serviço Público Municipal',
+    cargaHoraria: 4,
+    status: 'em_andamento',
+    progresso: 75,
+  },
+  {
+    id: '2',
+    categoria: 'Atendimento',
+    titulo: 'Atendimento Humanizado ao Cidadão',
+    cargaHoraria: 6,
+    status: 'nao_iniciado',
+    progresso: 0,
+  },
+  {
+    id: '3',
+    categoria: 'Governança',
+    titulo: 'LGPD no Serviço Público',
+    cargaHoraria: 8,
+    status: 'em_andamento',
+    progresso: 30,
+  },
+  {
+    id: '4',
+    categoria: 'Gestão',
+    titulo: 'Gestão de Processos na Administração Pública',
+    cargaHoraria: 12,
+    status: 'nao_iniciado',
+    progresso: 0,
+  },
+  {
+    id: '5',
+    categoria: 'Inovação',
+    titulo: 'Inovação e Transformação Digital no Setor Público',
+    cargaHoraria: 10,
+    status: 'nao_iniciado',
+    progresso: 0,
+  },
+  {
+    id: '6',
+    categoria: 'Comunicação',
+    titulo: 'Comunicação Assertiva no Trabalho',
+    cargaHoraria: 5,
+    status: 'concluido',
+    progresso: 100,
+  },
+]);
 
-const ratingForm = ref({
-  rating: 5,
-  comment: '',
-});
-
-function onSearch() {
-  courseStore.fetchCourses({
-    search: searchQuery.value,
-    categoria: selectedCategory.value,
+const cursosFiltrados = computed(() => {
+  return cursos.value.filter((c) => {
+    const matchFiltro = filtroAtivo.value === 'todos' || c.status === filtroAtivo.value;
+    const matchBusca = !searchQuery.value || c.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) || c.categoria.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return matchFiltro && matchBusca;
   });
-}
-
-function openRatingModal(course) {
-  selectedCourseForRating.value = course;
-  ratingForm.value = {
-    rating: course.myRating || 5,
-    comment: course.myComment || '',
-  };
-  showRatingModal.value = true;
-}
-
-async function handleSendRating() {
-  if (!selectedCourseForRating.value) return;
-  ratingSubmitting.value = true;
-  try {
-    await courseStore.rateCourse(selectedCourseForRating.value.id, ratingForm.value);
-    showRatingModal.value = false;
-  } finally {
-    ratingSubmitting.value = false;
-  }
-}
-
-onMounted(() => {
-  courseStore.fetchCourses();
-  courseStore.fetchMyCourses();
 });
+
+function statusBadgeClass(status) {
+  if (status === 'em_andamento') return 'bg-amber-100 text-amber-800';
+  if (status === 'concluido') return 'bg-emerald-100 text-emerald-800';
+  return 'bg-slate-100 text-slate-600';
+}
+
+function statusText(status) {
+  if (status === 'em_andamento') return 'Em andamento';
+  if (status === 'concluido') return 'Concluído';
+  return 'Não iniciado';
+}
 </script>
