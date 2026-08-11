@@ -47,6 +47,22 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
+      // ---------- SERVIDOR: Notícias UniVC ----------
+      {
+        name: 'noticias',
+        path: '/servidor/noticias',
+        component: () => import('pages/servidor/Noticias.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Norminha IA ----------
+      {
+        name: 'norminha',
+        path: '/servidor/norminha',
+        component: () => import('pages/servidor/Norminha.vue'),
+        meta: { requiredLogin: true },
+      },
+
       // ---------- SERVIDOR: Catálogo de Cursos ----------
       {
         name: 'catalogo-cursos',
@@ -101,6 +117,14 @@ const routes = [
         path: '/gestor/dashboard',
         component: () => import('pages/gestor/DashboardGestor.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+
+      // ---------- ADMIN: Painel de Administração ----------
+      {
+        name: 'dashboard-admin',
+        path: '/admin/dashboard',
+        component: () => import('pages/admin/Dashboard.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
       },
     ],
   },
