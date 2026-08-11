@@ -130,6 +130,10 @@
     <q-page-container class="bg-slate-50">
       <router-view />
     </q-page-container>
+    
+    <!-- Assistente Flutuante da Norminha IA -->
+    <NorminhaFloating />
+
     <q-footer class="bg-white border-t border-slate-200 py-3 text-center">
       <p class="text-xs text-pmvc-gray m-0 px-4">
         Prefeitura Municipal de Vitória da Conquista - Desenvolvido por
@@ -144,6 +148,7 @@ import { onMounted, computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/authStore';
 import LogoutModal from 'src/components/modals/ConfirmLogout.vue';
+import NorminhaFloating from 'src/components/NorminhaFloating.vue';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -162,20 +167,8 @@ const acesso = ref('');
 const userName = ref('');
 const links = ref([]);
 
-const ICONS = {
-  INICIO: 'home',
-  PERFIL: 'account_circle',
-  USUARIOS: 'group',
-};
-
 const getUserInitial = (name) => {
   return name ? name.charAt(0).toUpperCase() : 'U';
-};
-
-const getFirstName = (fullName) => {
-  if (!fullName) return '';
-  const firstName = fullName.trim().split(' ')[0];
-  return firstName;
 };
 
 const isActivePath = (link) => {
@@ -188,15 +181,26 @@ const configurarMenu = () => {
   userName.value = authStore.firstName || 'Servidor';
   acesso.value = authStore.roleLabel || 'Servidor Municipal';
 
-  links.value = [
-    { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
-    ...(authStore.isGestorOrAdmin ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }] : []),
-    { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
-    { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-    { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-    { title: 'Fórum Colaborativo', icon: 'forum', link: '/servidor/forum' },
-    { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-  ];
+  if (authStore.isGestorOrAdmin) {
+    links.value = [
+      { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ];
+  } else {
+    links.value = [
+      { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
+      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
+      { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
+      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
+      { title: 'Fórum Colaborativo', icon: 'forum', link: '/servidor/forum' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ];
+  }
 };
 
 const modelValue = computed({

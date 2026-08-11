@@ -39,7 +39,7 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
-      // ---------- SERVIDOR: Dashboard Principal ----------
+      // ---------- SERVIDOR: Dashboard Principal (Início) ----------
       {
         name: 'dashboard-servidor',
         path: '/servidor/dashboard',
@@ -47,11 +47,27 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
-      // ---------- SERVIDOR: Catálogo de Cursos ----------
+      // ---------- SERVIDOR: Trilhas de Aprendizagem ----------
+      {
+        name: 'trilhas-aprendizagem',
+        path: '/servidor/trilhas',
+        component: () => import('pages/servidor/TrilhasAprendizagem.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Cursos ----------
       {
         name: 'catalogo-cursos',
         path: '/servidor/cursos',
         component: () => import('pages/servidor/CatalogoCursos.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Eventos e Palestras ----------
+      {
+        name: 'eventos-palestras',
+        path: '/servidor/eventos',
+        component: () => import('pages/servidor/EventosPalestras.vue'),
         meta: { requiredLogin: true },
       },
 
