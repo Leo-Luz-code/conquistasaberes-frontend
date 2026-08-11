@@ -129,6 +129,16 @@
 
     <q-page-container class="bg-slate-50">
       <router-view />
+
+      <!-- Assistente Virtual Norminha (Floating Action Button) -->
+      <q-page-sticky position="bottom-right" :offset="[24, 24]">
+        <q-btn round unelevated class="bg-white text-pmvc-blue shadow-lg border border-slate-100 hover:scale-110 transition-transform duration-300" style="width: 56px; height: 56px;" @click="router.push('/servidor/norminha')">
+          <q-avatar size="56px" class="border-2 border-white shadow-sm">
+            <q-img src="~assets/images/norminha-avatar.png" />
+          </q-avatar>
+          <div class="absolute top-0 right-0 bg-pmvc-blue text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md border-2 border-white translate-x-1 -translate-y-1 z-10 shadow-sm">IA</div>
+        </q-btn>
+      </q-page-sticky>
     </q-page-container>
     <q-footer class="bg-white border-t border-slate-200 py-3 text-center">
       <p class="text-xs text-pmvc-gray m-0 px-4">
@@ -195,8 +205,13 @@ const configurarMenu = () => {
     { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
     { title: 'Fórum Colaborativo', icon: 'forum', link: '/servidor/forum' },
+    { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
     { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
   ];
+
+  if (authStore.isAdmin) {
+    links.value.push({ title: 'Administração', icon: 'admin_panel_settings', link: '/admin/dashboard' });
+  }
 };
 
 const modelValue = computed({
