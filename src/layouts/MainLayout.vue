@@ -190,6 +190,7 @@ const configurarMenu = () => {
 
   links.value = [
     { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
+    ...(authStore.isGestorOrAdmin ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }] : []),
     { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
     { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },

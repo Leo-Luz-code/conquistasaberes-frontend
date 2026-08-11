@@ -10,6 +10,7 @@ import { Notify } from 'quasar';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: [],
+    secretarias: [],
     currentCourse: null,
     enrollments: [],
     recommendations: [],
@@ -171,5 +172,146 @@ export const useCourseStore = defineStore('course', {
         return [];
       }
     },
+
+    // =========================================================================
+    // AÇÕES ADMINISTRATIVAS (CRUD CURSOS, MÓDULOS, AULAS, UPLOAD)
+    // =========================================================================
+
+    async fetchSecretarias() {
+      try {
+        const { data } = await api.get('/courses/secretarias');
+        this.secretarias = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar secretarias:', error);
+        return [];
+      }
+    },
+
+    async fetchAllAdminCourses() {
+      this.loading = true;
+      try {
+        const { data } = await api.get('/courses/admin/all');
+        this.courses = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar cursos admin:', error);
+        Notify.create({ color: 'negative', message: 'Erro ao carregar lista de cursos admin.' });
+        return [];
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async createCourse(courseData) {
+      try {
+        const { data } = await api.post('/courses', courseData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Curso criado com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar curso.' });
+        throw error;
+      }
+    },
+
+    async updateCourse(id, courseData) {
+      try {
+        const { data } = await api.put(`/courses/${id}`, courseData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Curso atualizado com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar curso.' });
+        throw error;
+      }
+    },
+
+    async deleteCourse(id) {
+      try {
+        await api.delete(`/courses/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Curso removido com sucesso!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir curso.' });
+        throw error;
+      }
+    },
+
+    async createModule(courseId, moduleData) {
+      try {
+        const { data } = await api.post(`/courses/${courseId}/modules`, moduleData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Módulo adicionado!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar módulo.' });
+        throw error;
+      }
+    },
+
+    async updateModule(moduleId, moduleData) {
+      try {
+        const { data } = await api.put(`/courses/modules/${moduleId}`, moduleData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Módulo atualizado!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar módulo.' });
+        throw error;
+      }
+    },
+
+    async deleteModule(moduleId) {
+      try {
+        await api.delete(`/courses/modules/${moduleId}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Módulo removido!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir módulo.' });
+        throw error;
+      }
+    },
+
+    async createLesson(moduleId, lessonData) {
+      try {
+        const { data } = await api.post(`/courses/modules/${moduleId}/lessons`, lessonData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Aula cadastrada!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar aula.' });
+        throw error;
+      }
+    },
+
+    async updateLesson(lessonId, lessonData) {
+      try {
+        const { data } = await api.put(`/courses/lessons/${lessonId}`, lessonData);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Aula atualizada!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar aula.' });
+        throw error;
+      }
+    },
+
+    async deleteLesson(lessonId) {
+      try {
+        await api.delete(`/courses/lessons/${lessonId}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Aula removida!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir aula.' });
+        throw error;
+      }
+    },
+
+    async uploadFile(file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { data } = await api.post('/courses/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao fazer upload do arquivo.' });
+        throw error;
+      }
+    },
   },
 });
+
