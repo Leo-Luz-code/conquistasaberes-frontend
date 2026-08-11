@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+  <div class="fixed bottom-4 right-6 z-[9999] flex flex-col items-end pointer-events-auto">
     <!-- Modal/Dialog de Conversa com Norminha -->
     <transition
       enter-active-class="transition duration-200 ease-out"

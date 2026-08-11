@@ -90,13 +90,7 @@
           </p>
         </div>
 
-        <!-- Avatar badge no canto inferior direito -->
-        <div class="flex justify-end pt-2">
-          <div class="relative w-10 h-10 rounded-full border-2 border-amber-400 overflow-hidden shadow">
-            <span class="absolute -top-0.5 -left-0.5 px-1 bg-[#0F4C81] text-white text-[8px] font-extrabold rounded-full z-10">IA</span>
-            <img src="~assets/images/norminha_avatar.jpg" alt="Norminha IA" class="w-full h-full object-cover" />
-          </div>
-        </div>
+
       </div>
     </div>
 
@@ -309,13 +303,7 @@
           </div>
         </div>
 
-        <!-- Avatar Norminha Flutuante no canto inferior direito -->
-        <div class="flex justify-end pt-4">
-          <div class="relative w-10 h-10 rounded-full border-2 border-amber-400 overflow-hidden shadow">
-            <span class="absolute -top-0.5 -left-0.5 px-1 bg-[#0F4C81] text-white text-[8px] font-extrabold rounded-full z-10">IA</span>
-            <img src="~assets/images/norminha_avatar.jpg" alt="Norminha IA" class="w-full h-full object-cover" />
-          </div>
-        </div>
+
       </div>
     </div>
   </q-page>
