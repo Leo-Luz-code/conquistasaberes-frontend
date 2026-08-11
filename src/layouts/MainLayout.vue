@@ -3,23 +3,21 @@
     <q-header
       class="bg-white text-pmvc-dark border-b border-slate-200 h-20 flex items-center shadow-none"
     >
-      <q-toolbar class="!px-3 sm:px-8 ">
+      <q-toolbar class="!px-3 sm:px-8">
         <q-btn
           flat
           dense
           round
           icon="menu"
-          class="text-pmvc-blue mr-1 sm:mr-4 hover:bg-slate-100 "
+          class="text-pmvc-blue mr-1 sm:mr-4 hover:bg-slate-100"
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-toolbar-title class="flex items-center shrink-1">
-          <div
-            class="flex flex-nowrap items-center leading-none gap-1.5 sm:gap-2"
-          >
+          <div class="flex flex-nowrap items-center leading-none gap-1.5 sm:gap-2">
             <q-img
               src="~assets/images/brasao-pmvc-2025.png"
               alt="Logo PMVC"
-              class="!w-9 !h-15 md:!w-12 md:!h-15 "
+              class="!w-9 !h-15 md:!w-12 md:!h-15"
             />
             <div class="flex flex-col justify-center">
               <span
@@ -38,14 +36,10 @@
         <div class="flex items-center gap-3 sm:gap-5">
           <div class="flex items-center gap-3">
             <div class="flex flex-col items-end gt-xs">
-              <span
-                class="text-pmvc-blue font-semibold text-sm leading-none mb-1"
-              >
+              <span class="text-pmvc-blue font-semibold text-sm leading-none mb-1">
                 {{ userName }}
               </span>
-              <span
-                class="text-xs text-pmvc-gray capitalize"
-              >
+              <span class="text-xs text-pmvc-gray capitalize">
                 {{ acesso }}
               </span>
             </div>
@@ -84,9 +78,7 @@
               class="text-red-500 hover:bg-red-50 transition-colors"
               @click="requestLogout"
             >
-              <q-tooltip class="bg-pmvc-blue text-white text-xs"
-                >Sair do Sistema</q-tooltip
-              >
+              <q-tooltip class="bg-pmvc-blue text-white text-xs">Sair do Sistema</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -101,9 +93,7 @@
     >
       <div class="flex flex-col h-full py-6 px-3">
         <div class="mb-6 px-4">
-          <p class="text-xs font-bold text-pmvc-gray uppercase tracking-wider">
-            Menu Principal
-          </p>
+          <p class="text-xs font-bold text-pmvc-gray uppercase tracking-wider">Menu Principal</p>
         </div>
         <q-list class="space-y-1">
           <router-link
@@ -124,23 +114,13 @@
         </q-list>
       </div>
     </q-drawer>
-     
+
     <LogoutModal v-model="showModal" @confirm="logout" />
 
     <q-page-container class="bg-slate-50">
       <router-view />
-
-      <!-- Assistente Virtual Norminha (Floating Action Button) -->
-      <q-page-sticky position="bottom-right" :offset="[24, 24]">
-        <q-btn round unelevated class="bg-white text-pmvc-blue shadow-lg border border-slate-100 hover:scale-110 transition-transform duration-300" style="width: 56px; height: 56px;" @click="router.push('/servidor/norminha')">
-          <q-avatar size="56px" class="border-2 border-white shadow-sm">
-            <q-img src="~assets/images/norminha-avatar.png" />
-          </q-avatar>
-          <div class="absolute top-0 right-0 bg-pmvc-blue text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md border-2 border-white translate-x-1 -translate-y-1 z-10 shadow-sm">IA</div>
-        </q-btn>
-      </q-page-sticky>
     </q-page-container>
-    
+
     <!-- Assistente Flutuante da Norminha IA -->
     <NorminhaFloating />
 
@@ -154,114 +134,123 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from 'src/stores/authStore';
-import LogoutModal from 'src/components/modals/ConfirmLogout.vue';
-import NorminhaFloating from 'src/components/NorminhaFloating.vue';
+import { onMounted, computed, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from 'src/stores/authStore'
+import LogoutModal from 'src/components/modals/ConfirmLogout.vue'
+import NorminhaFloating from 'src/components/NorminhaFloating.vue'
 
 const props = defineProps({
   isOpen: Boolean,
-});
+})
 
-const emit = defineEmits(['update:isOpen']);
+const emit = defineEmits(['update:isOpen'])
 
-const router = useRouter();
-const route = useRoute();
-const authStore = useAuthStore();
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
 
-const leftDrawerOpen = ref(false);
-const showModal = ref(false);
+const leftDrawerOpen = ref(false)
+const showModal = ref(false)
 
-const acesso = ref('');
-const userName = ref('');
-const links = ref([]);
+const acesso = ref('')
+const userName = ref('')
+const links = ref([])
 
 const getUserInitial = (name) => {
-  return name ? name.charAt(0).toUpperCase() : 'U';
-};
+  return name ? name.charAt(0).toUpperCase() : 'U'
+}
 
 const isActivePath = (link) => {
-  const normalizedPath = route.path.replace(/\/$/, '') || '/';
-  const normalizedLink = link.replace(/\/$/, '') || '/';
-  return normalizedPath === normalizedLink;
-};
+  const normalizedPath = route.path.replace(/\/$/, '') || '/'
+  const normalizedLink = link.replace(/\/$/, '') || '/'
+  return normalizedPath === normalizedLink
+}
 
 const configurarMenu = () => {
-  userName.value = authStore.firstName || 'Servidor';
-  acesso.value = authStore.roleLabel || 'Servidor Municipal';
+  userName.value = authStore.firstName || 'Servidor'
+  acesso.value = authStore.roleLabel || 'Servidor Municipal'
 
   links.value = [
-    { title: authStore.isGestorOrAdmin ? 'Painel Executivo' : 'Meu Painel', icon: authStore.isGestorOrAdmin ? 'analytics' : 'dashboard', link: authStore.isGestorOrAdmin ? '/gestor/dashboard' : '/servidor/dashboard' },
-    ...(authStore.isGestorOrAdmin ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }] : []),
-    { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+    ...(authStore.isGestorOrAdmin
+      ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }]
+      : []),
+    { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
+    { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
+    { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
+    { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
+    { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
+    { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
+    { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+    { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-    { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
     { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-  ];
+  ]
 
   if (authStore.isAdmin) {
-    links.value.push({ title: 'Administração', icon: 'admin_panel_settings', link: '/admin/dashboard' });
-  if (authStore.isGestorOrAdmin) {
-    links.value = [
-      { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
-      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
-      { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
-      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-    ];
-  } else {
-    links.value = [
-      { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
-      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
-      { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
-      { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
-      { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
-      { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
-      { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-      { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-      { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-    ];
+    links.value.push({
+      title: 'Administração',
+      icon: 'admin_panel_settings',
+      link: '/admin/dashboard',
+    })
+    if (authStore.isGestorOrAdmin) {
+      links.value = [
+        { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+        { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+        { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+        { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+        { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+      ]
+    } else {
+      links.value = [
+        { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
+        { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
+        { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
+        { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
+        { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
+        { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
+        { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+        { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+        { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
+        { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+      ]
+    }
   }
-};
+}
 
 const modelValue = computed({
   get: () => props.isOpen,
   set: (val) => {
     if (val === false) {
-      requestLogout();
+      requestLogout()
     } else {
-      emit('update:isOpen', val);
+      emit('update:isOpen', val)
     }
   },
 })
 
 const profile = () => {
-  router.push('/perfil');
-};
+  router.push('/perfil')
+}
 
 function requestLogout() {
-  showModal.value = true;
+  showModal.value = true
 }
 
 function confirmClose() {
-  emit('update:isOpen', false);
+  emit('update:isOpen', false)
 }
 
 const logout = () => {
-  authStore.logout();
-  router.replace('/login');
-};
+  authStore.logout()
+  router.replace('/login')
+}
 
 onMounted(() => {
-  configurarMenu();
-});
+  configurarMenu()
+})
 
-watch(
-  [() => authStore.nameUser, () => authStore.isAdmin, () => route.path],
-  () => {
-    configurarMenu();
-  }
-);
+watch([() => authStore.nameUser, () => authStore.isAdmin, () => route.path], () => {
+  configurarMenu()
+})
 </script>

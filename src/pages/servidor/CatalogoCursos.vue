@@ -2,9 +2,7 @@
   <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans relative pb-20">
     <!-- Cabeçalho da Página -->
     <div>
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mb-1">
-        Cursos
-      </h1>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mb-1">Cursos</h1>
       <p class="text-xs sm:text-sm text-slate-500">
         Catálogo de cursos disponíveis na Universidade do Servidor Público.
       </p>
@@ -14,7 +12,11 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <!-- Input de Busca -->
       <div class="relative flex-1 max-w-md">
-        <q-icon name="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size="20px" />
+        <q-icon
+          name="search"
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+          size="20px"
+        />
         <input
           v-model="searchQuery"
           type="text"
@@ -30,9 +32,11 @@
           :key="filtro.value"
           @click="filtroAtivo = filtro.value"
           class="px-4 py-2 text-xs font-bold rounded-xl transition-all border"
-          :class="filtroAtivo === filtro.value
-            ? 'bg-[#0F4C81] text-white border-[#0F4C81] shadow-sm'
-            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+          :class="
+            filtroAtivo === filtro.value
+              ? 'bg-[#0F4C81] text-white border-[#0F4C81] shadow-sm'
+              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+          "
         >
           {{ filtro.label }}
         </button>
@@ -47,8 +51,12 @@
         class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
       >
         <!-- Banner Superior Azul Escuro -->
-        <div class="bg-[#0F4C81] p-6 text-white relative flex items-start justify-between min-h-[110px] overflow-hidden">
-          <span class="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold backdrop-blur-sm relative z-10">
+        <div
+          class="bg-[#0F4C81] p-6 text-white relative flex items-start justify-between min-h-[110px] overflow-hidden"
+        >
+          <span
+            class="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold backdrop-blur-sm relative z-10"
+          >
             {{ curso.categoria }}
           </span>
 
@@ -99,20 +107,21 @@
           <router-link
             :to="`/servidor/cursos/${curso.id}`"
             class="block w-full py-3 text-center text-xs font-bold rounded-xl transition-colors shadow-sm"
-            :class="curso.status === 'em_andamento'
-              ? 'bg-[#0F4C81] hover:bg-[#0C3B66] text-white'
-              : 'bg-white hover:bg-slate-50 border border-slate-300 text-slate-700'"
+            :class="
+              curso.status === 'em_andamento'
+                ? 'bg-[#0F4C81] hover:bg-[#0C3B66] text-white'
+                : 'bg-white hover:bg-slate-50 border border-slate-300 text-slate-700'
+            "
           >
-            {{ curso.status === 'em_andamento' ? 'Continuar' : (curso.status === 'concluido' ? 'Refazer curso' : 'Acessar curso') }}
+            {{
+              curso.status === 'em_andamento'
+                ? 'Continuar'
+                : curso.status === 'concluido'
+                  ? 'Refazer curso'
+                  : 'Acessar curso'
+            }}
           </router-link>
         </div>
-      </div>
-
-      <!-- Empty State Meus Cursos -->
-      <div v-else class="bg-slate-50 rounded-2xl border border-dashed border-slate-300 p-8 text-center space-y-2">
-        <q-icon name="menu_book" size="40px" class="text-slate-400" />
-        <h4 class="font-bold text-slate-700 text-sm">Você ainda não se inscreveu em nenhum curso</h4>
-        <p class="text-xs text-slate-500">Explore o catálogo abaixo e faça sua matrícula para começar a pontuar XP!</p>
       </div>
     </div>
 
@@ -125,23 +134,21 @@
       <h3 class="font-bold text-slate-700 text-lg">Nenhum curso encontrado</h3>
       <p class="text-xs text-slate-500">Tente ajustar a busca ou o filtro de status selecionado.</p>
     </div>
-
-
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
-const searchQuery = ref('');
-const filtroAtivo = ref('todos');
+const searchQuery = ref('')
+const filtroAtivo = ref('todos')
 
 const filtros = [
   { label: 'Todos', value: 'todos' },
   { label: 'Em andamento', value: 'em_andamento' },
   { label: 'Concluídos', value: 'concluido' },
   { label: 'Não iniciados', value: 'nao_iniciado' },
-];
+]
 
 const cursos = ref([
   {
@@ -192,25 +199,28 @@ const cursos = ref([
     status: 'concluido',
     progresso: 100,
   },
-]);
+])
 
 const cursosFiltrados = computed(() => {
   return cursos.value.filter((c) => {
-    const matchFiltro = filtroAtivo.value === 'todos' || c.status === filtroAtivo.value;
-    const matchBusca = !searchQuery.value || c.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) || c.categoria.toLowerCase().includes(searchQuery.value.toLowerCase());
-    return matchFiltro && matchBusca;
-  });
-});
+    const matchFiltro = filtroAtivo.value === 'todos' || c.status === filtroAtivo.value
+    const matchBusca =
+      !searchQuery.value ||
+      c.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      c.categoria.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return matchFiltro && matchBusca
+  })
+})
 
 function statusBadgeClass(status) {
-  if (status === 'em_andamento') return 'bg-amber-100 text-amber-800';
-  if (status === 'concluido') return 'bg-emerald-100 text-emerald-800';
-  return 'bg-slate-100 text-slate-600';
+  if (status === 'em_andamento') return 'bg-amber-100 text-amber-800'
+  if (status === 'concluido') return 'bg-emerald-100 text-emerald-800'
+  return 'bg-slate-100 text-slate-600'
 }
 
 function statusText(status) {
-  if (status === 'em_andamento') return 'Em andamento';
-  if (status === 'concluido') return 'Concluído';
-  return 'Não iniciado';
+  if (status === 'em_andamento') return 'Em andamento'
+  if (status === 'concluido') return 'Concluído'
+  return 'Não iniciado'
 }
 </script>
