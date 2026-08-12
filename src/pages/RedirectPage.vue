@@ -27,7 +27,9 @@ onMounted(async () => {
   }
 
   // Redirecionamento baseado no perfil (Role)
-  if (authStore.isGestorOrAdmin) {
+  if (authStore.isAdmin) {
+    router.replace('/admin/dashboard');
+  } else if (authStore.isGestor) {
     router.replace('/gestor/dashboard');
   } else {
     router.replace('/servidor/dashboard');

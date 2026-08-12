@@ -171,52 +171,39 @@ const configurarMenu = () => {
   userName.value = authStore.firstName || 'Servidor'
   acesso.value = authStore.roleLabel || 'Servidor Municipal'
 
-  links.value = [
-    ...(authStore.isGestorOrAdmin
-      ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos/' }]
-      : []),
-    { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
-    { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
-    { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
-    { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
-    { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
-    { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
-    { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-    { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-    { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
-    { title: 'Norminha', icon: 'star', link: '/servidor/norminha' },
-    { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-    { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-  ]
-
   if (authStore.isAdmin) {
-    links.value.push({
-      title: 'Administração',
-      icon: 'admin_panel_settings',
-      link: '/admin/dashboard',
-    })
-    if (authStore.isGestorOrAdmin) {
-      links.value = [
-        { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
-        { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
-        { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
-        { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-        { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-      ]
-    } else {
-      links.value = [
-        { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
-        { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
-        { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
-        { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
-        { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
-        { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
-        { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-        { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
-        { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-        { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
-      ]
-    }
+    links.value = [
+      { title: 'Administração', icon: 'analytics', link: '/admin/dashboard' },
+      { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ]
+  } else if (authStore.isGestor) {
+    links.value = [
+      { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ]
+  } else {
+    links.value = [
+      { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
+      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
+      { title: 'Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Eventos e Palestras', icon: 'event', link: '/servidor/eventos' },
+      { title: 'Biblioteca', icon: 'menu_book', link: '/servidor/biblioteca' },
+      { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
+      { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
+      { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
+      { title: 'Norminha', icon: 'star', link: '/servidor/norminha' },
+      { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
+      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+    ]
   }
 }
 
@@ -252,7 +239,7 @@ onMounted(() => {
   configurarMenu()
 })
 
-watch([() => authStore.nameUser, () => authStore.isAdmin, () => route.path], () => {
+watch([() => authStore.user, () => route.path], () => {
   configurarMenu()
 })
 </script>
