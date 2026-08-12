@@ -104,6 +104,23 @@
               </q-select>
             </div>
 
+            <!-- Trilha de Aprendizagem -->
+            <div class="col-12 col-sm-4">
+              <q-select
+                v-model="form.trilhaId"
+                :options="trilhaOptions"
+                label="Trilha (Opcional)"
+                outlined
+                dense
+                emit-value
+                map-options
+              >
+                <template v-slot:prepend>
+                  <q-icon name="route" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
             <!-- Seção de Capa do Curso -->
             <div class="col-12">
               <div class="q-pa-sm bg-grey-2 rounded-borders">
@@ -235,6 +252,19 @@ const secretariaOptions = computed(() => {
   return options
 })
 
+const trilhaOptions = computed(() => {
+  const options = [{ label: 'Nenhuma (Avulso)', value: null }]
+  if (courseStore.learningPaths && courseStore.learningPaths.length > 0) {
+    courseStore.learningPaths.forEach((t) => {
+      options.push({
+        label: t.tituloTrilha,
+        value: t.id,
+      })
+    })
+  }
+  return options
+})
+
 const form = ref({
   titulo: '',
   descricao: '',
@@ -242,6 +272,7 @@ const form = ref({
   categoria: 'Geral',
   capaUrl: '',
   secretariaId: null,
+  trilhaId: null,
   isPublished: true,
 })
 
@@ -251,6 +282,7 @@ watch(
   async (isOpen) => {
     if (isOpen) {
       courseStore.fetchSecretarias()
+      courseStore.fetchLearningPaths()
       capaFile.value = null
       if (props.course) {
         form.value = {
@@ -260,6 +292,7 @@ watch(
           categoria: props.course.categoria || 'Geral',
           capaUrl: props.course.capaUrl || '',
           secretariaId: props.course.secretariaId || null,
+          trilhaId: props.course.trilhaId || null,
           isPublished: props.course.isPublished !== undefined ? props.course.isPublished : true,
         }
       } else {
@@ -270,6 +303,7 @@ watch(
           categoria: 'Geral',
           capaUrl: '',
           secretariaId: null,
+          trilhaId: null,
           isPublished: true,
         }
       }
