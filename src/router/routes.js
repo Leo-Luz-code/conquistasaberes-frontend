@@ -189,6 +189,7 @@ const routes = [
         path: '/admin/usuarios/editar/:id',
         component: () => import('pages/admin/users/UserActionsForm.vue'),
         meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
       {
         name: 'admin-biblioteca',
         path: '/admin/biblioteca',
