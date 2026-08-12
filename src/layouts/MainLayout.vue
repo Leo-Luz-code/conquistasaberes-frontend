@@ -173,7 +173,7 @@ const configurarMenu = () => {
 
   links.value = [
     ...(authStore.isGestorOrAdmin
-      ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' }]
+      ? [{ title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos/' }]
       : []),
     { title: 'Início', icon: 'home', link: '/servidor/dashboard' },
     { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
@@ -183,6 +183,8 @@ const configurarMenu = () => {
     { title: 'Passaporte Digital', icon: 'badge', link: '/servidor/passaporte' },
     { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
     { title: 'Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+    { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
+    { title: 'Norminha', icon: 'star', link: '/servidor/norminha' },
     { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
     { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
   ]

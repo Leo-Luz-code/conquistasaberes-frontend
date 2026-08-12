@@ -111,7 +111,7 @@ const routes = [
         component: () => import('pages/servidor/Ranking.vue'),
         meta: { requiredLogin: true },
       },
-      
+
       // ---------- SERVIDOR: Biblioteca -----------------
       {
         name: 'biblioteca',
@@ -119,7 +119,7 @@ const routes = [
         component: () => import('pages/servidor/Biblioteca.vue'),
         meta: { requiredLogin: true },
       },
-      
+
       // ---------- SERVIDOR: Fórum Comunitário ----------
       {
         name: 'forum',
@@ -127,7 +127,7 @@ const routes = [
         component: () => import('pages/servidor/Forum.vue'),
         meta: { requiredLogin: true },
       },
-      
+
       // ---------- SERVIDOR: Passaporte Digital -------
       {
         name: 'passaporte-digital',
@@ -144,7 +144,7 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
-      // ---------- GESTOR/ADMIN: Dashboard Analytics ----------
+      // ---------- GESTOR/: Dashboard Analytics ----------
       {
         name: 'dashboard-gestor',
         path: '/gestor/dashboard',
@@ -158,6 +158,19 @@ const routes = [
         component: () => import('pages/admin/Dashboard.vue'),
         meta: { requiredLogin: true, requiredAdminLevel: true },
       },
+      // ---------- ADMIN: Gestão de Cursos e Conteúdos ----------
+      {
+        name: 'admin-cursos',
+        path: '/admin/cursos',
+        component: () => import('pages/admin/courses/AdminCursosList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      {
+        name: 'admin-curso-conteudo',
+        path: '/admin/cursos/:id/conteudo',
+        component: () => import('pages/admin/courses/GerenciadorConteudo.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
     ],
   },
 
@@ -167,6 +180,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
   },
-];
+]
 
-export default routes;
+export default routes
