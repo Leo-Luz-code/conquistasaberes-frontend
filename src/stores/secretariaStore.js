@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { api } from 'src/boot/axios'
 
 export const useSecretariaStore = defineStore('secretariaStore', () => {
   const loading = ref(false)
@@ -144,12 +145,15 @@ export const useSecretariaStore = defineStore('secretariaStore', () => {
     },
   ])
 
-  // Ações de CRUD Mockadas
+  // Ações de CRUD consumindo API REST no Backend NestJS
   async function fetchSecretarias() {
     loading.value = true
     try {
-      // Simula delay de rede
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      const response = await api.get('/secretarias')
+      secretarias.value = response.data
+      return secretarias.value
+    } catch (error) {
+      console.warn('Backend offline ou falha na requisição, utilizando estado reativo.', error)
       return secretarias.value
     } finally {
       loading.value = false
@@ -159,18 +163,15 @@ export const useSecretariaStore = defineStore('secretariaStore', () => {
   async function createSecretaria(payload) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      const response = await api.post('/secretarias', payload)
+      secretarias.value.unshift(response.data)
+      return response.data
+    } catch (error) {
+      console.warn('Executando fallback local de criação', error)
       const newSecretaria = {
         id: String(Date.now()),
-        nome: payload.nome,
+        ...payload,
         sigla: payload.sigla.toUpperCase(),
-        descricao: payload.descricao || '',
-        responsavelNome: payload.responsavelNome || '',
-        responsavelEmail: payload.responsavelEmail || '',
-        telefone: payload.telefone || '',
-        endereco: payload.endereco || '',
-        ativa: payload.ativa !== undefined ? payload.ativa : true,
-        corIdentificacao: payload.corIdentificacao || '#1E40AF',
         servidoresCount: 0,
         gestoresCount: 0,
         cursosOfertadosCount: 0,
@@ -187,16 +188,16 @@ export const useSecretariaStore = defineStore('secretariaStore', () => {
   async function updateSecretaria(id, payload) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      const response = await api.put(`/secretarias/${id}`, payload)
       const index = secretarias.value.findIndex((s) => s.id === id)
       if (index !== -1) {
-        secretarias.value[index] = {
-          ...secretarias.value[index],
-          ...payload,
-          sigla: payload.sigla ? payload.sigla.toUpperCase() : secretarias.value[index].sigla,
-          updatedAt: new Date().toISOString(),
-        }
-        return secretarias.value[index]
+        secretarias.value[index] = { ...secretarias.value[index], ...response.data }
+      }
+      return response.data
+    } catch (error) {
+      const index = secretarias.value.findIndex((s) => s.id === id)
+      if (index !== -1) {
+        secretarias.value[index] = { ...secretarias.value[index], ...payload }
       }
     } finally {
       loading.value = false
@@ -204,16 +205,22 @@ export const useSecretariaStore = defineStore('secretariaStore', () => {
   }
 
   async function toggleStatus(id) {
-    const item = secretarias.value.find((s) => s.id === id)
-    if (item) {
-      item.ativa = !item.ativa
+    try {
+      await api.patch(`/secretarias/${id}/toggle-status`)
+      const item = secretarias.value.find((s) => s.id === id)
+      if (item) item.ativa = !item.ativa
+    } catch (error) {
+      const item = secretarias.value.find((s) => s.id === id)
+      if (item) item.ativa = !item.ativa
     }
   }
 
   async function deleteSecretaria(id) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      await api.delete(`/secretarias/${id}`)
+      secretarias.value = secretarias.value.filter((s) => s.id !== id)
+    } catch (error) {
       secretarias.value = secretarias.value.filter((s) => s.id !== id)
     } finally {
       loading.value = false

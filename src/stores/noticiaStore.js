@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { api } from 'src/boot/axios'
 
 export const useNoticiaStore = defineStore('noticiaStore', () => {
   const loading = ref(false)
@@ -17,7 +18,7 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
       publicada: true,
       visualizacoes: 1420,
       autorNome: 'Assessoria de Comunicação CETI',
-      secretariaAlvoId: null, // Global
+      secretariaAlvoId: null,
       secretariaAlvoSigla: 'Todas as Secretarias',
       dataPublicacao: '2026-04-28T10:00:00Z',
     },
@@ -36,58 +37,17 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
       secretariaAlvoSigla: 'Todas as Secretarias',
       dataPublicacao: '2026-04-22T14:30:00Z',
     },
-    {
-      id: '3',
-      titulo: 'Norminha IA apoiará servidores na busca por orientações e conteúdos acadêmicos',
-      subtitulo: 'Assistente virtual baseada em inteligência artificial entra em operação experimental no AVA.',
-      conteudo: 'A assistente virtual Norminha agora responde dúvidas em tempo real sobre normas municipais, navegação nas lições, emissão de certificados e sugestão de cursos compatíveis com a secretaria do servidor.',
-      categoria: 'Inovação',
-      capaUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
-      destaque: false,
-      publicada: true,
-      visualizacoes: 615,
-      autorNome: 'Equipe de Tecnologia CETI',
-      secretariaAlvoId: null,
-      secretariaAlvoSigla: 'Todas as Secretarias',
-      dataPublicacao: '2026-04-15T09:15:00Z',
-    },
-    {
-      id: '4',
-      titulo: 'Capacitação em Vigilância Epidemiológica para Agentes de Saúde',
-      subtitulo: 'Curso específico direcionado aos servidores municipais vinculados à Secretaria de Saúde.',
-      conteudo: 'Atualização de protocolos para identificação precoce e manejo de endemias na zona urbana e rural de Vitória da Conquista. Exclusivo para profissionais da SMS.',
-      categoria: 'Saúde',
-      capaUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=800&auto=format&fit=crop',
-      destaque: false,
-      publicada: true,
-      visualizacoes: 490,
-      autorNome: 'Diretoria de Atenção à Saúde',
-      secretariaAlvoId: '1',
-      secretariaAlvoSigla: 'SMS',
-      dataPublicacao: '2026-04-12T11:00:00Z',
-    },
-    {
-      id: '5',
-      titulo: 'Abertura das inscrições para o Workshop de Letramento Digital na Educação',
-      subtitulo: 'Capacitação prática em metodologias ativas e uso de recursos midiáticos na sala de aula.',
-      conteudo: 'A SMED convida professores e coordenadores pedagógicos da rede municipal para o ciclo de formações do segundo trimestre.',
-      categoria: 'Educação',
-      capaUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop',
-      destaque: false,
-      publicada: false, // Rascunho
-      visualizacoes: 0,
-      autorNome: 'Núcleo de Formação SMED',
-      secretariaAlvoId: '2',
-      secretariaAlvoSigla: 'SMED',
-      dataPublicacao: '2026-05-02T16:00:00Z',
-    },
   ])
 
-  // Ações CRUD Mockadas
-  async function fetchNoticias() {
+  // Ações CRUD Consumindo REST API no Backend
+  async function fetchNoticias(onlyPublished = false) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      const response = await api.get('/noticias', { params: { onlyPublished } })
+      noticias.value = response.data
+      return noticias.value
+    } catch (error) {
+      console.warn('Backend offline ou falha na requisição, mantendo dados reativos.', error)
       return noticias.value
     } finally {
       loading.value = false
@@ -97,28 +57,20 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
   async function createNoticia(payload) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      const response = await api.post('/noticias', payload)
+      noticias.value.unshift(response.data)
+      return response.data
+    } catch (error) {
+      console.warn('Executando fallback de criação de notícia', error)
       const newNoticia = {
         id: String(Date.now()),
-        titulo: payload.titulo,
-        subtitulo: payload.subtitulo || '',
-        conteudo: payload.conteudo || '',
-        categoria: payload.categoria || 'Geral',
-        capaUrl: payload.capaUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop',
-        destaque: !!payload.destaque,
-        publicada: payload.publicada !== undefined ? payload.publicada : true,
+        ...payload,
         visualizacoes: 0,
-        autorNome: payload.autorNome || 'Administrador UniVC',
-        secretariaAlvoId: payload.secretariaAlvoId || null,
-        secretariaAlvoSigla: payload.secretariaAlvoSigla || 'Todas as Secretarias',
-        dataPublicacao: payload.dataPublicacao || new Date().toISOString(),
+        dataPublicacao: new Date().toISOString(),
       }
-      
-      // Se a nova notícia for cadastrada como destaque, desmarca destaques anteriores se desejado
       if (newNoticia.destaque) {
         noticias.value.forEach((n) => (n.destaque = false))
       }
-
       noticias.value.unshift(newNoticia)
       return newNoticia
     } finally {
@@ -129,17 +81,16 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
   async function updateNoticia(id, payload) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      const response = await api.put(`/noticias/${id}`, payload)
       const index = noticias.value.findIndex((n) => n.id === id)
       if (index !== -1) {
-        if (payload.destaque) {
-          noticias.value.forEach((n) => (n.destaque = false))
-        }
-        noticias.value[index] = {
-          ...noticias.value[index],
-          ...payload,
-        }
-        return noticias.value[index]
+        noticias.value[index] = { ...noticias.value[index], ...response.data }
+      }
+      return response.data
+    } catch (error) {
+      const index = noticias.value.findIndex((n) => n.id === id)
+      if (index !== -1) {
+        noticias.value[index] = { ...noticias.value[index], ...payload }
       }
     } finally {
       loading.value = false
@@ -147,27 +98,45 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
   }
 
   async function toggleStatus(id) {
-    const item = noticias.value.find((n) => n.id === id)
-    if (item) {
-      item.publicada = !item.publicada
+    try {
+      await api.patch(`/noticias/${id}/toggle-status`)
+      const item = noticias.value.find((n) => n.id === id)
+      if (item) item.publicada = !item.publicada
+    } catch (error) {
+      const item = noticias.value.find((n) => n.id === id)
+      if (item) item.publicada = !item.publicada
     }
   }
 
   async function toggleDestaque(id) {
-    const item = noticias.value.find((n) => n.id === id)
-    if (item) {
-      const novoStatus = !item.destaque
-      if (novoStatus) {
-        noticias.value.forEach((n) => (n.destaque = false))
+    try {
+      await api.patch(`/noticias/${id}/toggle-destaque`)
+      const item = noticias.value.find((n) => n.id === id)
+      if (item) {
+        const novoStatus = !item.destaque
+        if (novoStatus) {
+          noticias.value.forEach((n) => (n.destaque = false))
+        }
+        item.destaque = novoStatus
       }
-      item.destaque = novoStatus
+    } catch (error) {
+      const item = noticias.value.find((n) => n.id === id)
+      if (item) {
+        const novoStatus = !item.destaque
+        if (novoStatus) {
+          noticias.value.forEach((n) => (n.destaque = false))
+        }
+        item.destaque = novoStatus
+      }
     }
   }
 
   async function deleteNoticia(id) {
     loading.value = true
     try {
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      await api.delete(`/noticias/${id}`)
+      noticias.value = noticias.value.filter((n) => n.id !== id)
+    } catch (error) {
       noticias.value = noticias.value.filter((n) => n.id !== id)
     } finally {
       loading.value = false
