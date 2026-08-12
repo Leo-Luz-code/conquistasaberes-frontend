@@ -174,6 +174,8 @@ const configurarMenu = () => {
   if (authStore.isAdmin) {
     links.value = [
       { title: 'Administração', icon: 'analytics', link: '/admin/dashboard' },
+      { title: 'Gestão de Secretarias', icon: 'account_balance', link: '/admin/secretarias' },
+      { title: 'Gestão de Notícias', icon: 'newspaper', link: '/admin/noticias' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
       { title: 'Gestão de Servidores', icon: 'people', link: '/admin/usuarios' },
       { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },

@@ -158,6 +158,20 @@ const routes = [
         component: () => import('pages/admin/Dashboard.vue'),
         meta: { requiredLogin: true, requiredAdminLevel: true },
       },
+      // ---------- ADMIN: Gestão de Secretarias ----------
+      {
+        name: 'admin-secretarias',
+        path: '/admin/secretarias',
+        component: () => import('pages/admin/GestaoSecretarias.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Notícias ----------
+      {
+        name: 'admin-noticias',
+        path: '/admin/noticias',
+        component: () => import('pages/admin/GestaoNoticias.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
       // ---------- ADMIN: Gestão de Cursos e Conteúdos ----------
       {
         name: 'admin-cursos',
