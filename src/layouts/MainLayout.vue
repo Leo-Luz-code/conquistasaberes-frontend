@@ -176,9 +176,10 @@ const configurarMenu = () => {
       { title: 'Administração', icon: 'analytics', link: '/admin/dashboard' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
       { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Gestão de Biblioteca', icon: 'menu_book', link: '/admin/biblioteca' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-      { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Gestão de Certificados', icon: 'workspace_premium', link: '/admin/certificados' },
       { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
     ]
   } else if (authStore.isGestor) {

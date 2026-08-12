@@ -171,6 +171,18 @@ const routes = [
         component: () => import('pages/admin/courses/GerenciadorConteudo.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+      {
+        name: 'admin-biblioteca',
+        path: '/admin/biblioteca',
+        component: () => import('pages/admin/library/AdminBibliotecaList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      {
+        name: 'admin-certificados',
+        path: '/admin/certificados',
+        component: () => import('pages/admin/certificates/AdminGestaoCertificados.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
     ],
   },
 
