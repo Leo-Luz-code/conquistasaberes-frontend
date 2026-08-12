@@ -189,6 +189,17 @@ const routes = [
         path: '/admin/usuarios/editar/:id',
         component: () => import('pages/admin/users/UserActionsForm.vue'),
         meta: { requiredLogin: true, requiredAdminLevel: true },
+      {
+        name: 'admin-biblioteca',
+        path: '/admin/biblioteca',
+        component: () => import('pages/admin/library/AdminBibliotecaList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      {
+        name: 'admin-certificados',
+        path: '/admin/certificados',
+        component: () => import('pages/admin/certificates/AdminGestaoCertificados.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
       },
     ],
   },
