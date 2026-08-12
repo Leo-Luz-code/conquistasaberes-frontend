@@ -53,15 +53,15 @@
       </div>
 
       <!-- KPI 4: Secretarias -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center shrink-0">
-          <q-icon name="settings" size="24px" />
+      <router-link to="/admin/secretarias" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 cursor-pointer">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#1b4b7f] flex items-center justify-center shrink-0">
+          <q-icon name="account_balance" size="24px" />
         </div>
         <div>
           <span class="block text-xs font-medium text-slate-500">Secretarias</span>
           <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">18</span>
         </div>
-      </div>
+      </router-link>
     </div>
 
     <!-- Áreas Administrativas -->
@@ -105,22 +105,22 @@
           <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 5 -->
+        <!-- Area 5: Notícias -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Certificados</h3>
-            <p class="text-sm text-slate-500">Modelos e emissões</p>
+            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de Notícias</h3>
+            <p class="text-sm text-slate-500">Publicar matérias e comunicados</p>
           </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/noticias" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 6 -->
+        <!-- Area 6: Secretarias -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Relatórios institucionais</h3>
-            <p class="text-sm text-slate-500">Exportar dados gerenciais</p>
+            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de Secretarias</h3>
+            <p class="text-sm text-slate-500">Órgãos, siglas, gestores e contatos</p>
           </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/secretarias" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
       </div>
     </div>
