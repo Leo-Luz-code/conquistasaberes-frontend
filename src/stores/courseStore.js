@@ -17,6 +17,7 @@ export const useCourseStore = defineStore('course', {
     enrollments: [],
     recommendations: [],
     learningPaths: [],
+    eixos: [],
     loading: false,
     loadingDetail: false,
   }),
@@ -215,6 +216,86 @@ export const useCourseStore = defineStore('course', {
       } catch (error) {
         console.error('Erro ao buscar trilhas:', error);
         return [];
+      }
+    },
+    async createLearningPath(payload) {
+      try {
+        const { data } = await api.post('/learning-paths', payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Trilha criada com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar trilha.' });
+        throw error;
+      }
+    },
+    async updateLearningPath(id, payload) {
+      try {
+        const { data } = await api.put(`/learning-paths/${id}`, payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Trilha atualizada!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar trilha.' });
+        throw error;
+      }
+    },
+    async deleteLearningPath(id) {
+      try {
+        await api.delete(`/learning-paths/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Trilha removida!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir trilha.' });
+        throw error;
+      }
+    },
+    async linkCoursesToPath(trilhaId, courseIds) {
+      try {
+        const { data } = await api.patch(`/learning-paths/${trilhaId}/courses`, { courseIds });
+        Notify.create({ color: 'positive', icon: 'link', message: 'Cursos vinculados com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao vincular cursos.' });
+        throw error;
+      }
+    },
+
+    // Eixos
+    async fetchEixos() {
+      try {
+        const { data } = await api.get('/eixos');
+        this.eixos = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar eixos:', error);
+        return [];
+      }
+    },
+    async createEixo(payload) {
+      try {
+        const { data } = await api.post('/eixos', payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Eixo criado com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar eixo.' });
+        throw error;
+      }
+    },
+    async updateEixo(id, payload) {
+      try {
+        const { data } = await api.put(`/eixos/${id}`, payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Eixo atualizado!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar eixo.' });
+        throw error;
+      }
+    },
+    async deleteEixo(id) {
+      try {
+        await api.delete(`/eixos/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Eixo removido!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir eixo.' });
+        throw error;
       }
     },
 

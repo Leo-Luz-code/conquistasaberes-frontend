@@ -175,6 +175,7 @@ const configurarMenu = () => {
     links.value = [
       { title: 'Administração', icon: 'analytics', link: '/admin/dashboard' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Servidores', icon: 'people', link: '/admin/usuarios' },
       { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },

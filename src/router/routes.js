@@ -171,6 +171,25 @@ const routes = [
         component: () => import('pages/admin/courses/GerenciadorConteudo.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+      // ---------- ADMIN: Gestão de Servidores ----------
+      {
+        name: 'admin-usuarios',
+        path: '/admin/usuarios',
+        component: () => import('pages/admin/users/ListUsers.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      {
+        name: 'admin-usuarios-novo',
+        path: '/admin/usuarios/novo',
+        component: () => import('pages/admin/users/UserActionsForm.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      {
+        name: 'admin-usuarios-editar',
+        path: '/admin/usuarios/editar/:id',
+        component: () => import('pages/admin/users/UserActionsForm.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
     ],
   },
 
