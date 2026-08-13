@@ -40,10 +40,14 @@ export const useNoticiaStore = defineStore('noticiaStore', () => {
   ])
 
   // Ações CRUD Consumindo REST API no Backend
-  async function fetchNoticias(onlyPublished = false) {
+  async function fetchNoticias(onlyPublished = false, secretariaId = null) {
     loading.value = true
     try {
-      const response = await api.get('/noticias', { params: { onlyPublished } })
+      const params = {}
+      if (onlyPublished) params.onlyPublished = true
+      if (secretariaId) params.secretariaId = secretariaId
+
+      const response = await api.get('/noticias', { params })
       noticias.value = response.data
       return noticias.value
     } catch (error) {
