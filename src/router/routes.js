@@ -72,6 +72,14 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
+      // ---------- SERVIDOR: Detalhe de uma Trilha ----------
+      {
+        name: 'trilha-detalhes',
+        path: '/servidor/trilhas/:id',
+        component: () => import('pages/servidor/TrilhaDetalhes.vue'),
+        meta: { requiredLogin: true },
+      },
+
       // ---------- SERVIDOR: Cursos ----------
       {
         name: 'catalogo-cursos',
