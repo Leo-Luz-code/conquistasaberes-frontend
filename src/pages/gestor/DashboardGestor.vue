@@ -1,34 +1,52 @@
 <template>
   <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans">
     <!-- Cabeçalho e Seletor de Secretaria (Filtro do Admin) -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-      <div>
-        <div class="flex items-center gap-2 mb-1">
-          <q-chip
-            v-if="authStore.isAdmin"
-            dense
-            color="primary"
-            text-color="white"
-            icon="admin_panel_settings"
-            class="font-bold text-xs"
-          >
-            Visão Global Admin
-          </q-chip>
-          <span v-else class="text-xs font-bold text-slate-400 uppercase tracking-wider">Painel Executivo</span>
+    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+      <!-- Título e Tag de Status -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <q-chip
+              v-if="authStore.isAdmin"
+              dense
+              color="primary"
+              text-color="white"
+              icon="admin_panel_settings"
+              class="font-bold text-xs"
+            >
+              Visão Global Admin
+            </q-chip>
+            <span v-else class="text-xs font-bold text-slate-400 uppercase tracking-wider">Painel Executivo</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-pmvc-dark tracking-tight leading-tight">
+            {{ secretariaSelecionada ? secretariaSelecionada.nome : 'Visão Geral — Todas as Secretarias' }}
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            {{ secretariaSelecionada ? `Indicadores de capacitação e engajamento da ${secretariaSelecionada.sigla}.` : 'Indicadores de capacitação consolidados de todos os órgãos municipais.' }}
+          </p>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-pmvc-dark tracking-tight leading-tight">
-          {{ secretariaSelecionada ? secretariaSelecionada.nome : 'Visão Geral — Todas as Secretarias' }}
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-          {{ secretariaSelecionada ? `Indicadores de capacitação e engajamento da ${secretariaSelecionada.sigla}.` : 'Indicadores de capacitação consolidados de todos os órgãos municipais.' }}
-        </p>
+
+        <q-chip
+          v-if="secretariaSelecionada"
+          outline
+          color="primary"
+          icon="check_circle"
+          class="font-bold text-xs self-start sm:self-center"
+        >
+          Filtro Ativo: {{ secretariaSelecionada.sigla }}
+        </q-chip>
       </div>
 
-      <!-- Barra de Pesquisa e Filtro de Secretaria -->
-      <div class="w-full md:w-80 shrink-0">
-        <label class="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1">
-          <q-icon name="search" color="primary" size="16px" />
-          Filtrar por Secretaria:
+      <!-- Barra de Pesquisa e Filtro de Secretaria (Largura Total Centralizada) -->
+      <div class="w-full pt-2 border-t border-slate-100">
+        <label class="block text-xs font-bold text-slate-600 mb-2 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <q-icon name="search" color="primary" size="18px" />
+            Pesquisar e Filtrar por Secretaria Municipal:
+          </span>
+          <span v-if="secretariaSelecionada" class="text-xs text-pmvc-blue cursor-pointer hover:underline font-semibold" @click="limparFiltroSecretaria">
+            Limpar filtro (Ver Todas)
+          </span>
         </label>
         <q-select
           v-model="secretariaFiltro"
@@ -40,39 +58,52 @@
           hide-selected
           fill-input
           input-debounce="0"
-          placeholder="Digite ou selecione uma secretaria..."
-          class="rounded-xl bg-slate-50"
+          placeholder="Digite o nome da secretaria, sigla (ex: SMS, SMED, SETP) ou nome do gestor..."
+          class="w-full rounded-2xl bg-slate-50 text-sm font-medium"
           @filter="filtrarOpcoesSecretaria"
           @update:model-value="onSecretariaChange"
         >
+          <template v-slot:prepend>
+            <q-icon name="apartment" class="text-slate-400 ml-1" />
+          </template>
+
+          <template v-slot:append>
+            <q-icon
+              v-if="secretariaSelecionada"
+              name="close"
+              class="cursor-pointer text-slate-400 hover:text-slate-600"
+              @click.stop="limparFiltroSecretaria"
+            />
+          </template>
+
           <template v-slot:no-option>
             <q-item>
               <q-item-section class="text-slate-400 text-xs">
-                Nenhuma secretaria encontrada
+                Nenhuma secretaria correspondente encontrada
               </q-item-section>
             </q-item>
           </template>
 
           <template v-slot:option="scope">
-            <q-item v-bind="scope.itemProps" class="hover:bg-blue-50">
+            <q-item v-bind="scope.itemProps" class="hover:bg-blue-50 py-3">
               <q-item-section avatar v-if="scope.opt.sigla !== 'TODAS'">
                 <div
-                  class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs"
+                  class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white text-xs shadow-sm"
                   :style="{ backgroundColor: scope.opt.corIdentificacao || '#1b4b7f' }"
                 >
                   {{ scope.opt.sigla }}
                 </div>
               </q-item-section>
               <q-item-section avatar v-else>
-                <div class="w-8 h-8 rounded-lg bg-blue-100 text-pmvc-blue flex items-center justify-center font-bold text-xs">
-                  <q-icon name="apps" />
+                <div class="w-9 h-9 rounded-xl bg-blue-100 text-pmvc-blue flex items-center justify-center font-bold text-xs">
+                  <q-icon name="apps" size="20px" />
                 </div>
               </q-item-section>
 
               <q-item-section>
                 <q-item-label class="font-bold text-sm text-slate-800">{{ scope.opt.nome }}</q-item-label>
-                <q-item-label caption class="text-xs text-slate-400">
-                  {{ scope.opt.sigla !== 'TODAS' ? `Sigla: ${scope.opt.sigla} • Resp: ${scope.opt.responsavelNome || 'Não informado'}` : 'Exibir dados consolidados da prefeitura' }}
+                <q-item-label caption class="text-xs text-slate-500">
+                  {{ scope.opt.sigla !== 'TODAS' ? `Sigla: ${scope.opt.sigla} • Resp: ${scope.opt.responsavelNome || 'Não informado'}` : 'Exibir indicadores consolidados de toda a prefeitura' }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -464,6 +495,16 @@ function filtrarOpcoesSecretaria(val, update) {
 async function onSecretariaChange(opt) {
   const targetId = opt && opt.id !== 'TODAS' ? opt.id : null
   await analyticsStore.fetchDashboard(targetId)
+}
+
+async function limparFiltroSecretaria() {
+  secretariaFiltro.value = opcoesSecretariaOriginal.value[0] || {
+    id: 'TODAS',
+    nome: 'Todas as Secretarias',
+    sigla: 'TODAS',
+    nomeExibicao: 'Todas as Secretarias (Visão Consolidada)',
+  }
+  await analyticsStore.fetchDashboard(null)
 }
 
 onMounted(async () => {
