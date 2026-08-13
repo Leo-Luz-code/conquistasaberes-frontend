@@ -179,6 +179,20 @@ const routes = [
         component: () => import('pages/admin/courses/AdminCursosList.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+      // ---------- ADMIN/GESTOR: Gestão de Eventos ----------
+      {
+        name: 'admin-eventos',
+        path: '/admin/eventos',
+        component: () => import('pages/admin/events/AdminEventosList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true, },
+      },
+      // ---------- ADMIN/GESTOR: Inscritos do Evento ----------
+      {
+        name: 'admin-evento-inscritos',
+        path: '/admin/eventos/:id/inscritos',
+        component: () => import('pages/admin/events/AdminEventoInscritos.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true, },
+      },
       {
         name: 'admin-curso-conteudo',
         path: '/admin/cursos/:id/conteudo',

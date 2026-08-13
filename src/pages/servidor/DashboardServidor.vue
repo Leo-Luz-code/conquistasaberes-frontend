@@ -1,20 +1,75 @@
 <template>
   <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans">
-    <!-- Top Header: Boas-vindas + Data + Botão de Continuar Curso -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+     <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <!-- Informações de boas-vindas -->
       <div>
-        <p class="text-xs sm:text-sm text-slate-500 font-medium">
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mb-1">
           {{ dataAtualFormatada }}
         </p>
+
         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
-          Olá, <span class="text-[#0F4C81]">{{ authStore.firstName || 'Maria' }}</span>. Bem-vinda à UniVC.
+          Olá,
+          <span class="text-[#0F4C81]">
+            {{ authStore.firstName || 'Maria' }}
+          </span>.
+          Bem-vinda à UniVC.
         </h1>
-        <p class="text-xs sm:text-sm text-slate-500">
+
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
           Continue sua jornada de aprendizagem hoje.
         </p>
       </div>
 
-      <div>
+      <!-- Ações -->
+      <div class="flex flex-wrap items-center gap-3">
+
+        <!-- Botão de áudio -->
+        <div
+          v-if="ouvindo"
+          class="flex items-center gap-2"
+        >
+          <!-- Pausar -->
+          <button
+            v-if="!pausado"
+            @click="pausarLeitura"
+            class="inline-flex items-center gap-2 px-4 py-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs sm:text-sm rounded-xl transition-all"
+          >
+            <q-icon name="pause" size="18px" />
+            <span>Pausar</span>
+          </button>
+
+          <!-- Continuar -->
+          <button
+            v-else
+            @click="continuarLeitura"
+            class="inline-flex items-center gap-2 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs sm:text-sm rounded-xl transition-all"
+          >
+            <q-icon name="play_arrow" size="18px" />
+            <span>Continuar</span>
+          </button>
+
+          <!-- Parar -->
+          <button
+            @click="pararLeitura"
+            class="inline-flex items-center justify-center w-11 h-11 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl transition-all"
+            title="Parar leitura"
+          >
+            <q-icon name="stop" size="19px" />
+          </button>
+        </div>
+
+        <!-- Ouvir -->
+        <button
+          v-else
+          @click="ouvirDashboard"
+          class="inline-flex items-center gap-2 px-5 py-3 bg-white hover:bg-blue-50 text-[#0F4C81] border border-[#0F4C81] font-bold text-xs sm:text-sm rounded-xl transition-all"
+        >
+          <q-icon name="volume_up" size="18px" />
+          <span>Ouvir página</span>
+        </button>
+
+        <!-- Continuar curso -->
         <router-link
           to="/servidor/cursos/1"
           class="inline-flex items-center gap-2 px-5 py-3 bg-[#0F4C81] hover:bg-[#0C3B66] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md hover:shadow-lg"
@@ -22,6 +77,7 @@
           <span>Continuar curso atual</span>
           <q-icon name="arrow_forward" size="18px" />
         </router-link>
+
       </div>
     </div>
 
@@ -312,6 +368,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useAuthStore } from 'src/stores/authStore';
+import { ref, onBeforeUnmount } from 'vue';
 
 const authStore = useAuthStore();
 
@@ -325,4 +382,82 @@ const dataAtualFormatada = computed(() => {
 function abrirNorminha() {
   // Triggers Norminha widget event or dialog if needed
 }
+
+const textoDashboard = computed(() => {
+  return `
+    Olá, ${authStore.firstName || 'servidora'}. Bem-vinda à UniVC.
+    
+    Continue sua jornada de aprendizagem hoje.
+    
+    Desenvolva suas competências e fortaleça o serviço público municipal.
+    Trilhas, cursos e materiais selecionados para você atuar com excelência no atendimento ao cidadão.
+    
+    Você possui 48 cursos disponíveis.
+    3 cursos estão em andamento.
+    7 cursos foram concluídos.
+    Você possui 5 certificados emitidos.
+    
+    Sua evolução atual:
+    Trilha de Integração ao Serviço Público: 45% concluída.
+    Trilha de Gestão e Liderança: 20% concluída.
+    Curso de Ética e Conduta no Serviço Público: 75% concluído.
+  `;
+});
+
+const ouvindo = ref(false);
+const pausado = ref(false);
+
+function ouvirDashboard() {
+  if (!('speechSynthesis' in window)) {
+    alert('Seu navegador não suporta leitura de texto.');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const fala = new SpeechSynthesisUtterance(textoDashboard.value);
+
+  fala.lang = 'pt-BR';
+  fala.rate = 0.9;
+  fala.pitch = 1;
+
+  fala.onstart = () => {
+    ouvindo.value = true;
+    pausado.value = false;
+  };
+
+  fala.onend = () => {
+    ouvindo.value = false;
+    pausado.value = false;
+  };
+
+  fala.onerror = () => {
+    ouvindo.value = false;
+    pausado.value = false;
+  };
+
+  window.speechSynthesis.speak(fala);
+}
+
+function pausarLeitura() {
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.pause();
+    pausado.value = true;
+  }
+}
+
+function continuarLeitura() {
+  window.speechSynthesis.resume();
+  pausado.value = false;
+}
+
+function pararLeitura() {
+  window.speechSynthesis.cancel();
+  ouvindo.value = false;
+  pausado.value = false;
+}
+
+onBeforeUnmount(() => {
+  window.speechSynthesis.cancel();
+});
 </script>
