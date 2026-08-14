@@ -5,10 +5,10 @@
       <div class="col-12 col-sm-auto">
         <div class="text-h5 text-weight-bold text-primary row items-center">
           <q-icon name="menu_book" class="q-mr-sm" size="28px" />
-          Gestão de Cursos e Conteúdos
+          {{ authStore.isGestor ? 'Meus Cursos e Conteúdos' : 'Gestão de Cursos e Conteúdos' }}
         </div>
         <div class="text-caption text-grey-7 q-mt-xs">
-          Painel administrativo para cadastro de cursos e gerenciamento de módulos e aulas (Vídeos, Textos, PDFs e Quizzes).
+          {{ authStore.isGestor ? 'Gerencie os cursos criados por você, seus módulos, aulas e inscritos.' : 'Painel administrativo para cadastro de cursos e gerenciamento de módulos e aulas (Vídeos, Textos, PDFs e Quizzes).' }}
         </div>
       </div>
       <div class="col-12 col-sm-auto">
@@ -305,11 +305,13 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useCourseStore } from 'src/stores/courseStore';
+import { useAuthStore } from 'src/stores/authStore';
 import { useQuasar } from 'quasar';
 import FormularioCursoDialog from 'src/components/FormularioCursoDialog.vue';
 
 const $q = useQuasar();
 const courseStore = useCourseStore();
+const authStore = useAuthStore();
 
 const filter = ref('');
 const showCourseDialog = ref(false);

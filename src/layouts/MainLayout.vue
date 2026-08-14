@@ -241,10 +241,12 @@ const configurarMenu = () => {
   } else if (authStore.isGestor) {
     links.value = [
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
-      { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
       { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
       { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
+      { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
+      { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
       { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
     ]
   } else {

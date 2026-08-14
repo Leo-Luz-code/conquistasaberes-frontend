@@ -262,6 +262,12 @@ const trilhaOptions = computed(() => {
       })
     })
   }
+  if (props.course?.trilha && !options.some((o) => o.value === props.course.trilha.id)) {
+    options.push({
+      label: props.course.trilha.tituloTrilha,
+      value: props.course.trilha.id,
+    })
+  }
   return options
 })
 
@@ -282,7 +288,7 @@ watch(
   async (isOpen) => {
     if (isOpen) {
       courseStore.fetchSecretarias()
-      courseStore.fetchLearningPaths()
+      courseStore.fetchAdminLearningPaths()
       capaFile.value = null
       if (props.course) {
         form.value = {

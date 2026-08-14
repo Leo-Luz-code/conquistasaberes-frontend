@@ -224,6 +224,16 @@ export const useCourseStore = defineStore('course', {
         return [];
       }
     },
+    async fetchAdminLearningPaths() {
+      try {
+        const { data } = await api.get('/learning-paths/admin/all');
+        this.learningPaths = Array.isArray(data) ? data : [];
+        return this.learningPaths;
+      } catch (error) {
+        console.error('Erro ao buscar trilhas para administração:', error);
+        return [];
+      }
+    },
     async enrollLearningPath(id) {
       try {
         const { data } = await api.post(`/learning-paths/${id}/enroll`);

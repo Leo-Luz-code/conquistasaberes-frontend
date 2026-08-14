@@ -3,7 +3,10 @@
     <div class="row items-center q-mb-md">
       <div class="col-12 text-h5 text-weight-bold text-primary row items-center">
         <q-icon name="menu_book" class="q-mr-sm" size="28px" />
-        Gestão de Catálogo (Cursos, Trilhas e Eixos)
+        {{ authStore.isGestor ? 'Gestão de Catálogo (Meus Cursos e Trilhas)' : 'Gestão de Catálogo (Cursos, Trilhas e Eixos)' }}
+      </div>
+      <div v-if="authStore.isGestor" class="text-caption text-grey-7 q-mt-xs">
+        Área do criador de conteúdo: gerencie seus cursos e trilhas cadastrados para a prefeitura.
       </div>
     </div>
 
@@ -19,7 +22,7 @@
       >
         <q-tab name="cursos" icon="school" label="Cursos" />
         <q-tab name="trilhas" icon="alt_route" label="Trilhas de Aprendizagem" />
-        <q-tab name="eixos" icon="account_tree" label="Eixos de Conhecimento" />
+        <q-tab v-if="authStore.isAdmin" name="eixos" icon="account_tree" label="Eixos de Conhecimento" />
       </q-tabs>
 
       <q-separator />
@@ -33,7 +36,7 @@
           <AdminTrilhasList />
         </q-tab-panel>
 
-        <q-tab-panel name="eixos" class="q-pa-none">
+        <q-tab-panel v-if="authStore.isAdmin" name="eixos" class="q-pa-none">
           <AdminEixosList />
         </q-tab-panel>
       </q-tab-panels>
@@ -42,10 +45,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { useAuthStore } from 'src/stores/authStore';
 import AdminCursosTable from './AdminCursosTable.vue';
 import AdminTrilhasList from './AdminTrilhasList.vue';
 import AdminEixosList from './AdminEixosList.vue';
 
+const authStore = useAuthStore();
 const tab = ref('cursos');
+
+onMounted(() => {
+  if (tab.value === 'eixos' && !authStore.isAdmin) {
+    tab.value = 'cursos';
+  }
+});
+
+watch(tab, (newVal) => {
+  if (newVal === 'eixos' && !authStore.isAdmin) {
+    tab.value = 'cursos';
+  }
+});
 </script>

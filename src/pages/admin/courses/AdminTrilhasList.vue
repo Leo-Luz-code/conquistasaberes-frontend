@@ -1,8 +1,13 @@
 <template>
   <div class="q-pa-md">
     <div class="row items-center justify-between q-mb-md">
-      <div class="text-subtitle1 text-weight-bold text-primary">
-        Trilhas de Aprendizagem
+      <div>
+        <div class="text-subtitle1 text-weight-bold text-primary">
+          {{ authStore.isGestor ? 'Minhas Trilhas de Aprendizagem' : 'Trilhas de Aprendizagem' }}
+        </div>
+        <div v-if="authStore.isGestor" class="text-caption text-grey-7">
+          Listagem com as trilhas de capacitação criadas por você.
+        </div>
       </div>
       <q-btn color="primary" icon="add" label="Nova Trilha" unelevated @click="openCreateModal" />
     </div>
@@ -116,10 +121,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useCourseStore } from 'src/stores/courseStore';
+import { useAuthStore } from 'src/stores/authStore';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
 const courseStore = useCourseStore();
+const authStore = useAuthStore();
 
 const loading = ref(false);
 const showDialog = ref(false);
@@ -148,7 +155,7 @@ const columns = [
 const loadData = async () => {
   loading.value = true;
   await Promise.all([
-    courseStore.fetchLearningPaths(),
+    courseStore.fetchAdminLearningPaths(),
     courseStore.fetchEixos(),
     courseStore.fetchAllAdminCourses()
   ]);
