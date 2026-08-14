@@ -91,9 +91,13 @@
       >
         <!-- Banner Superior -->
         <div
-          class="p-6 text-white relative flex items-start justify-between min-h-[110px] overflow-hidden"
+          class="p-6 text-white relative flex items-start justify-between min-h-[120px] overflow-hidden bg-cover bg-center"
           :class="bannerClass(curso.status)"
+          :style="curso.capaUrl ? `background-image: url('${curso.capaUrl}')` : ''"
         >
+          <!-- Overlay Escuro para Capa -->
+          <div v-if="curso.capaUrl" class="absolute inset-0 bg-slate-900/50 z-0 pointer-events-none"></div>
+
           <span
             class="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold backdrop-blur-sm relative z-10"
           >
@@ -102,14 +106,14 @@
           <!-- Badge de trilha -->
           <span
             v-if="curso.trilha"
-            class="px-2 py-0.5 bg-white/15 text-white rounded-full text-[10px] font-semibold absolute bottom-3 left-6 z-10"
+            class="px-2 py-0.5 bg-white/20 text-white rounded-full text-[10px] font-semibold absolute bottom-3 left-6 z-10 backdrop-blur-sm"
           >
             📍 {{ curso.trilha.tituloTrilha }}
           </span>
           <q-icon
             name="menu_book"
             size="72px"
-            class="text-white/10 absolute -right-2 -bottom-3 pointer-events-none"
+            class="text-white/20 absolute -right-2 -bottom-3 pointer-events-none z-10"
           />
         </div>
 

@@ -330,7 +330,7 @@
               </div>
 
               <!-- Tipo de Conteúdo -->
-              <div class="col-12 col-sm-7">
+              <div class="col-12 col-sm-5">
                 <q-select
                   v-model="lessonForm.tipo"
                   :options="tiposAulaOptions"
@@ -347,7 +347,7 @@
               </div>
 
               <!-- Duração Estimada -->
-              <div class="col-12 col-sm-5">
+              <div class="col-12 col-sm-4">
                 <q-input
                   v-model.number="lessonForm.duracaoMin"
                   label="Duração (minutos) *"
@@ -359,6 +359,28 @@
                 >
                   <template v-slot:prepend>
                     <q-icon name="timer" color="primary" />
+                  </template>
+                </q-input>
+              </div>
+
+              <!-- XP Concedido -->
+              <div class="col-12 col-sm-3">
+                <q-input
+                  v-model.number="lessonForm.xp"
+                  label="Pontos XP *"
+                  type="number"
+                  outlined
+                  dense
+                  min="0"
+                  max="100"
+                  :rules="[
+                    val => (val !== null && val !== '') || 'Obrigatório',
+                    val => val <= 100 || 'Máximo 100 XP',
+                    val => val >= 0 || 'Mínimo 0 XP'
+                  ]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="star" color="amber-6" />
                   </template>
                 </q-input>
               </div>
@@ -444,42 +466,71 @@
               <!-- TIPO 4: QUIZ DE FIXAÇÃO -->
               <div v-if="lessonForm.tipo === 'QUIZ'" class="col-12">
                 <div class="q-pa-md bg-purple-1 rounded-borders">
-                  <div class="text-subtitle2 text-purple-9 text-weight-bold q-mb-sm row items-center">
-                    <q-icon name="quiz" class="q-mr-xs" size="20px" /> Construtor do Quiz de Fixação
+                  <div class="row items-center justify-between q-mb-md">
+                    <div class="text-subtitle2 text-purple-9 text-weight-bold row items-center">
+                      <q-icon name="quiz" class="q-mr-xs" size="20px" /> Construtor do Quiz de Fixação
+                    </div>
+                    <q-btn
+                      color="purple-7"
+                      icon="add"
+                      label="Adicionar Pergunta"
+                      size="sm"
+                      unelevated
+                      @click="quizBuilder.push({ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 })"
+                    />
                   </div>
 
-                  <!-- Pergunta -->
-                  <q-input
-                    v-model="quizBuilder.pergunta"
-                    label="Enunciado da Pergunta *"
-                    outlined
-                    dense
-                    bg-color="white"
-                    class="q-mb-sm"
-                    :rules="[val => !!val || 'Informe a pergunta do quiz']"
-                  />
-
-                  <!-- Alternativas -->
-                  <div class="text-caption text-weight-bold text-grey-8 q-mb-xs">
-                    Opções de Resposta (Marque a opção correta):
-                  </div>
                   <div
-                    v-for="(opcao, idx) in quizBuilder.opcoes"
-                    :key="idx"
-                    class="row items-center q-mb-xs bg-white q-pa-xs rounded-borders shadow-1"
+                    v-for="(questao, qIdx) in quizBuilder"
+                    :key="qIdx"
+                    class="q-mb-md q-pa-md bg-white rounded-borders shadow-1"
                   >
-                    <q-radio
-                      v-model="quizBuilder.respostaCorreta"
-                      :val="idx"
-                      color="positive"
-                    />
+                    <div class="row items-center justify-between q-mb-sm">
+                      <div class="text-subtitle2 text-weight-bold text-grey-8">Pergunta {{ qIdx + 1 }}</div>
+                      <q-btn
+                        v-if="quizBuilder.length > 1"
+                        flat round dense
+                        icon="delete"
+                        color="negative"
+                        @click="quizBuilder.splice(qIdx, 1)"
+                      >
+                        <q-tooltip>Remover Pergunta</q-tooltip>
+                      </q-btn>
+                    </div>
+
+                    <!-- Pergunta -->
                     <q-input
-                      v-model="quizBuilder.opcoes[idx]"
-                      :label="`Alternativa ${String.fromCharCode(65 + idx)}`"
+                      v-model="questao.pergunta"
+                      label="Enunciado da Pergunta *"
+                      outlined
                       dense
-                      borderless
-                      class="col q-ml-sm"
+                      bg-color="white"
+                      class="q-mb-sm"
+                      :rules="[val => !!val || 'Informe a pergunta do quiz']"
                     />
+
+                    <!-- Alternativas -->
+                    <div class="text-caption text-weight-bold text-grey-8 q-mb-xs">
+                      Opções de Resposta (Marque a opção correta):
+                    </div>
+                    <div
+                      v-for="(opcao, idx) in questao.opcoes"
+                      :key="idx"
+                      class="row items-center q-mb-xs bg-grey-1 q-pa-xs rounded-borders"
+                    >
+                      <q-radio
+                        v-model="questao.respostaCorreta"
+                        :val="idx"
+                        color="positive"
+                      />
+                      <q-input
+                        v-model="questao.opcoes[idx]"
+                        :label="`Alternativa ${String.fromCharCode(65 + idx)}`"
+                        dense
+                        borderless
+                        class="col q-ml-sm"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -567,14 +618,13 @@ const lessonForm = ref({
   texto: '',
   quizData: '',
   duracaoMin: 10,
+  xp: 10,
   ordem: 1,
 });
 
-const quizBuilder = ref({
-  pergunta: '',
-  opcoes: ['', '', '', ''],
-  respostaCorreta: 0,
-});
+const quizBuilder = ref([
+  { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }
+]);
 
 const tiposAulaOptions = [
   { label: 'Vídeo (YouTube / URL)', value: 'VIDEO' },
@@ -677,17 +727,19 @@ const openLessonModal = (moduleId, lesson = null) => {
       texto: lesson.texto || '',
       quizData: lesson.quizData || '',
       duracaoMin: lesson.duracaoMin || 10,
+      xp: lesson.xp ?? 10,
       ordem: lesson.ordem || 1,
     };
 
     if (lesson.tipo === 'QUIZ' && lesson.quizData) {
       try {
-        quizBuilder.value = JSON.parse(lesson.quizData);
+        const parsed = JSON.parse(lesson.quizData);
+        quizBuilder.value = Array.isArray(parsed) ? parsed : [parsed];
       } catch (e) {
-        quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+        quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
       }
     } else {
-      quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+      quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
     }
   } else {
     isEditingLesson.value = false;
@@ -702,9 +754,10 @@ const openLessonModal = (moduleId, lesson = null) => {
       texto: '',
       quizData: '',
       duracaoMin: 10,
+      xp: 10,
       ordem: existingCount + 1,
     };
-    quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+    quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
   }
   showLessonModal.value = true;
 };

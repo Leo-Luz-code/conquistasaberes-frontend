@@ -69,59 +69,90 @@
       <h2 class="text-lg font-bold text-pmvc-dark mb-4">Áreas administrativas</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Area 1 -->
+        <!-- Servidores -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de servidores</h3>
-            <p class="text-sm text-slate-500">Cadastro, vínculos e perfis</p>
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="people" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Servidores</h3>
+            </div>
+            <p class="text-sm text-slate-500">Cadastro, vínculos e perfis dos servidores e gestores municipais.</p>
           </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/usuarios" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 2 -->
+        <!-- Cursos -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Catálogo de cursos</h3>
-            <p class="text-sm text-slate-500">Criar, editar e publicar cursos</p>
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="edit_note" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Cursos</h3>
+            </div>
+            <p class="text-sm text-slate-500">Criar, editar e organizar os cursos e trilhas formativas do AVA.</p>
           </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/cursos" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 3 -->
+        <!-- Secretarias -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Trilhas formativas</h3>
-            <p class="text-sm text-slate-500">Montar percursos por cargo</p>
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="account_balance" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Secretarias</h3>
+            </div>
+            <p class="text-sm text-slate-500">Administrar os órgãos, siglas e estrutura do município.</p>
           </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/secretarias" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 4 -->
+        <!-- Notícias -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de tutores</h3>
-            <p class="text-sm text-slate-500">Cadastro e atribuições</p>
-          </div>
-          <q-btn outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
-        </div>
-
-        <!-- Area 5: Notícias -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
-          <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de Notícias</h3>
-            <p class="text-sm text-slate-500">Publicar matérias e comunicados</p>
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="newspaper" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Notícias</h3>
+            </div>
+            <p class="text-sm text-slate-500">Publicar comunicados, informes e editais para os servidores.</p>
           </div>
           <q-btn to="/admin/noticias" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
-        <!-- Area 6: Secretarias -->
+        <!-- Eventos -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
           <div class="mb-6">
-            <h3 class="font-bold text-pmvc-dark mb-1 group-hover:text-pmvc-blue transition-colors">Gestão de Secretarias</h3>
-            <p class="text-sm text-slate-500">Órgãos, siglas, gestores e contatos</p>
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="event" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Eventos</h3>
+            </div>
+            <p class="text-sm text-slate-500">Agendar palestras, cerimônias e eventos presenciais/online.</p>
           </div>
-          <q-btn to="/admin/secretarias" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+          <q-btn to="/admin/eventos" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
+
+        <!-- Biblioteca -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="menu_book" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Biblioteca</h3>
+            </div>
+            <p class="text-sm text-slate-500">Acervo digital de e-books, manuais e legislações da PMVC.</p>
+          </div>
+          <q-btn to="/admin/biblioteca" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+        </div>
+
+        <!-- Certificados -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="workspace_premium" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Certificados</h3>
+            </div>
+            <p class="text-sm text-slate-500">Emitir, validar e revogar certificados de conclusão de curso.</p>
+          </div>
+          <q-btn to="/admin/certificados" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+        </div>
+
       </div>
     </div>
   </q-page>

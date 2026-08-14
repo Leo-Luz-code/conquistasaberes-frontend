@@ -192,7 +192,11 @@
                   <div
                     v-for="(qItem, qIdx) in parsedQuiz"
                     :key="qItem.id"
-                    class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3"
+                    class="bg-slate-50 p-4 rounded-xl border space-y-3 transition-colors"
+                    :class="[
+                      quizErrors.includes(qItem.id) ? 'border-red-400 bg-red-50/30' : 'border-slate-200',
+                      quizCorrect.includes(qItem.id) ? 'border-green-400 bg-green-50/30' : ''
+                    ]"
                   >
                     <p class="font-bold text-slate-900 text-xs sm:text-sm">
                       {{ qIdx + 1 }}. {{ qItem.pergunta }}
@@ -204,10 +208,10 @@
                         class="flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer"
                         :class="
                           userAnswers[qItem.id] === optIdx
-                            ? 'bg-blue-50 border-pmvc-blue text-pmvc-blue font-bold'
+                            ? (quizCorrect.includes(qItem.id) ? 'bg-green-100 border-green-500 text-green-700 font-bold' : 'bg-blue-50 border-pmvc-blue text-pmvc-blue font-bold')
                             : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
                         "
-                        @click="userAnswers[qItem.id] = optIdx"
+                        @click="userAnswers[qItem.id] = optIdx; quizErrors = quizErrors.filter(id => id !== qItem.id); quizCorrect = quizCorrect.filter(id => id !== qItem.id)"
                       >
                         <q-radio
                           v-model="userAnswers[qItem.id]"
@@ -220,6 +224,12 @@
                           {{ opcao }}
                         </span>
                       </div>
+                    </div>
+                    <div v-if="quizErrors.includes(qItem.id)" class="text-red-500 text-xs font-bold flex items-center gap-1 mt-2">
+                      <q-icon name="error" size="14px" /> Resposta incorreta. Revise o conteúdo e tente novamente.
+                    </div>
+                    <div v-if="quizCorrect.includes(qItem.id)" class="text-green-600 text-xs font-bold flex items-center gap-1 mt-2">
+                      <q-icon name="check_circle" size="14px" /> Resposta correta!
                     </div>
                   </div>
                 </div>
@@ -476,12 +486,16 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCourseStore } from 'src/stores/courseStore'
 import { api } from 'src/boot/axios'
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const route = useRoute()
 const courseStore = useCourseStore()
 const currentLesson = ref(null)
 const userAnswers = ref({})
 const concludingLesson = ref(false)
+const quizErrors = ref([])
+const quizCorrect = ref([])
 // Hash do certificado deste curso (para abrir direto na validação)
 const courseCertificateHash = ref(null)
 
@@ -586,6 +600,8 @@ const parsedQuiz = computed(() => {
 
 watch(currentLesson, () => {
   userAnswers.value = {}
+  quizErrors.value = []
+  quizCorrect.value = []
 })
 
 onMounted(async () => {
@@ -618,6 +634,43 @@ async function handleEnroll() {
 
 async function handleCompleteLesson() {
   if (!currentLesson.value || concludingLesson.value) return
+
+  // Validação do Quiz
+  if (currentLesson.value.tipo === 'QUIZ' && parsedQuiz.value?.length > 0) {
+    quizErrors.value = []
+    quizCorrect.value = []
+    const errors = []
+    const corrects = []
+    
+    parsedQuiz.value.forEach(q => {
+      if (userAnswers.value[q.id] !== q.respostaCorreta) {
+        errors.push(q.id)
+      } else {
+        corrects.push(q.id)
+      }
+    })
+
+    quizErrors.value = errors
+    quizCorrect.value = corrects
+
+    if (errors.length > 0) {
+      $q.notify({
+        color: 'negative',
+        icon: 'warning',
+        message: 'Existem respostas incorretas. Revise as perguntas destacadas em vermelho.',
+        position: 'top',
+      })
+      return
+    }
+
+    $q.notify({
+      color: 'positive',
+      icon: 'emoji_events',
+      message: 'Excelente! Você gabaritou o quiz.',
+      position: 'top',
+    })
+  }
+
   concludingLesson.value = true
   try {
     const result = await courseStore.completeLesson(currentLesson.value.id)

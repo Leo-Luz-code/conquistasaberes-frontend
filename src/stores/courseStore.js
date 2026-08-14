@@ -30,7 +30,13 @@ export const useCourseStore = defineStore('course', {
   actions: {
     async fetchMyCourses() {
       try {
-        const { data } = await api.get('/courses/my-courses');
+        const syncFlag = !sessionStorage.getItem('myCoursesSynced');
+        const { data } = await api.get('/courses/my-courses', { params: { sync: syncFlag } });
+        
+        if (syncFlag) {
+          sessionStorage.setItem('myCoursesSynced', 'true');
+        }
+        
         console.log(data);
         this.myCourses = Array.isArray(data) ? data : [];
         return this.myCourses;
