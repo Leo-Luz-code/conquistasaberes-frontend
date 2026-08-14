@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <!-- Barra de Busca e Filtros -->
+    <!-- Barra de Busca -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <!-- Input de Busca -->
       <div class="relative flex-1 max-w-md">
@@ -22,25 +22,8 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Buscar trilhas por nome ou eixo..."
+          placeholder="Buscar trilhas por nome..."
           class="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
-        />
-      </div>
-
-      <!-- Filtro por Eixo -->
-      <div class="w-full md:w-60">
-        <q-select
-          v-model="eixoFiltro"
-          :options="eixoOptions"
-          option-value="id"
-          option-label="nomeEixo"
-          emit-value
-          map-options
-          dense
-          outlined
-          label="Eixo Temático"
-          clearable
-          class="text-xs rounded-xl bg-white"
         />
       </div>
     </div>
@@ -122,11 +105,7 @@
             <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl leading-snug group-hover:text-[#0F4C81] transition-colors">
               {{ trilha.tituloTrilha }}
             </h3>
-            <p v-if="trilha.eixo" class="text-xs text-slate-500 leading-relaxed flex items-center gap-1">
-              <q-icon name="category" size="14px" class="text-slate-400" />
-              <span class="font-semibold text-slate-600">{{ trilha.eixo.nomeEixo }}</span>
-            </p>
-            <p v-else class="text-xs text-slate-500 leading-relaxed">
+            <p class="text-xs text-slate-500 leading-relaxed">
               Trilha de capacitação estruturada para servidores públicos municipais.
             </p>
           </div>
@@ -232,7 +211,6 @@ const loading = ref(false)
 const matriculandoId = ref(null)
 
 const searchQuery = ref('')
-const eixoFiltro = ref(null)
 const filtroAtivo = ref('minhas')
 
 const filtros = [
@@ -242,8 +220,6 @@ const filtros = [
   { label: 'Disponíveis', value: 'disponiveis' },
   { label: 'Todas', value: 'todas' },
 ]
-
-const eixoOptions = computed(() => courseStore.eixos || [])
 
 function nivelLabel(trilha) {
   const h = trilha.cargaHorariaTotal || 0
@@ -286,14 +262,9 @@ const trilhasFiltradas = computed(() => {
     const q = searchQuery.value.toLowerCase()
     list = list.filter(
       (t) =>
-        t.tituloTrilha.toLowerCase().includes(q) ||
-        (t.eixo && t.eixo.nomeEixo.toLowerCase().includes(q))
+        t.tituloTrilha?.toLowerCase().includes(q) ||
+        t.courses?.some((c) => c.titulo?.toLowerCase().includes(q))
     )
-  }
-
-  // Filtro por eixo
-  if (eixoFiltro.value) {
-    list = list.filter((t) => t.eixoId === eixoFiltro.value)
   }
 
   // Filtro por status
@@ -327,7 +298,6 @@ onMounted(async () => {
     await Promise.all([
       courseStore.fetchLearningPaths(),
       courseStore.fetchMyCourses(),
-      courseStore.fetchEixos(),
     ])
     // Se o usuário ainda não tiver nenhuma trilha inscrita, muda para a aba "Disponíveis" para não mostrar tela vazia de início
     const inscritasCount = (courseStore.learningPaths || []).filter((t) => t.isEnrolled).length
@@ -339,3 +309,4 @@ onMounted(async () => {
   }
 })
 </script>
+

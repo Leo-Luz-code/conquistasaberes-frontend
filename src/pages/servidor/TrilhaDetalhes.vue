@@ -50,9 +50,6 @@
               <span class="px-3 py-1 text-xs font-bold rounded-full" :class="nivelClass">
                 {{ nivelLabel }}
               </span>
-              <span v-if="trilha.eixo" class="px-3 py-1 bg-white/15 rounded-full text-[11px] font-semibold">
-                {{ trilha.eixo.nomeEixo }}
-              </span>
               <span
                 v-if="trilha.isEnrolled"
                 class="px-3 py-1 rounded-full text-[11px] font-bold"
