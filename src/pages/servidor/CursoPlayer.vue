@@ -154,7 +154,7 @@
               <div v-else-if="currentLesson.tipo === 'PDF'">
                 <iframe
                   v-if="currentLesson.conteudoUrl"
-                  :src="currentLesson.conteudoUrl"
+                  :src="getMediaUrl(currentLesson.conteudoUrl)"
                   class="w-full border-0"
                   style="height: 520px"
                 />
@@ -547,6 +547,7 @@ import { useRoute } from 'vue-router'
 import { useCourseStore } from 'src/stores/courseStore'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import { getMediaUrl } from 'src/utils/media'
 
 const $q = useQuasar()
 const route = useRoute()

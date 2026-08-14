@@ -54,7 +54,7 @@
         <template v-slot:body-cell-capa="props">
           <q-td :props="props">
             <q-avatar square size="48px" class="bg-grey-3 rounded-borders">
-              <img v-if="props.row.capaUrl" :src="props.row.capaUrl" alt="Capa" />
+              <img v-if="props.row.capaUrl" :src="getMediaUrl(props.row.capaUrl)" alt="Capa" />
               <q-icon v-else name="school" color="primary" size="24px" />
             </q-avatar>
           </q-td>
@@ -308,6 +308,7 @@ import { useCourseStore } from 'src/stores/courseStore';
 import { useAuthStore } from 'src/stores/authStore';
 import { useQuasar } from 'quasar';
 import FormularioCursoDialog from 'src/components/FormularioCursoDialog.vue';
+import { getMediaUrl } from 'src/utils/media';
 
 const $q = useQuasar();
 const courseStore = useCourseStore();

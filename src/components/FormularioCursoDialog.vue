@@ -164,7 +164,7 @@
                 <div v-if="form.capaUrl" class="q-mt-sm row items-center q-gutter-sm">
                   <span class="text-caption text-grey-7">Pré-visualização:</span>
                   <q-img
-                    :src="form.capaUrl"
+                    :src="getMediaUrl(form.capaUrl)"
                     style="max-width: 120px; height: 60px"
                     class="rounded-borders shadow-1"
                     fit="cover"
@@ -207,6 +207,7 @@
 import { ref, watch, computed } from 'vue'
 import { useCourseStore } from 'src/stores/courseStore'
 import { useQuasar } from 'quasar'
+import { getMediaUrl } from 'src/utils/media'
 
 const props = defineProps({
   modelValue: {

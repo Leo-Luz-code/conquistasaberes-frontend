@@ -44,15 +44,22 @@
       <!-- Card Hero da Trilha -->
       <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <!-- Banner de topo -->
-        <div class="bg-[#0F4C81] p-7 sm:p-10 text-white relative overflow-hidden">
+        <div
+          class="p-7 sm:p-10 text-white relative overflow-hidden bg-cover bg-center"
+          :class="trilha.isEnrolled && trilha.progress >= 100 ? 'bg-gradient-to-r from-emerald-600 to-teal-700' : 'bg-[#0F4C81]'"
+          :style="trilha.capaUrl ? `background-image: url('${getMediaUrl(trilha.capaUrl)}')` : ''"
+        >
+          <!-- Overlay escuro se tiver capaUrl -->
+          <div v-if="trilha.capaUrl" class="absolute inset-0 bg-slate-900/70 z-0 pointer-events-none"></div>
+
           <div class="relative z-10 space-y-4 max-w-3xl">
             <div class="flex items-center gap-3 flex-wrap">
-              <span class="px-3 py-1 text-xs font-bold rounded-full" :class="nivelClass">
+              <span class="px-3 py-1 text-xs font-bold rounded-full backdrop-blur-sm" :class="nivelClass">
                 {{ nivelLabel }}
               </span>
               <span
                 v-if="trilha.isEnrolled"
-                class="px-3 py-1 rounded-full text-[11px] font-bold"
+                class="px-3 py-1 rounded-full text-[11px] font-bold backdrop-blur-sm"
                 :class="trilha.progress >= 100 ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-slate-900'"
               >
                 {{ trilha.progress >= 100 ? '✓ Trilha Concluída' : 'Em Andamento' }}
@@ -78,7 +85,7 @@
               />
             </div>
           </div>
-          <q-icon name="route" size="140px" class="text-white/5 absolute -right-6 -bottom-6 pointer-events-none" />
+          <q-icon name="route" size="140px" class="text-white/10 absolute -right-6 -bottom-6 pointer-events-none" />
         </div>
 
         <!-- Progresso Geral (Se matriculado) -->
@@ -199,6 +206,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCourseStore } from 'src/stores/courseStore'
 import { api } from 'src/boot/axios'
+import { getMediaUrl } from 'src/utils/media'
 
 const route = useRoute()
 const courseStore = useCourseStore()

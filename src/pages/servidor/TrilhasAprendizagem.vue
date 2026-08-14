@@ -59,98 +59,113 @@
         class="bg-white rounded-3xl border border-slate-200 p-7 shadow-sm animate-pulse space-y-5"
       >
         <div class="flex justify-between">
-          <div class="h-6 bg-slate-200 rounded-full w-24" />
-          <div class="h-4 bg-slate-100 rounded w-28" />
+          <div class="h-6 bg-slate-200 rounded-full w-24"></div>
+          <div class="h-4 bg-slate-100 rounded w-28"></div>
         </div>
         <div class="space-y-2">
-          <div class="h-5 bg-slate-200 rounded w-3/4" />
-          <div class="h-3 bg-slate-100 rounded w-full" />
-          <div class="h-3 bg-slate-100 rounded w-5/6" />
+          <div class="h-5 bg-slate-200 rounded w-3/4"></div>
+          <div class="h-3 bg-slate-100 rounded w-full"></div>
+          <div class="h-3 bg-slate-100 rounded w-5/6"></div>
         </div>
-        <div class="h-2.5 bg-slate-100 rounded-full w-full" />
-        <div class="h-10 bg-slate-100 rounded-xl" />
+        <div class="h-2.5 bg-slate-100 rounded-full w-full"></div>
+        <div class="h-10 bg-slate-100 rounded-xl"></div>
       </div>
     </div>
 
-    <!-- Grid de Cards de Trilhas -->
     <div v-else-if="trilhasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="trilha in trilhasFiltradas"
         :key="trilha.id"
-        class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6 relative overflow-hidden group"
+        class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
       >
-        <!-- Topo do Card: Badge de Status/Nível + Horas -->
-        <div class="space-y-4">
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span
-                class="px-2.5 py-0.5 text-[11px] font-bold rounded-full"
-                :class="statusBadgeClass(trilha)"
-              >
-                {{ statusBadgeLabel(trilha) }}
-              </span>
-              <span
-                class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-100 text-slate-700"
-              >
-                {{ nivelLabel(trilha) }}
-              </span>
-            </div>
-            <span class="text-xs font-semibold text-slate-400 shrink-0">
-              {{ trilha.courses?.length || 0 }} cursos · {{ trilha.cargaHorariaTotal }}h
+        <!-- Banner Superior da Trilha -->
+        <div
+          class="p-6 text-white relative flex items-start justify-between min-h-[125px] overflow-hidden bg-cover bg-center"
+          :class="trilha.isEnrolled && trilha.progress >= 100 ? 'bg-gradient-to-r from-emerald-600 to-teal-700' : 'bg-gradient-to-r from-[#0F4C81] to-[#1a6bb5]'"
+          :style="trilha.capaUrl ? `background-image: url('${getMediaUrl(trilha.capaUrl)}')` : ''"
+        >
+          <!-- Overlay Escuro para Capa -->
+          <div v-if="trilha.capaUrl" class="absolute inset-0 bg-slate-900/50 z-0 pointer-events-none"></div>
+
+          <div class="flex items-center gap-1.5 flex-wrap relative z-10">
+            <span
+              class="px-2.5 py-0.5 text-[11px] font-bold rounded-full backdrop-blur-sm"
+              :class="statusBadgeClass(trilha)"
+            >
+              {{ statusBadgeLabel(trilha) }}
+            </span>
+            <span
+              class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-white/20 text-white backdrop-blur-sm"
+            >
+              {{ nivelLabel(trilha) }}
             </span>
           </div>
 
-          <!-- Título e Descrição -->
-          <div class="space-y-2">
-            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl leading-snug group-hover:text-[#0F4C81] transition-colors">
-              {{ trilha.tituloTrilha }}
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed">
-              Trilha de capacitação estruturada para servidores públicos municipais.
-            </p>
-          </div>
+          <span class="text-xs font-semibold text-white/90 shrink-0 bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-sm relative z-10">
+            {{ trilha.courses?.length || 0 }} cursos · {{ trilha.cargaHorariaTotal }}h
+          </span>
 
-          <!-- Chips dos cursos da Trilha -->
-          <div v-if="trilha.courses?.length" class="space-y-1.5">
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Cursos Integrados:</span>
-            <div class="flex flex-wrap gap-1.5">
-              <span
-                v-for="curso in trilha.courses.slice(0, 3)"
-                :key="curso.id"
-                class="px-2 py-1 bg-slate-50 border border-slate-100 text-slate-600 rounded-lg text-[10px] font-semibold truncate max-w-[130px]"
-                :title="curso.titulo"
-              >
-                {{ curso.titulo }}
-              </span>
-              <span
-                v-if="trilha.courses.length > 3"
-                class="px-2 py-1 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg text-[10px] font-semibold"
-              >
-                +{{ trilha.courses.length - 3 }} mais
-              </span>
-            </div>
-          </div>
+          <q-icon
+            name="alt_route"
+            size="72px"
+            class="text-white/20 absolute -right-2 -bottom-3 pointer-events-none z-10"
+          />
         </div>
 
-        <!-- Progresso e Ação -->
-        <div class="space-y-4 pt-2 border-t border-slate-100">
-          <!-- Se inscrito: mostra barra de progresso -->
-          <div v-if="trilha.isEnrolled" class="space-y-1.5">
-            <div class="flex justify-between items-center text-xs font-bold">
-              <span class="text-slate-600">Progresso na trilha</span>
-              <span class="text-[#0F4C81]">{{ trilha.progress }}%</span>
+        <!-- Conteúdo do Card -->
+        <div class="p-6 flex-1 flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <!-- Título e Descrição -->
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl leading-snug group-hover:text-[#0F4C81] transition-colors">
+                {{ trilha.tituloTrilha }}
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Trilha de capacitação estruturada para servidores públicos municipais.
+              </p>
             </div>
-            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-              <div
-                class="h-2.5 rounded-full transition-all duration-500"
-                :class="trilha.progress >= 100 ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
-                :style="{ width: trilha.progress + '%' }"
-              />
+
+            <!-- Chips dos cursos da Trilha -->
+            <div v-if="trilha.courses?.length" class="space-y-1.5">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Cursos Integrados:</span>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  v-for="curso in trilha.courses.slice(0, 3)"
+                  :key="curso.id"
+                  class="px-2 py-1 bg-slate-50 border border-slate-100 text-slate-600 rounded-lg text-[10px] font-semibold truncate max-w-[130px]"
+                  :title="curso.titulo"
+                >
+                  {{ curso.titulo }}
+                </span>
+                <span
+                  v-if="trilha.courses.length > 3"
+                  class="px-2 py-1 bg-slate-50 border border-slate-100 text-slate-400 rounded-lg text-[10px] font-semibold"
+                >
+                  +{{ trilha.courses.length - 3 }} mais
+                </span>
+              </div>
             </div>
-            <p class="text-[10px] text-slate-400">
-              {{ trilha.concluidosCount || 0 }} de {{ trilha.courses?.length || 0 }} cursos concluídos
-            </p>
           </div>
+
+          <!-- Progresso e Ação -->
+          <div class="space-y-4 pt-2 border-t border-slate-100">
+            <!-- Se inscrito: mostra barra de progresso -->
+            <div v-if="trilha.isEnrolled" class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs font-bold">
+                <span class="text-slate-600">Progresso na trilha</span>
+                <span class="text-[#0F4C81]">{{ trilha.progress }}%</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                <div
+                  class="h-2.5 rounded-full transition-all duration-500"
+                  :class="trilha.progress >= 100 ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
+                  :style="{ width: trilha.progress + '%' }"
+                ></div>
+              </div>
+              <p class="text-[10px] text-slate-400">
+                {{ trilha.concluidosCount || 0 }} de {{ trilha.courses?.length || 0 }} cursos concluídos
+              </p>
+            </div>
 
           <!-- Se NÃO inscrito: mostra badge de convite -->
           <div v-else class="flex items-center gap-2 text-xs text-slate-500 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">
@@ -189,8 +204,8 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Empty State -->
     <div
       v-else
       class="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-3"
@@ -205,6 +220,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCourseStore } from 'src/stores/courseStore'
+import { getMediaUrl } from 'src/utils/media'
 
 const courseStore = useCourseStore()
 const loading = ref(false)
