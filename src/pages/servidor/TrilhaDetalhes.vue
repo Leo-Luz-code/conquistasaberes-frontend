@@ -44,40 +44,79 @@
       <!-- Card Hero da Trilha -->
       <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <!-- Banner de topo -->
-        <div class="bg-[#0F4C81] p-7 text-white relative overflow-hidden">
-          <div class="relative z-10 space-y-3">
-            <div class="flex items-center gap-3">
+        <div class="bg-[#0F4C81] p-7 sm:p-10 text-white relative overflow-hidden">
+          <div class="relative z-10 space-y-4 max-w-3xl">
+            <div class="flex items-center gap-3 flex-wrap">
               <span class="px-3 py-1 text-xs font-bold rounded-full" :class="nivelClass">
                 {{ nivelLabel }}
               </span>
               <span v-if="trilha.eixo" class="px-3 py-1 bg-white/15 rounded-full text-[11px] font-semibold">
                 {{ trilha.eixo.nomeEixo }}
               </span>
+              <span
+                v-if="trilha.isEnrolled"
+                class="px-3 py-1 rounded-full text-[11px] font-bold"
+                :class="trilha.progress >= 100 ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-slate-900'"
+              >
+                {{ trilha.progress >= 100 ? '✓ Trilha Concluída' : 'Em Andamento' }}
+              </span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight">{{ trilha.tituloTrilha }}</h1>
-            <p class="text-sm text-white/80">
-              Trilha de capacitação · {{ trilha.courses?.length || 0 }} cursos · {{ trilha.cargaHorariaTotal }}h de conteúdo
+
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight">{{ trilha.tituloTrilha }}</h1>
+            <p class="text-sm sm:text-base text-blue-100">
+              Trilha de capacitação · {{ trilha.courses?.length || 0 }} cursos integrados · {{ trilha.cargaHorariaTotal }}h de carga horária total
             </p>
+
+            <!-- Botão de inscrição no banner se não inscrito -->
+            <div v-if="!trilha.isEnrolled" class="pt-2">
+              <q-btn
+                unelevated
+                color="amber-5"
+                text-color="dark"
+                icon="how_to_reg"
+                label="Inscrever-se nesta Trilha Completa"
+                class="px-6 py-3 font-bold rounded-xl shadow-md text-sm"
+                :loading="matriculando"
+                @click="inscreverNaTrilha"
+              />
+            </div>
           </div>
-          <q-icon name="route" size="120px" class="text-white/5 absolute -right-6 -bottom-6 pointer-events-none" />
+          <q-icon name="route" size="140px" class="text-white/5 absolute -right-6 -bottom-6 pointer-events-none" />
         </div>
 
-        <!-- Progresso Geral -->
-        <div class="p-6 border-t border-slate-100 space-y-2">
+        <!-- Progresso Geral (Se matriculado) -->
+        <div v-if="trilha.isEnrolled" class="p-6 border-t border-slate-100 space-y-2">
           <div class="flex justify-between items-center text-xs font-bold">
             <span class="text-slate-600">Seu progresso na trilha</span>
-            <span class="text-[#0F4C81] text-sm">{{ progressoGeral }}%</span>
+            <span class="text-[#0F4C81] text-sm">{{ trilha.progress }}%</span>
           </div>
           <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
             <div
               class="h-3 rounded-full transition-all duration-700"
-              :class="progressoGeral >= 100 ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
-              :style="{ width: progressoGeral + '%' }"
+              :class="trilha.progress >= 100 ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
+              :style="{ width: trilha.progress + '%' }"
             />
           </div>
           <p class="text-[11px] text-slate-400">
-            {{ cursosConcluidosCount }} de {{ trilha.courses?.length || 0 }} cursos concluídos
+            {{ trilha.concluidosCount || 0 }} de {{ trilha.courses?.length || 0 }} cursos concluídos
           </p>
+        </div>
+
+        <!-- Aviso se não matriculado -->
+        <div v-else class="p-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-4 flex-wrap">
+          <div class="flex items-center gap-3 text-xs text-slate-600">
+            <q-icon name="school" size="20px" class="text-[#0F4C81]" />
+            <span>Matricule-se para acompanhar seu progresso e receber certificados ao concluir cada etapa.</span>
+          </div>
+          <q-btn
+            unelevated
+            color="primary"
+            label="Inscrever-se"
+            size="sm"
+            class="px-4 py-2 font-bold rounded-xl bg-[#0F4C81]"
+            :loading="matriculando"
+            @click="inscreverNaTrilha"
+          />
         </div>
       </div>
 
@@ -90,7 +129,7 @@
 
         <div class="space-y-3">
           <div
-            v-for="(curso, idx) in cursosEnriquecidos"
+            v-for="(curso, idx) in trilha.courses"
             :key="curso.id"
             class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center gap-4"
           >
@@ -98,9 +137,9 @@
             <div class="flex items-center gap-4 shrink-0">
               <div
                 class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-extrabold shrink-0"
-                :class="curso.status === 'concluido' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'"
+                :class="curso.status === 'CONCLUIDO' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'"
               >
-                <q-icon v-if="curso.status === 'concluido'" name="check_circle" size="22px" class="text-emerald-600" />
+                <q-icon v-if="curso.status === 'CONCLUIDO'" name="check_circle" size="22px" class="text-emerald-600" />
                 <span v-else>{{ idx + 1 }}</span>
               </div>
             </div>
@@ -122,33 +161,33 @@
               </p>
 
               <!-- Mini barra de progresso (se inscrito) -->
-              <div v-if="curso.status !== 'nao_inscrito'" class="flex items-center gap-2 pt-1">
+              <div v-if="curso.isEnrolled" class="flex items-center gap-2 pt-1">
                 <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                   <div
                     class="h-1.5 rounded-full"
-                    :class="curso.status === 'concluido' ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
-                    :style="{ width: (curso.progresso || 0) + '%' }"
+                    :class="curso.status === 'CONCLUIDO' ? 'bg-emerald-500' : 'bg-[#0F4C81]'"
+                    :style="{ width: (curso.progress || 0) + '%' }"
                   />
                 </div>
-                <span class="text-[10px] font-bold text-slate-500 shrink-0">{{ curso.progresso || 0 }}%</span>
+                <span class="text-[10px] font-bold text-slate-500 shrink-0">{{ curso.progress || 0 }}%</span>
               </div>
             </div>
 
             <!-- Botão de Ação -->
             <router-link
               :to="`/servidor/cursos/${curso.id}`"
-              class="shrink-0 px-5 py-2.5 text-xs font-bold rounded-xl transition-colors"
+              class="shrink-0 px-5 py-2.5 text-xs font-bold rounded-xl transition-colors text-center"
               :class="
-                curso.status === 'em_andamento'
+                curso.status === 'EM_ANDAMENTO'
                   ? 'bg-[#0F4C81] hover:bg-[#0C3B66] text-white'
-                  : curso.status === 'concluido'
+                  : curso.status === 'CONCLUIDO'
                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                     : 'bg-white hover:bg-slate-50 border border-slate-200 text-slate-700'
               "
             >
               {{
-                curso.status === 'em_andamento' ? 'Continuar' :
-                curso.status === 'concluido' ? 'Rever' : 'Iniciar'
+                curso.status === 'EM_ANDAMENTO' ? 'Continuar' :
+                curso.status === 'CONCLUIDO' ? 'Rever' : 'Acessar Aula'
               }}
             </router-link>
           </div>
@@ -169,8 +208,8 @@ const courseStore = useCourseStore()
 
 const trilha = ref(null)
 const loading = ref(false)
+const matriculando = ref(false)
 
-// Nível derivado da carga horária (sem necessidade de migration)
 const nivelLabel = computed(() => {
   const h = trilha.value?.cargaHorariaTotal || 0
   if (h <= 12) return 'Básico'
@@ -185,64 +224,47 @@ const nivelClass = computed(() => {
   return 'bg-indigo-100/20 text-indigo-100 border border-indigo-300/30'
 })
 
-// Map de meus cursos para join de progresso
-const myCoursesMap = computed(() => {
-  const map = {}
-  courseStore.myCourses.forEach((mc) => { map[mc.id] = mc })
-  return map
-})
-
-// Cursos enriquecidos com progresso do usuário
-const cursosEnriquecidos = computed(() => {
-  if (!trilha.value?.courses) return []
-  return trilha.value.courses.map((curso) => {
-    const myCourse = myCoursesMap.value[curso.id]
-    return {
-      ...curso,
-      status: myCourse?.status ?? 'nao_inscrito',
-      progresso: myCourse?.progresso ?? 0,
-    }
-  })
-})
-
-const cursosConcluidosCount = computed(() =>
-  cursosEnriquecidos.value.filter((c) => c.status === 'concluido').length
-)
-
-const progressoGeral = computed(() => {
-  const cursos = cursosEnriquecidos.value
-  if (!cursos.length) return 0
-  const soma = cursos.reduce((acc, c) => acc + (c.progresso || 0), 0)
-  return Math.round(soma / cursos.length)
-})
-
 function statusBadgeClass(status) {
-  if (status === 'em_andamento') return 'bg-amber-100 text-amber-800'
-  if (status === 'concluido') return 'bg-emerald-100 text-emerald-800'
-  if (status === 'nao_inscrito') return 'bg-blue-50 text-blue-700'
+  if (status === 'EM_ANDAMENTO') return 'bg-amber-100 text-amber-800'
+  if (status === 'CONCLUIDO') return 'bg-emerald-100 text-emerald-800'
+  if (status === 'DISPONIVEL') return 'bg-blue-50 text-blue-700'
   return 'bg-slate-100 text-slate-600'
 }
 
 function statusText(status) {
-  if (status === 'em_andamento') return 'Em andamento'
-  if (status === 'concluido') return 'Concluído ✓'
-  if (status === 'nao_inscrito') return 'Disponível'
+  if (status === 'EM_ANDAMENTO') return 'Em andamento'
+  if (status === 'CONCLUIDO') return 'Concluído ✓'
+  if (status === 'DISPONIVEL') return 'Disponível'
   return 'Não iniciado'
 }
 
-onMounted(async () => {
+async function carregarTrilha() {
   loading.value = true
   try {
-    const [trilhaRes] = await Promise.all([
-      api.get(`/learning-paths/${route.params.id}`),
-      courseStore.fetchMyCourses(),
-    ])
-    trilha.value = trilhaRes.data
+    const { data } = await api.get(`/learning-paths/${route.params.id}`)
+    trilha.value = data
   } catch (err) {
     console.error('Erro ao carregar trilha:', err)
     trilha.value = null
   } finally {
     loading.value = false
   }
+}
+
+async function inscreverNaTrilha() {
+  if (!trilha.value) return
+  matriculando.value = true
+  try {
+    await courseStore.enrollLearningPath(trilha.value.id)
+    await carregarTrilha()
+  } catch (error) {
+    console.error('Erro ao se inscrever na trilha:', error)
+  } finally {
+    matriculando.value = false
+  }
+}
+
+onMounted(() => {
+  carregarTrilha()
 })
 </script>

@@ -224,6 +224,20 @@ export const useCourseStore = defineStore('course', {
         return [];
       }
     },
+    async enrollLearningPath(id) {
+      try {
+        const { data } = await api.post(`/learning-paths/${id}/enroll`);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Inscrição na trilha realizada com sucesso!' });
+        await Promise.all([
+          this.fetchLearningPaths(),
+          this.fetchMyCourses(true),
+        ]);
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao se inscrever na trilha.' });
+        throw error;
+      }
+    },
     async createLearningPath(payload) {
       try {
         const { data } = await api.post('/learning-paths', payload);
