@@ -93,7 +93,7 @@
         <div
           class="p-6 text-white relative flex items-start justify-between min-h-[120px] overflow-hidden bg-cover bg-center"
           :class="bannerClass(curso.status)"
-          :style="curso.capaUrl ? `background-image: url('${curso.capaUrl}')` : ''"
+          :style="curso.capaUrl ? `background-image: url('${getMediaUrl(curso.capaUrl)}')` : ''"
         >
           <!-- Overlay Escuro para Capa -->
           <div v-if="curso.capaUrl" class="absolute inset-0 bg-slate-900/50 z-0 pointer-events-none"></div>
@@ -192,6 +192,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCourseStore } from 'src/stores/courseStore'
+import { getMediaUrl } from 'src/utils/media'
 
 const courseStore = useCourseStore()
 

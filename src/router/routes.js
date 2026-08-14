@@ -19,6 +19,20 @@ const routes = [
     meta: { public: true },
   },
 
+  // ===================== ROTAS PÚBLICAS: CHECK-IN QR CODE =====================
+  {
+    name: 'checkin-evento',
+    path: '/checkin/evento/:id',
+    component: () => import('pages/public/CheckinEvento.vue'),
+    meta: { public: true },
+  },
+  {
+    name: 'checkin-aula',
+    path: '/checkin/aula/:id',
+    component: () => import('pages/public/CheckinAula.vue'),
+    meta: { public: true },
+  },
+
   // ===================== ROTA LGPD: ACEITE DE TERMOS =====================
   {
     name: 'lgpd',
@@ -237,6 +251,13 @@ const routes = [
         path: '/admin/certificados',
         component: () => import('pages/admin/certificates/AdminGestaoCertificados.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Badges & Conquistas ----------
+      {
+        name: 'admin-badges',
+        path: '/admin/badges',
+        component: () => import('pages/admin/gamification/AdminBadgesList.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
       },
     ],
   },

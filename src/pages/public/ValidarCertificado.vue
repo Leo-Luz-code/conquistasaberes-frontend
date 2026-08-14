@@ -6,7 +6,7 @@
         <div class="flex items-center gap-3">
           <img src="~assets/images/brasao-pmvc-2025.png" alt="Brasao PMVC" class="h-10" />
           <div>
-            <h1 class="text-lg font-bold text-pmvc-blue leading-none">CONQUISTA SABERES</h1>
+            <h1 class="text-lg font-bold text-pmvc-blue leading-none">AVA UniVC</h1>
             <p class="text-xs text-pmvc-gray uppercase tracking-wider">Portal Público de Validação de Certificados</p>
           </div>
         </div>

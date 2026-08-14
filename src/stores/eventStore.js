@@ -225,6 +225,11 @@ export const useEventStore = defineStore('event', () => {
     return Array.isArray(response.data) ? response.data : []
   }
 
+  async function confirmEventCheckin(eventId, matricula) {
+    const response = await api.post(`/events/${eventId}/checkin`, { matricula })
+    return response.data
+  }
+
   return {
     events,
     loading,
@@ -235,6 +240,7 @@ export const useEventStore = defineStore('event', () => {
     fetchMyEnrollments,
     fetchEventEnrollments,
     fetchEvent,
+    confirmEventCheckin,
     enroll,
     unenroll,
     createEvent,

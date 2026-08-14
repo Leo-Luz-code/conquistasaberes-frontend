@@ -164,7 +164,7 @@
                 <div v-if="form.capaUrl" class="q-mt-sm row items-center q-gutter-sm">
                   <span class="text-caption text-grey-7">Pré-visualização:</span>
                   <q-img
-                    :src="form.capaUrl"
+                    :src="getMediaUrl(form.capaUrl)"
                     style="max-width: 120px; height: 60px"
                     class="rounded-borders shadow-1"
                     fit="cover"
@@ -207,6 +207,7 @@
 import { ref, watch, computed } from 'vue'
 import { useCourseStore } from 'src/stores/courseStore'
 import { useQuasar } from 'quasar'
+import { getMediaUrl } from 'src/utils/media'
 
 const props = defineProps({
   modelValue: {
@@ -262,6 +263,12 @@ const trilhaOptions = computed(() => {
       })
     })
   }
+  if (props.course?.trilha && !options.some((o) => o.value === props.course.trilha.id)) {
+    options.push({
+      label: props.course.trilha.tituloTrilha,
+      value: props.course.trilha.id,
+    })
+  }
   return options
 })
 
@@ -282,7 +289,7 @@ watch(
   async (isOpen) => {
     if (isOpen) {
       courseStore.fetchSecretarias()
-      courseStore.fetchLearningPaths()
+      courseStore.fetchAdminLearningPaths()
       capaFile.value = null
       if (props.course) {
         form.value = {

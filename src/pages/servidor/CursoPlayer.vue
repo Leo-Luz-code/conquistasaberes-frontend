@@ -154,7 +154,7 @@
               <div v-else-if="currentLesson.tipo === 'PDF'">
                 <iframe
                   v-if="currentLesson.conteudoUrl"
-                  :src="currentLesson.conteudoUrl"
+                  :src="getMediaUrl(currentLesson.conteudoUrl)"
                   class="w-full border-0"
                   style="height: 520px"
                 />
@@ -242,6 +242,49 @@
                   <p class="font-bold text-slate-800 text-sm">Nenhuma pergunta cadastrada</p>
                 </div>
               </div>
+
+              <!-- Aula Presencial (Check-in via QR Code) -->
+              <div v-else-if="currentLesson.tipo === 'AULA_PRESENCIAL'" class="px-6 py-8 space-y-6">
+                <!-- Se já completada -->
+                <div v-if="isLessonCompleted(currentLesson.id)" class="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-3">
+                  <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto ring-8 ring-emerald-50">
+                    <q-icon name="check_circle" size="36px" />
+                  </div>
+                  <div class="space-y-1">
+                    <h3 class="text-base font-extrabold text-emerald-900">Presença Confirmada!</h3>
+                    <p class="text-xs text-emerald-700 max-w-md mx-auto">
+                      Sua frequência nesta aula presencial já foi validada via QR Code e computada no seu progresso.
+                    </p>
+                  </div>
+                  <div v-if="currentLesson.texto" class="pt-2 text-xs text-slate-600 bg-white/70 p-3 rounded-xl border border-emerald-100 max-w-md mx-auto">
+                    <strong class="text-emerald-900">Local / Orientações:</strong> {{ currentLesson.texto }}
+                  </div>
+                </div>
+
+                <!-- Se ainda NÃO completada: Instrução para ler QR Code -->
+                <div v-else class="p-8 bg-purple-50/70 border-2 border-dashed border-deep-purple-200 rounded-3xl text-center space-y-4">
+                  <div class="w-16 h-16 rounded-2xl bg-deep-purple-100 text-deep-purple-700 flex items-center justify-center mx-auto animate-pulse">
+                    <q-icon name="qr_code_scanner" size="36px" />
+                  </div>
+                  <div class="space-y-2">
+                    <h3 class="text-lg font-extrabold text-deep-purple-900">
+                      Leia o QR Code para confirmar sua presença
+                    </h3>
+                    <p class="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                      Esta é uma <strong>aula presencial</strong>. Aproxime a câmera do seu celular do QR Code apresentado pelo instrutor para validar sua frequência e concluir a aula.
+                    </p>
+                  </div>
+
+                  <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-deep-purple-100 text-xs font-bold text-deep-purple-800 shadow-sm">
+                    <q-spinner-hourglass size="16px" color="deep-purple" />
+                    <span>Aguardando leitura do QR Code...</span>
+                  </div>
+
+                  <div v-if="currentLesson.texto" class="pt-3 text-xs text-slate-600 max-w-md mx-auto bg-white/70 p-3 rounded-xl border border-purple-100">
+                    <strong class="text-deep-purple-900">Local / Orientações:</strong> {{ currentLesson.texto }}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Barra de navegação: Prev / Concluir / Next -->
@@ -259,7 +302,24 @@
               />
               <div v-else />
 
+              <!-- Botão Concluir: desabilitado com 'Aguardando confirmação' se for Aula Presencial pendente -->
               <q-btn
+                v-if="currentLesson.tipo === 'AULA_PRESENCIAL' && !isLessonCompleted(currentLesson.id)"
+                label="Aguardando confirmação"
+                color="deep-purple-7"
+                icon="hourglass_top"
+                class="!py-2.5 !px-5 font-bold text-xs bg-purple-50 text-deep-purple-800 border border-deep-purple-200"
+                unelevated
+                no-caps
+                flat
+                dense
+                disabled
+              >
+                <q-tooltip>Leia o QR Code exibido pelo instrutor para confirmar sua presença.</q-tooltip>
+              </q-btn>
+
+              <q-btn
+                v-else
                 :label="isLessonCompleted(currentLesson.id) ? 'AULA CONCLUÍDA ✓' : 'Concluir'"
                 :color="isLessonCompleted(currentLesson.id) ? 'grey-6' : 'positive'"
                 icon="check_circle"
@@ -482,11 +542,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCourseStore } from 'src/stores/courseStore'
 import { api } from 'src/boot/axios'
 import { useQuasar } from 'quasar'
+import { getMediaUrl } from 'src/utils/media'
 
 const $q = useQuasar()
 const route = useRoute()
@@ -540,7 +601,56 @@ function lessonIcon(tipo) {
   if (tipo === 'VIDEO') return 'play_circle'
   if (tipo === 'QUIZ') return 'quiz'
   if (tipo === 'PDF') return 'picture_as_pdf'
+  if (tipo === 'AULA_PRESENCIAL') return 'groups'
   return 'article'
+}
+
+// Polling de Presença para Aula Presencial
+let pollingInterval = null
+
+function stopPollingPresenca() {
+  if (pollingInterval) {
+    clearInterval(pollingInterval)
+    pollingInterval = null
+  }
+}
+
+function startPollingPresenca() {
+  stopPollingPresenca()
+  if (currentLesson.value?.tipo === 'AULA_PRESENCIAL' && !isLessonCompleted(currentLesson.value?.id)) {
+    pollingInterval = setInterval(async () => {
+      if (!currentLesson.value || currentLesson.value.tipo !== 'AULA_PRESENCIAL') {
+        stopPollingPresenca()
+        return
+      }
+
+      // Se a aula já foi concluída
+      if (isLessonCompleted(currentLesson.value.id)) {
+        stopPollingPresenca()
+        return
+      }
+
+      try {
+        const updatedCourse = await courseStore.fetchCourseDetail(route.params.id)
+        if (updatedCourse?.completedLessonIds?.includes(currentLesson.value.id)) {
+          stopPollingPresenca()
+          $q.notify({
+            color: 'positive',
+            icon: 'how_to_reg',
+            position: 'top',
+            timeout: 5000,
+            message: '🎉 Presença confirmada via QR Code!',
+            caption: 'Aula concluída com sucesso e XP registrado.',
+          })
+          if (nextLesson.value) {
+            setTimeout(() => selectLesson(nextLesson.value), 2000)
+          }
+        }
+      } catch (err) {
+        // Silencioso em caso de oscilação momentânea de rede
+      }
+    }, 3000)
+  }
 }
 
 // Parser dinâmico de quizData (mantido integralmente)
@@ -602,6 +712,7 @@ watch(currentLesson, () => {
   userAnswers.value = {}
   quizErrors.value = []
   quizCorrect.value = []
+  startPollingPresenca()
 })
 
 onMounted(async () => {
@@ -611,6 +722,7 @@ onMounted(async () => {
   if (data?.modules?.[0]?.lessons?.[0]) {
     currentLesson.value = data.modules[0].lessons[0]
   }
+  startPollingPresenca()
   // Se o curso já estava concluído antes, busca o hash do certificado deste curso
   if (data?.userProgress >= 100) {
     try {
@@ -621,6 +733,10 @@ onMounted(async () => {
       console.warn('Não foi possível carregar o certificado:', e)
     }
   }
+})
+
+onUnmounted(() => {
+  stopPollingPresenca()
 })
 
 function selectLesson(lesson) {
