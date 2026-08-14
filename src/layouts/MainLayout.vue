@@ -223,6 +223,7 @@ const configurarMenu = () => {
   if (authStore.isAdmin) {
     links.value = [
       { title: 'Administração', icon: 'dashboard', link: '/admin/dashboard' },
+      { title: 'Gestão de Notícias', icon: 'newspaper', link: '/admin/noticias' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
