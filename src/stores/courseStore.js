@@ -458,6 +458,31 @@ export const useCourseStore = defineStore('course', {
         throw error;
       }
     },
+
+    // =========================================================================
+    // PRESENÇAS E CONTROLE DE INSCRITOS
+    // =========================================================================
+
+    async confirmLessonCheckin(lessonId, matricula) {
+      const { data } = await api.post(`/courses/lessons/${lessonId}/checkin`, { matricula });
+      return data;
+    },
+
+    async fetchLessonPublicInfo(lessonId) {
+      const { data } = await api.get(`/courses/lessons/${lessonId}/public-info`);
+      return data;
+    },
+
+    async fetchLessonAttendances(lessonId) {
+      const { data } = await api.get(`/courses/lessons/${lessonId}/attendances`);
+      return data;
+    },
+
+    async fetchCourseEnrollments(courseId) {
+      const { data } = await api.get(`/courses/${courseId}/enrollments`);
+      return Array.isArray(data) ? data : [];
+    },
   },
 });
+
 

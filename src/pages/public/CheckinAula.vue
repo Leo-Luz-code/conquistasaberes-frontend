@@ -1,0 +1,313 @@
+<template>
+  <div class="min-h-screen bg-slate-50 flex flex-col justify-between font-sans text-slate-800">
+    <!-- Barra Superior / Topo Institucional -->
+    <header class="bg-[#0F4C81] text-white py-4 px-6 shadow-sm border-b border-[#0C3B66]">
+      <div class="max-w-4xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+            <q-icon name="groups" size="24px" class="text-amber-400" />
+          </div>
+          <div>
+            <div class="text-xs uppercase tracking-wider font-semibold text-blue-200">
+              Prefeitura de Vitória da Conquista
+            </div>
+            <div class="text-base sm:text-lg font-extrabold tracking-tight">
+              Conquista Saberes · Aula Presencial
+            </div>
+          </div>
+        </div>
+
+        <router-link
+          to="/login"
+          class="text-xs text-blue-100 hover:text-white underline font-semibold transition-colors"
+        >
+          Acessar AVA
+        </router-link>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 max-w-xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center my-6 space-y-6">
+      <!-- Loading State -->
+      <div v-if="loadingLesson" class="text-center py-12 space-y-4">
+        <q-spinner-dots color="primary" size="48px" />
+        <p class="text-sm text-slate-500 font-medium">Carregando dados da aula...</p>
+      </div>
+
+      <!-- Erro ao Carregar Aula -->
+      <div
+        v-else-if="!lessonData"
+        class="bg-white rounded-3xl border border-dashed border-red-200 p-8 text-center space-y-3 shadow-sm"
+      >
+        <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+          <q-icon name="meeting_room" size="32px" />
+        </div>
+        <h2 class="text-lg font-bold text-slate-800">Aula não encontrada</h2>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+          O link de presença pode estar incorreto ou a aula não está mais disponível.
+        </p>
+      </div>
+
+      <!-- Card da Aula + Formulário de Presença -->
+      <template v-else>
+        <!-- Card Informativo da Aula e Curso -->
+        <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-4">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <span class="px-3 py-1 bg-deep-purple-50 text-deep-purple-800 border border-deep-purple-100 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+              <q-icon name="groups" size="14px" />
+              Aula Presencial
+            </span>
+            <span class="text-xs font-semibold text-slate-500 flex items-center gap-1">
+              <q-icon name="timer" size="14px" class="text-slate-400" />
+              {{ lessonData.duracaoMin || 15 }} min · +{{ lessonData.xp || 10 }} XP
+            </span>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Curso: {{ lessonData.curso?.titulo || 'Curso Municipal' }}
+            </div>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+              {{ lessonData.titulo }}
+            </h1>
+            <p v-if="lessonData.modulo" class="text-xs text-slate-500 font-medium">
+              Módulo: {{ lessonData.modulo.titulo }}
+            </p>
+          </div>
+
+          <div
+            v-if="lessonData.dataHoraAgendada"
+            class="pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl"
+          >
+            <q-icon name="event" size="18px" class="text-[#0F4C81]" />
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase">Horário Agendado</div>
+              <div class="font-bold text-slate-800">{{ formatarDataHora(lessonData.dataHoraAgendada) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tela de Sucesso -->
+        <div
+          v-if="checkinResult && checkinResult.success"
+          class="bg-white rounded-3xl border border-emerald-200 p-7 sm:p-8 shadow-sm space-y-6 text-center animate-fade-in"
+        >
+          <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto ring-8 ring-emerald-50">
+            <q-icon name="check" size="36px" />
+          </div>
+
+          <div class="space-y-2">
+            <h2 class="text-xl font-extrabold text-emerald-900 leading-snug">
+              {{ checkinResult.alreadyConfirmed ? 'Presença já Registrada!' : 'Presença Confirmada!' }}
+            </h2>
+            <p class="text-xs text-slate-600 max-w-sm mx-auto">
+              {{ checkinResult.message }}
+            </p>
+          </div>
+
+          <!-- Detalhes do Servidor Confirmado -->
+          <div class="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-100 text-left space-y-2 text-xs">
+            <div class="flex justify-between items-center py-1 border-b border-emerald-100">
+              <span class="text-slate-500 font-medium">Servidor(a):</span>
+              <span class="font-extrabold text-slate-900">{{ checkinResult.servidorNome }}</span>
+            </div>
+            <div class="flex justify-between items-center py-1 border-b border-emerald-100">
+              <span class="text-slate-500 font-medium">Matrícula:</span>
+              <span class="font-bold text-slate-800">{{ checkinResult.matricula }}</span>
+            </div>
+            <div v-if="checkinResult.gainedXp" class="flex justify-between items-center py-1 border-b border-emerald-100">
+              <span class="text-slate-500 font-medium">XP Conquistado:</span>
+              <span class="font-extrabold text-amber-700">+{{ checkinResult.gainedXp }} XP</span>
+            </div>
+            <div v-if="checkinResult.courseProgress !== undefined" class="flex justify-between items-center py-1 border-b border-emerald-100">
+              <span class="text-slate-500 font-medium">Progresso no Curso:</span>
+              <span class="font-extrabold text-[#0F4C81]">{{ checkinResult.courseProgress }}%</span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+              <span class="text-slate-500 font-medium">Data/Hora do Registro:</span>
+              <span class="font-bold text-emerald-800">{{ formatarTimestamp(checkinResult.timestamp) }}</span>
+            </div>
+          </div>
+
+          <div class="pt-2 flex flex-col gap-2">
+            <q-btn
+              outline
+              color="primary"
+              label="Confirmar presença de outro servidor"
+              class="w-full py-2.5 text-xs font-bold rounded-xl"
+              no-caps
+              @click="resetForm"
+            />
+            <router-link
+              to="/servidor/dashboard"
+              class="block w-full py-3 text-center text-xs font-bold rounded-xl bg-[#0F4C81] text-white hover:bg-[#0C3B66] transition-colors shadow-sm"
+            >
+              Ir para meu Painel de Cursos
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Formulário de Check-in -->
+        <div v-else class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+          <div class="space-y-1">
+            <h2 class="text-lg font-extrabold text-slate-900">
+              Registrar Presença na Aula
+            </h2>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Informe sua <strong>matrícula funcional</strong> ou <strong>CPF</strong> para computar sua frequência e o progresso da aula no curso.
+            </p>
+          </div>
+
+          <!-- Mensagem de Erro -->
+          <div
+            v-if="errorMessage"
+            class="p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5 text-xs text-red-700 leading-snug"
+          >
+            <q-icon name="error_outline" size="18px" class="text-red-500 shrink-0 mt-0.5" />
+            <div class="flex-1">{{ errorMessage }}</div>
+          </div>
+
+          <form @submit.prevent="submeterCheckin" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Matrícula ou CPF *
+              </label>
+              <div class="relative">
+                <q-icon
+                  name="badge"
+                  size="20px"
+                  class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+                <input
+                  v-model="matricula"
+                  type="text"
+                  required
+                  autofocus
+                  placeholder="Ex: 123456 ou 000.000.000-00"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 outline-none focus:bg-white focus:ring-2 focus:ring-[#0F4C81] focus:border-transparent transition-all"
+                  :disabled="submitting"
+                />
+              </div>
+            </div>
+
+            <q-btn
+              type="submit"
+              unelevated
+              color="primary"
+              icon="how_to_reg"
+              label="Confirmar Presença na Aula"
+              class="w-full py-3 text-sm font-extrabold rounded-xl bg-[#0F4C81] hover:bg-[#0C3B66] text-white shadow-md"
+              :loading="submitting"
+              :disable="!matricula.trim()"
+            />
+          </form>
+
+          <p class="text-[11px] text-center text-slate-400">
+            A frequência concluirá a aula no seu plano de estudos e atualizará sua pontuação de XP.
+          </p>
+        </div>
+      </template>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
+      Prefeitura Municipal de Vitória da Conquista · Gestão de Pessoas & Inovação Digital
+    </footer>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useCourseStore } from 'src/stores/courseStore'
+import { useQuasar } from 'quasar'
+
+const route = useRoute()
+const $q = useQuasar()
+const courseStore = useCourseStore()
+
+const lessonData = ref(null)
+const loadingLesson = ref(true)
+const matricula = ref('')
+const submitting = ref(false)
+const errorMessage = ref('')
+const checkinResult = ref(null)
+
+function formatarDataHora(dateStr) {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  return d.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function formatarTimestamp(dateStr) {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  return d.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+}
+
+function resetForm() {
+  matricula.value = ''
+  errorMessage.value = ''
+  checkinResult.value = null
+}
+
+async function carregarAula() {
+  loadingLesson.value = true
+  try {
+    const data = await courseStore.fetchLessonPublicInfo(route.params.id)
+    lessonData.value = data
+  } catch (error) {
+    console.error('Erro ao carregar dados da aula:', error)
+    lessonData.value = null
+  } finally {
+    loadingLesson.value = false
+  }
+}
+
+async function submeterCheckin() {
+  if (!matricula.value.trim()) return
+
+  submitting.value = true
+  errorMessage.value = ''
+
+  try {
+    const result = await courseStore.confirmLessonCheckin(route.params.id, matricula.value.trim())
+    checkinResult.value = result
+    $q.notify({
+      type: 'positive',
+      icon: 'how_to_reg',
+      message: result.message || 'Presença confirmada!',
+      position: 'top',
+    })
+  } catch (error) {
+    console.error('Erro no check-in da aula:', error)
+    const msg = error.response?.data?.message || 'Erro ao confirmar presença na aula. Verifique sua matrícula.'
+    errorMessage.value = msg
+    $q.notify({
+      type: 'negative',
+      icon: 'warning',
+      message: msg,
+      position: 'top',
+    })
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(() => {
+  carregarAula()
+})
+</script>

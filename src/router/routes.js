@@ -19,6 +19,20 @@ const routes = [
     meta: { public: true },
   },
 
+  // ===================== ROTAS PÚBLICAS: CHECK-IN QR CODE =====================
+  {
+    name: 'checkin-evento',
+    path: '/checkin/evento/:id',
+    component: () => import('pages/public/CheckinEvento.vue'),
+    meta: { public: true },
+  },
+  {
+    name: 'checkin-aula',
+    path: '/checkin/aula/:id',
+    component: () => import('pages/public/CheckinAula.vue'),
+    meta: { public: true },
+  },
+
   // ===================== ROTA LGPD: ACEITE DE TERMOS =====================
   {
     name: 'lgpd',
