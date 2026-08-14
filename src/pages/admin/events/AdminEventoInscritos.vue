@@ -256,6 +256,7 @@ import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useEventStore } from 'src/stores/eventStore'
 import QRCode from 'qrcode'
+import { getAppOrigin } from 'src/utils/media'
 
 const route = useRoute()
 const $q = useQuasar()
@@ -271,7 +272,7 @@ const showQrModal = ref(false)
 const qrCodeDataUrl = ref('')
 
 const publicCheckinUrl = computed(() => {
-  const origin = window.location.origin
+  const origin = getAppOrigin()
   return `${origin}/#/checkin/evento/${route.params.id}`
 })
 

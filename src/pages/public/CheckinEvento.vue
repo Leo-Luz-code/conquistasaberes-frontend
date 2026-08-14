@@ -12,7 +12,7 @@
               Prefeitura de Vitória da Conquista
             </div>
             <div class="text-base sm:text-lg font-extrabold tracking-tight">
-              Conquista Saberes · Check-in
+              AVA UniVC · Check-in
             </div>
           </div>
         </div>

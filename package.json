@@ -1,8 +1,8 @@
 {
-  "name": "modelo-front-end-ceti",
+  "name": "ava-univc-frontend",
   "version": "1.0.0",
-  "description": "Modelo Front-End do CETI",
-  "productName": "Modelo Front-End CETI",
+  "description": "AVA UniVC - Ambiente Virtual de Aprendizagem da Prefeitura Municipal de Vitória da Conquista",
+  "productName": "AVA UniVC - Universidade do Servidor",
   "author": "sarahzxwy <sarahalvesborges@outlook.com>",
   "type": "module",
   "private": true,

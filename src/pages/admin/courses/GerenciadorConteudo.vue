@@ -743,6 +743,7 @@ import { useRoute } from 'vue-router';
 import { useCourseStore } from 'src/stores/courseStore';
 import { useQuasar } from 'quasar';
 import QRCode from 'qrcode';
+import { getAppOrigin } from 'src/utils/media';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -768,7 +769,7 @@ const filtroBuscaPresenca = ref('');
 
 const publicLessonUrl = computed(() => {
   if (!selectedLessonForPresencas.value) return '';
-  const origin = window.location.origin;
+  const origin = getAppOrigin();
   return `${origin}/#/checkin/aula/${selectedLessonForPresencas.value.id}`;
 });
 

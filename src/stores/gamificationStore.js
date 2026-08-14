@@ -4,6 +4,7 @@
 // =============================================================================
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
+import { Notify } from 'quasar';
 
 export const useGamificationStore = defineStore('gamification', {
   state: () => ({
@@ -11,6 +12,7 @@ export const useGamificationStore = defineStore('gamification', {
     level: 1,
     nextLevelXp: 250,
     badges: [],
+    allBadges: [],
     leaderboard: {
       topUsers: [],
       topSecretarias: [],
@@ -69,6 +71,60 @@ export const useGamificationStore = defineStore('gamification', {
         return data;
       } catch (error) {
         console.error('Erro ao buscar ranking:', error);
+      }
+    },
+
+    // =========================================================================
+    // CRUD DE BADGES (ADMIN)
+    // =========================================================================
+
+    async fetchAllBadges() {
+      this.loading = true;
+      try {
+        const { data } = await api.get('/gamification/badges');
+        this.allBadges = data;
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao carregar lista de conquistas/badges.' });
+        console.error('Erro ao buscar badges:', error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async createBadge(payload) {
+      try {
+        const { data } = await api.post('/gamification/badges', payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Conquista/Badge criada com sucesso!' });
+        await this.fetchAllBadges();
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar conquista.' });
+        throw error;
+      }
+    },
+
+    async updateBadge(id, payload) {
+      try {
+        const { data } = await api.put(`/gamification/badges/${id}`, payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Conquista atualizada com sucesso!' });
+        await this.fetchAllBadges();
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar conquista.' });
+        throw error;
+      }
+    },
+
+    async deleteBadge(id) {
+      try {
+        await api.delete(`/gamification/badges/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Conquista removida com sucesso!' });
+        await this.fetchAllBadges();
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir conquista.' });
+        throw error;
       }
     },
   },

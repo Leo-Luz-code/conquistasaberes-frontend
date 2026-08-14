@@ -252,6 +252,13 @@ const routes = [
         component: () => import('pages/admin/certificates/AdminGestaoCertificados.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+      // ---------- ADMIN: Gestão de Badges & Conquistas ----------
+      {
+        name: 'admin-badges',
+        path: '/admin/badges',
+        component: () => import('pages/admin/gamification/AdminBadgesList.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
     ],
   },
 

@@ -12,7 +12,7 @@
               Prefeitura de Vitória da Conquista
             </div>
             <div class="text-base sm:text-lg font-extrabold tracking-tight">
-              Conquista Saberes · Aula Presencial
+              AVA UniVC · Aula Presencial
             </div>
           </div>
         </div>

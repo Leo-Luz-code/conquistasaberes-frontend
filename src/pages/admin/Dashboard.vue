@@ -165,6 +165,18 @@
           <q-btn to="/admin/certificados" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
         </div>
 
+        <!-- Badges & Gamificação -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between items-start h-full group">
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-2">
+              <q-icon name="military_tech" size="20px" class="text-pmvc-blue" />
+              <h3 class="font-bold text-pmvc-dark group-hover:text-pmvc-blue transition-colors">Gestão de Badges</h3>
+            </div>
+            <p class="text-sm text-slate-500">Criar e configurar as medalhas e selos de gamificação dos servidores.</p>
+          </div>
+          <q-btn to="/admin/badges" outline color="grey-4" text-color="primary" label="Acessar" size="sm" class="font-semibold px-4 py-1 hover:bg-blue-50" />
+        </div>
+
       </div>
     </div>
   </q-page>

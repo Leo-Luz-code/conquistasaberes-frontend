@@ -234,6 +234,8 @@ const configurarMenu = () => {
     links.value = [
       { title: 'Administração', icon: 'dashboard', link: '/admin/dashboard' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
+      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
+      { title: 'Badges & Conquistas', icon: 'military_tech', link: '/admin/badges' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
       { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
