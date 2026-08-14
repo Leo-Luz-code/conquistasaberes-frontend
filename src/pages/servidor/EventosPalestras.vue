@@ -1,392 +1,450 @@
 <template>
-  <q-page class="p-4 sm:p-8 max-w-7xl mx-auto space-y-6 font-sans">
-    <!-- Cabeçalho -->
-    <div class="row items-center justify-between q-col-gutter-md q-mb-md">
-      <div class="col-12 col-sm-auto">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Eventos e Palestras
-          </h1>
-
-          <p class="text-xs sm:text-sm text-slate-500">
-            Programação institucional de capacitação, palestras e encontros.
-          </p>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-auto q-mt-sm">
-        <q-tabs
-          v-model="abaAtiva"
-          dense
-          no-caps
-          inline-label
-          indicator-color="primary"
-          active-color="primary"
-          class="text-grey-7 full-width-xs"
-        >
-          <q-tab
-            name="todos"
-            icon="event"
-            :label="`Todos os eventos (${eventos.length})`"
-          />
-
-          <q-tab
-            name="meus"
-            icon="bookmark"
-            :label="`Meus eventos (${totalInscritos})`"
-          />
-        </q-tabs>
-      </div>
-    </div>
-
-    <!-- Busca + Filtros -->
-    <q-card
-      flat
-      bordered
-      class="q-pa-sm shadow-1 bg-white rounded-borders q-mb-md"
-    >
-      <div class="row q-col-gutter-sm">
+  <q-page class="q-pa-md q-pa-lg-lg">
+    <div class="q-mx-auto" style="max-width: 1280px">
+      <!-- Cabeçalho -->
+      <div class="row items-center justify-between q-col-gutter-md q-mb-lg">
         <div class="col-12 col-sm">
-          <q-input
-            v-model="busca"
-            dense
-            debounce="300"
-            outlined
-            clearable
-            placeholder="Buscar por título ou local..."
-          >
-            <template #append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-
-        <div class="col-12 col-sm-3">
-          <q-select
-            v-model="tipoFiltro"
-            dense
-            outlined
-            emit-value
-            map-options
-            clearable
-            :options="opcoesTipo"
-            placeholder="Todos os tipos"
-          />
-        </div>
-
-        <div class="col-12 col-sm-3">
-          <q-select
-            v-model="periodoFiltro"
-            dense
-            outlined
-            emit-value
-            map-options
-            :options="opcoesPeriodo"
-          />
-        </div>
-      </div>
-    </q-card>
-
-    <!-- Chips -->
-    <div
-      v-if="filtrosAtivos.length"
-      class="q-mb-md q-gutter-xs"
-    >
-      <q-chip
-        v-for="chip in filtrosAtivos"
-        :key="chip.key"
-        removable
-        dense
-        color="blue-1"
-        text-color="primary"
-        class="text-weight-medium"
-        @remove="chip.limpar"
-      >
-        {{ chip.label }}
-      </q-chip>
-
-      <q-btn
-        flat
-        dense
-        no-caps
-        size="sm"
-        label="Limpar tudo"
-        color="grey-7"
-        @click="limparFiltros"
-      />
-    </div>
-
-    <!-- Loading -->
-    <div
-      v-if="eventStore.loading"
-      class="flex justify-center py-16"
-    >
-      <q-spinner-dots
-        color="primary"
-        size="50px"
-      />
-    </div>
-
-    <!-- Grid -->
-    <div
-      v-else-if="eventosPaginados.length"
-      class="row q-col-gutter-md"
-    >
-      <div
-        v-for="evento in eventosPaginados"
-        :key="evento.id"
-        class="col-12 col-md-6"
-      >
-        <q-card
-          flat
-          bordered
-          class="rounded-borders row no-wrap full-height"
-        >
-          <!-- Data -->
-          <div
-            class="col-auto bg-primary text-white column items-center justify-center q-pa-md text-center"
-            style="width: 112px"
-          >
-            <q-icon
-              name="calendar_today"
-              color="amber-4"
-              size="22px"
-            />
-
-            <div class="text-caption text-weight-bold text-blue-2 q-mt-xs">
-              {{ rotuloTemporal(evento) }}
-            </div>
-
-            <div class="text-h5 text-weight-bold q-my-xs">
-              {{ rotuloDia(evento) }}
-            </div>
-
-            <div
-              class="text-caption text-weight-bold text-blue-1 text-lowercase"
-            >
-              {{ rotuloMes(evento) }}
-            </div>
+          <div class="text-h4 text-weight-bold text-grey-9">
+            Eventos e Palestras
           </div>
 
-          <!-- Conteúdo -->
-          <q-card-section class="col column justify-between">
-            <div>
-              <!-- Categorias -->
-              <div class="q-gutter-xs q-mb-sm">
-                <q-chip
-                  dense
-                  color="warning"
-                  text-color="white"
-                  size="sm"
-                >
-                  {{ evento.categoria || 'Evento' }}
-                </q-chip>
+          <div class="text-caption text-grey-6 q-mt-xs">
+            Programação institucional de capacitação, palestras e encontros.
+          </div>
+        </div>
 
-                <!-- IMPORTANTE:
-                     usa isEventoInscrito() e não evento.inscrito -->
-                <q-chip
-                  v-if="isEventoInscrito(evento)"
-                  dense
-                  color="positive"
-                  text-color="white"
-                  icon="check_circle"
-                  size="sm"
-                >
-                  Inscrito
-                </q-chip>
-              </div>
+        <div class="col-12 col-sm-auto">
+          <q-tabs
+            v-model="abaAtiva"
+            dense
+            no-caps
+            inline-label
+            indicator-color="primary"
+            active-color="primary"
+            class="text-grey-7"
+          >
+            <q-tab
+              name="todos"
+              icon="event"
+              :label="`Todos os eventos (${eventos.length})`"
+            />
 
-              <div class="text-subtitle1 text-weight-bold text-grey-9">
-                {{ evento.titulo }}
-              </div>
-
-              <div
-                v-if="evento.descricao"
-                class="text-caption text-grey-7 q-mt-sm"
-              >
-                {{ evento.descricao }}
-              </div>
-
-              <div class="text-caption text-grey-7 q-mt-sm">
-                <!-- Horário -->
-                <div class="row items-center q-gutter-xs">
-                  <q-icon
-                    name="schedule"
-                    size="16px"
-                  />
-
-                  <span>
-                    {{ formatHorario(evento) }}
-                  </span>
-                </div>
-
-                <!-- Local -->
-                <div class="row items-center q-gutter-xs q-mt-xs">
-                  <q-icon
-                    :name="
-                      evento.modalidade === 'ONLINE'
-                        ? 'language'
-                        : 'place'
-                    "
-                    size="16px"
-                  />
-
-                  <span>
-                    {{ formatLocal(evento) }}
-                  </span>
-                </div>
-
-                <!-- Secretaria -->
-                <div
-                  v-if="evento.secretaria"
-                  class="row items-center q-gutter-xs q-mt-xs"
-                >
-                  <q-icon
-                    name="account_balance"
-                    size="16px"
-                  />
-
-                  <span>
-                    {{
-                      evento.secretaria.nome ||
-                      evento.secretaria.sigla
-                    }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Ações -->
-            <div class="row items-center q-gutter-xs q-mt-md">
-              <!-- Botão principal -->
-              <q-btn
-                :color="
-                  isEventoInscrito(evento)
-                    ? 'positive'
-                    : 'primary'
-                "
-                unelevated
-                no-caps
-                dense
-                :loading="eventStore.enrolling[evento.id]"
-                :disable="
-                  rotuloTemporal(evento) === 'ENCERRADO' ||
-                  eventStore.enrolling[evento.id]
-                "
-                :label="
-                  isEventoInscrito(evento)
-                    ? 'Inscrito'
-                    : 'Inscrever-se'
-                "
-                :icon="
-                  isEventoInscrito(evento)
-                    ? 'check_circle'
-                    : 'event_available'
-                "
-                @click="toggleInscricao(evento)"
-              />
-
-              <!-- Cancelar inscrição -->
-              <q-btn
-                v-if="isEventoInscrito(evento)"
-                flat
-                round
-                dense
-                icon="event_busy"
-                color="grey-6"
-                :loading="eventStore.enrolling[evento.id]"
-                :disable="eventStore.enrolling[evento.id]"
-                @click="toggleInscricao(evento)"
-              >
-                <q-tooltip>
-                  Cancelar inscrição
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-
-    <!-- Estado vazio -->
-    <q-card
-      v-else
-      flat
-      bordered
-      class="rounded-borders q-py-xl column items-center q-gutter-sm"
-    >
-      <q-icon
-        :name="
-          abaAtiva === 'meus'
-            ? 'bookmark_border'
-            : 'event_busy'
-        "
-        size="32px"
-        color="grey-5"
-      />
-
-      <div class="text-body2 text-grey-7 text-weight-medium">
-        {{
-          abaAtiva === 'meus'
-            ? 'Você ainda não se inscreveu em nenhum evento.'
-            : 'Nenhum evento encontrado com esses filtros.'
-        }}
+            <q-tab
+              name="meus"
+              icon="bookmark"
+              :label="`Meus eventos (${totalInscritos})`"
+            />
+          </q-tabs>
+        </div>
       </div>
 
-      <q-btn
+      <!-- Busca + Filtros -->
+      <q-card
+        flat
+        bordered
+        class="q-pa-md q-mb-md"
+      >
+        <div class="row q-col-gutter-sm">
+          <div class="col-12 col-sm">
+            <q-input
+              v-model="busca"
+              dense
+              debounce="300"
+              outlined
+              clearable
+              placeholder="Buscar por título ou local..."
+            >
+              <template #prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+
+          <div class="col-12 col-sm-3">
+            <q-select
+              v-model="tipoFiltro"
+              dense
+              outlined
+              emit-value
+              map-options
+              clearable
+              :options="opcoesTipo"
+              label="Tipo"
+            />
+          </div>
+
+          <div class="col-12 col-sm-3">
+            <q-select
+              v-model="periodoFiltro"
+              dense
+              outlined
+              emit-value
+              map-options
+              :options="opcoesPeriodo"
+              label="Período"
+            />
+          </div>
+        </div>
+      </q-card>
+
+      <!-- Filtros ativos -->
+      <div
         v-if="filtrosAtivos.length"
+        class="row items-center q-gutter-xs q-mb-md"
+      >
+        <q-chip
+          v-for="chip in filtrosAtivos"
+          :key="chip.key"
+          removable
+          dense
+          color="blue-1"
+          text-color="primary"
+          @remove="chip.limpar"
+        >
+          {{ chip.label }}
+        </q-chip>
+
+        <q-btn
+          flat
+          dense
+          no-caps
+          size="sm"
+          label="Limpar tudo"
+          color="grey-7"
+          @click="limparFiltros"
+        />
+      </div>
+
+      <!-- Loading -->
+      <div
+        v-if="eventStore.loading"
+        class="flex flex-center q-py-xl"
+      >
+        <q-spinner-dots
+          color="primary"
+          size="50px"
+        />
+      </div>
+
+      <!-- Grid -->
+      <div
+        v-else-if="eventosPaginados.length"
+        class="row q-col-gutter-lg"
+      >
+        <div
+          v-for="evento in eventosPaginados"
+          :key="evento.id"
+          class="col-12 col-md-6"
+        >
+          <q-card
+            flat
+            bordered
+            class="full-height overflow-hidden"
+          >
+            <!-- Imagem de capa -->
+            <q-img
+              v-if="evento.capaUrl"
+              :src="evento.capaUrl"
+              :alt="evento.titulo"
+              ratio="16/7"
+              fit="cover"
+            >
+              <template #error>
+                <div class="absolute-full flex flex-center bg-grey-2">
+                  <q-icon
+                    name="image_not_supported"
+                    size="40px"
+                    color="grey-5"
+                  />
+                </div>
+              </template>
+            </q-img>
+
+            <!-- Placeholder quando não existe capa -->
+            <div
+              v-else
+              class="bg-grey-2 flex flex-center"
+              style="height: 180px"
+            >
+              <div class="column items-center text-grey-5">
+                <q-icon
+                  name="event"
+                  size="48px"
+                />
+
+                <div class="text-caption q-mt-sm">
+                  Sem imagem de capa
+                </div>
+              </div>
+            </div>
+
+            <!-- Corpo do evento -->
+            <div class="row no-wrap">
+              <!-- Data -->
+              <div
+                class="col-auto bg-primary text-white column items-center justify-center q-pa-md text-center"
+                style="width: 112px"
+              >
+                <q-icon
+                  name="calendar_today"
+                  color="amber-4"
+                  size="22px"
+                />
+
+                <div
+                  class="text-caption text-weight-bold text-blue-2 q-mt-xs"
+                >
+                  {{ rotuloTemporal(evento) }}
+                </div>
+
+                <div class="text-h5 text-weight-bold q-my-xs">
+                  {{ rotuloDia(evento) }}
+                </div>
+
+                <div
+                  class="text-caption text-weight-bold text-blue-1 text-lowercase"
+                >
+                  {{ rotuloMes(evento) }}
+                </div>
+              </div>
+
+              <!-- Conteúdo -->
+              <q-card-section class="col column justify-between">
+                <div>
+                  <!-- Categorias -->
+                  <div class="row items-center q-gutter-xs q-mb-sm">
+                    <q-chip
+                      dense
+                      color="warning"
+                      text-color="white"
+                      size="sm"
+                    >
+                      {{ evento.categoria || 'Evento' }}
+                    </q-chip>
+
+                    <q-chip
+                      v-if="isEventoInscrito(evento)"
+                      dense
+                      color="positive"
+                      text-color="white"
+                      icon="check_circle"
+                      size="sm"
+                    >
+                      Inscrito
+                    </q-chip>
+                  </div>
+
+                  <!-- Título -->
+                  <div class="text-subtitle1 text-weight-bold text-grey-9">
+                    {{ evento.titulo }}
+                  </div>
+
+                  <!-- Descrição -->
+                  <div
+                    v-if="evento.descricao"
+                    class="text-caption text-grey-7 q-mt-sm"
+                  >
+                    {{ evento.descricao }}
+                  </div>
+
+                  <!-- Informações -->
+                  <div class="text-caption text-grey-7 q-mt-md">
+                    <!-- Horário -->
+                    <div class="row items-center q-gutter-xs">
+                      <q-icon
+                        name="schedule"
+                        size="16px"
+                      />
+
+                      <span>
+                        {{ formatHorario(evento) }}
+                      </span>
+                    </div>
+
+                    <!-- Local -->
+                    <div class="row items-center q-gutter-xs q-mt-xs">
+                      <q-icon
+                        :name="
+                          evento.modalidade === 'ONLINE'
+                            ? 'language'
+                            : 'place'
+                        "
+                        size="16px"
+                      />
+
+                      <span>
+                        {{ formatLocal(evento) }}
+                      </span>
+                    </div>
+
+                    <!-- Secretaria -->
+                    <div
+                      v-if="evento.secretaria"
+                      class="row items-center q-gutter-xs q-mt-xs"
+                    >
+                      <q-icon
+                        name="account_balance"
+                        size="16px"
+                      />
+
+                      <span>
+                        {{
+                          evento.secretaria.nome ||
+                          evento.secretaria.sigla
+                        }}
+                      </span>
+                    </div>
+
+                    <!-- Vagas -->
+                    <div
+                      v-if="evento.vagas"
+                      class="row items-center q-gutter-xs q-mt-xs"
+                    >
+                      <q-icon
+                        name="groups"
+                        size="16px"
+                      />
+
+                      <span>
+                        {{ evento.vagas }} vagas
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="row items-center q-gutter-sm q-mt-md">
+                  <q-btn
+                    :color="
+                      isEventoInscrito(evento)
+                        ? 'positive'
+                        : 'primary'
+                    "
+                    unelevated
+                    no-caps
+                    dense
+                    :loading="eventStore.enrolling[evento.id]"
+                    :disable="
+                      rotuloTemporal(evento) === 'ENCERRADO' ||
+                      eventStore.enrolling[evento.id]
+                    "
+                    :label="
+                      isEventoInscrito(evento)
+                        ? 'Inscrito'
+                        : 'Inscrever-se'
+                    "
+                    :icon="
+                      isEventoInscrito(evento)
+                        ? 'check_circle'
+                        : 'event_available'
+                    "
+                    @click="toggleInscricao(evento)"
+                  />
+
+                  <q-btn
+                    v-if="isEventoInscrito(evento)"
+                    flat
+                    round
+                    dense
+                    icon="event_busy"
+                    color="grey-6"
+                    :loading="eventStore.enrolling[evento.id]"
+                    :disable="eventStore.enrolling[evento.id]"
+                    @click="toggleInscricao(evento)"
+                  >
+                    <q-tooltip>
+                      Cancelar inscrição
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+              </q-card-section>
+            </div>
+          </q-card>
+        </div>
+      </div>
+
+      <!-- Estado vazio -->
+      <q-card
+        v-else
         flat
-        no-caps
-        dense
-        label="Limpar filtros"
-        color="primary"
-        @click="limparFiltros"
-      />
-    </q-card>
+        bordered
+        class="q-py-xl"
+      >
+        <div class="column items-center q-gutter-sm">
+          <q-icon
+            :name="
+              abaAtiva === 'meus'
+                ? 'bookmark_border'
+                : 'event_busy'
+            "
+            size="40px"
+            color="grey-5"
+          />
 
-    <!-- Paginação -->
-    <div
-      v-if="eventosFiltrados.length"
-      class="row items-center justify-end q-gutter-sm text-caption text-grey-7 q-mt-lg"
-    >
-      <span>Registros por página:</span>
+          <div class="text-body2 text-grey-7 text-weight-medium">
+            {{
+              abaAtiva === 'meus'
+                ? 'Você ainda não se inscreveu em nenhum evento.'
+                : 'Nenhum evento encontrado com esses filtros.'
+            }}
+          </div>
 
-      <q-select
-        v-model="porPagina"
-        dense
-        borderless
-        emit-value
-        map-options
-        :options="opcoesPorPagina"
-        options-dense
-        style="min-width: 56px"
-        class="text-grey-8"
-      />
+          <q-btn
+            v-if="filtrosAtivos.length"
+            flat
+            no-caps
+            dense
+            label="Limpar filtros"
+            color="primary"
+            @click="limparFiltros"
+          />
+        </div>
+      </q-card>
 
-      <span class="q-ml-sm">
-        {{ inicioRegistro }}-{{ fimRegistro }}
-        de {{ eventosFiltrados.length }}
-      </span>
+      <!-- Paginação -->
+      <div
+        v-if="eventosFiltrados.length"
+        class="row items-center justify-end q-gutter-sm text-caption text-grey-7 q-mt-lg"
+      >
+        <span>Registros por página:</span>
 
-      <q-btn
-        flat
-        round
-        dense
-        icon="chevron_left"
-        color="grey-7"
-        :disable="pagina <= 1"
-        @click="pagina--"
-      />
+        <q-select
+          v-model="porPagina"
+          dense
+          borderless
+          emit-value
+          map-options
+          :options="opcoesPorPagina"
+          options-dense
+          style="min-width: 56px"
+          class="text-grey-8"
+        />
 
-      <q-btn
-        flat
-        round
-        dense
-        icon="chevron_right"
-        color="grey-7"
-        :disable="pagina >= totalPaginas"
-        @click="pagina++"
-      />
+        <span class="q-ml-sm">
+          {{ inicioRegistro }}-{{ fimRegistro }}
+          de {{ eventosFiltrados.length }}
+        </span>
+
+        <q-btn
+          flat
+          round
+          dense
+          icon="chevron_left"
+          color="grey-7"
+          :disable="pagina <= 1"
+          @click="pagina--"
+        />
+
+        <q-btn
+          flat
+          round
+          dense
+          icon="chevron_right"
+          color="grey-7"
+          :disable="pagina >= totalPaginas"
+          @click="pagina++"
+        />
+      </div>
     </div>
   </q-page>
 </template>
@@ -442,11 +500,7 @@ const opcoesPeriodo = [
 const eventos = computed(() => eventStore.events)
 
 /**
- * Retorna os IDs dos eventos nos quais o usuário
- * está inscrito.
- *
- * O eventStore agora mantém enrolledEvents como
- * fonte de verdade para as inscrições.
+ * IDs dos eventos em que o usuário está inscrito.
  */
 const eventosInscritosIds = computed(() => {
   const inscritos = eventStore.enrolledEvents || []
@@ -454,13 +508,6 @@ const eventosInscritosIds = computed(() => {
   return new Set(
     inscritos
       .map((item) => {
-        /*
-         * Pode vir como:
-         * { id: 1 }
-         * { eventId: 1 }
-         * { eventoId: 1 }
-         * { evento: { id: 1 } }
-         */
         return (
           item?.eventId ??
           item?.eventoId ??
@@ -479,11 +526,7 @@ const eventosInscritosIds = computed(() => {
 })
 
 /**
- * Fonte única para saber se o usuário está inscrito.
- *
- * Primeiro verifica enrolledEvents.
- * O fallback para evento.inscrito mantém compatibilidade
- * caso algum endpoint ainda retorne esse campo.
+ * Fonte única para verificar inscrição.
  */
 function isEventoInscrito(evento) {
   if (!evento?.id) {
@@ -498,11 +541,14 @@ function isEventoInscrito(evento) {
   )
 }
 
+/**
+ * Tipos disponíveis no filtro.
+ */
 const opcoesTipo = computed(() => {
   const tipos = [
     ...new Set(
       eventos.value
-        .map((event) => event.categoria)
+        .map((evento) => evento.categoria)
         .filter(Boolean),
     ),
   ]
@@ -513,10 +559,16 @@ const opcoesTipo = computed(() => {
   }))
 })
 
+/**
+ * Total de inscrições.
+ */
 const totalInscritos = computed(
   () => eventStore.enrolledEvents?.length || 0,
 )
 
+/**
+ * Verifica se o evento está dentro do período selecionado.
+ */
 const dentroDoPeriodo = (evento) => {
   if (periodoFiltro.value === 'todos') {
     return true
@@ -551,14 +603,11 @@ const dentroDoPeriodo = (evento) => {
   return true
 }
 
+/**
+ * Eventos filtrados.
+ */
 const eventosFiltrados = computed(() => {
   return eventos.value
-    /*
-     * MEUS EVENTOS
-     *
-     * Não usa evento.inscrito.
-     * Usa enrolledEvents.
-     */
     .filter((evento) =>
       abaAtiva.value === 'meus'
         ? isEventoInscrito(evento)
@@ -601,6 +650,9 @@ const eventosFiltrados = computed(() => {
     )
 })
 
+/**
+ * Total de páginas.
+ */
 const totalPaginas = computed(() =>
   Math.max(
     1,
@@ -611,6 +663,9 @@ const totalPaginas = computed(() =>
   ),
 )
 
+/**
+ * Eventos da página atual.
+ */
 const eventosPaginados = computed(() => {
   const inicio =
     (pagina.value - 1) *
@@ -622,6 +677,9 @@ const eventosPaginados = computed(() => {
   )
 })
 
+/**
+ * Primeiro registro exibido.
+ */
 const inicioRegistro = computed(() => {
   if (!eventosFiltrados.value.length) {
     return 0
@@ -634,6 +692,9 @@ const inicioRegistro = computed(() => {
   )
 })
 
+/**
+ * Último registro exibido.
+ */
 const fimRegistro = computed(() =>
   Math.min(
     pagina.value * porPagina.value,
@@ -641,6 +702,10 @@ const fimRegistro = computed(() =>
   ),
 )
 
+/**
+ * Volta para a primeira página quando
+ * algum filtro é alterado.
+ */
 watch(
   [
     abaAtiva,
@@ -654,6 +719,9 @@ watch(
   },
 )
 
+/**
+ * Filtros ativos.
+ */
 const filtrosAtivos = computed(() => {
   const chips = []
 
@@ -840,6 +908,9 @@ function formatLocal(evento) {
   )
 }
 
+/**
+ * Inscrição / cancelamento.
+ */
 async function toggleInscricao(evento) {
   const inscrito =
     isEventoInscrito(evento)
@@ -883,13 +954,11 @@ async function toggleInscricao(evento) {
   }
 }
 
+/**
+ * Carrega os eventos.
+ */
 onMounted(async () => {
   try {
-    /*
-     * fetchEvents precisa carregar os eventos e,
-     * pelo novo store, também manter enrolledEvents
-     * atualizado.
-     */
     await eventStore.fetchEvents()
   } catch (error) {
     $q.notify({
@@ -902,19 +971,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.rounded-borders {
-  border-radius: 8px;
-}
-
-.full-height {
-  height: 100%;
-}
-
-@media (max-width: 599px) {
-  .full-width-xs {
-    width: 100%;
-  }
-}
-</style>

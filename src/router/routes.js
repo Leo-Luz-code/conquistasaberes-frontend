@@ -149,15 +149,6 @@ const routes = [
         component: () => import('pages/servidor/Forum.vue'),
         meta: { requiredLogin: true },
       },
-
-      // ---------- SERVIDOR: Passaporte Digital -------
-      {
-        name: 'passaporte-digital',
-        path: '/servidor/passaporte',
-        component: () => import('pages/servidor/PassaporteDigital.vue'),
-        meta: { requiredLogin: true },
-      },
-
       // ---------- COMUM: Perfil do Servidor ----------
       {
         name: 'perfil',
@@ -214,6 +205,13 @@ const routes = [
         path: '/admin/eventos/:id/inscritos',
         component: () => import('pages/admin/events/AdminEventoInscritos.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true, },
+      },
+      // ---------- ADMIN/GESTOR: Banco de Talentos ----------
+      {
+        name: 'admin-talentos',
+        path: '/admin/talentos',
+        component: () => import('pages/admin/TalentBank.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
       },
       {
         name: 'admin-curso-conteudo',

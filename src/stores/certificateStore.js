@@ -16,12 +16,15 @@ export const useCertificateStore = defineStore('certificate', {
     // Certificados do servidor autenticado
     async fetchMyCertificates() {
       this.loading = true;
+
       try {
         const { data } = await api.get('/certificates/my-certificates');
-        this.certificates = data;
-        return data;
+
+        this.certificates = Array.isArray(data) ? data : [];
+
+        return this.certificates;
       } catch (error) {
-        console.error('Erro ao buscar certificados:', error);
+        this.certificates = [];
         return [];
       } finally {
         this.loading = false;

@@ -175,14 +175,26 @@
               hide-bottom-space
             />
 
-            <q-input
-              v-model="form.capaUrl"
+            <q-file
+              v-model="capaFile"
               outlined
               dense
-              label="URL da capa"
-              placeholder="https://..."
+              label="Capa do evento"
+              accept="image/png,image/jpeg,image/webp"
+              max-file-size="5242880"
+              clearable
+              use-chips
               hide-bottom-space
-            />
+              @rejected="onFileRejected"
+            >
+              <template #prepend>
+                <q-icon name="image" />
+              </template>
+
+              <template #hint>
+                Selecione uma imagem do seu computador. Máximo de 5 MB.
+              </template>
+            </q-file>
           </div>
 
           <!-- Preview -->

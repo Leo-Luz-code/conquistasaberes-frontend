@@ -421,6 +421,7 @@ const confirmDelete = (course) => {
     await courseStore.fetchAllAdminCourses();
   });
 };
+
 </script>
 
 <style scoped>
