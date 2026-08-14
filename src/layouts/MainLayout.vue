@@ -14,9 +14,15 @@
             @click="leftDrawerOpen = !leftDrawerOpen"
           />
           <!-- Barra de Busca Mockup -->
-          <div class="hidden md:flex items-center bg-slate-50 border border-slate-200 rounded-full px-4 py-2 w-96">
+          <div
+            class="hidden md:flex items-center bg-slate-50 border border-slate-200 rounded-full px-4 py-2 w-96"
+          >
             <q-icon name="search" class="text-slate-400 mr-2" size="20px" />
-            <input type="text" placeholder="Buscar cursos, trilhas, materiais..." class="bg-transparent outline-none w-full text-sm text-slate-700" />
+            <input
+              type="text"
+              placeholder="Buscar cursos, trilhas, materiais..."
+              class="bg-transparent outline-none w-full text-sm text-slate-700"
+            />
           </div>
         </div>
 
@@ -32,7 +38,9 @@
                 <q-btn
                   v-if="!pausado"
                   @click="pausarLeitura"
-                  round flat dense
+                  round
+                  flat
+                  dense
                   icon="pause"
                   class="text-amber-600 bg-white shadow-sm hover:bg-amber-50 transition-colors"
                   size="sm"
@@ -43,7 +51,9 @@
                 <q-btn
                   v-else
                   @click="continuarLeitura"
-                  round flat dense
+                  round
+                  flat
+                  dense
                   icon="play_arrow"
                   class="text-emerald-600 bg-white shadow-sm hover:bg-emerald-50 transition-colors"
                   size="sm"
@@ -53,7 +63,9 @@
                 <!-- Parar -->
                 <q-btn
                   @click="pararLeitura"
-                  round flat dense
+                  round
+                  flat
+                  dense
                   icon="stop"
                   class="text-red-500 bg-white shadow-sm hover:bg-red-50 transition-colors"
                   size="sm"
@@ -64,7 +76,9 @@
               <q-btn
                 v-else
                 @click="ouvirPagina"
-                round flat dense
+                round
+                flat
+                dense
                 icon="record_voice_over"
                 class="text-pmvc-blue mr-2 hover:bg-slate-100"
               >
@@ -120,11 +134,7 @@
       <div class="flex flex-col h-full">
         <!-- Logo Area -->
         <div class="p-6 flex items-center gap-3 mb-2">
-          <q-img
-            src="~assets/images/brasao-pmvc-2025.png"
-            alt="Logo PMVC"
-            class="w-10 h-12"
-          />
+          <q-img src="~assets/images/brasao-pmvc-2025.png" alt="Logo PMVC" class="w-10 h-12" />
           <div class="flex flex-col">
             <span class="font-extrabold text-white text-lg leading-tight">AVA UniVC</span>
             <span class="text-[11px] text-blue-200">Universidade do Servidor</span>
@@ -163,7 +173,7 @@
             <q-icon name="logout" size="20px" class="mr-3" />
             <span class="text-sm font-semibold">Sair</span>
           </q-btn>
-          
+
           <p class="text-[10px] text-blue-300 m-0 leading-tight">
             © Prefeitura Municipal de Vitória da Conquista
           </p>
@@ -302,7 +312,7 @@ function ouvirPagina() {
     alert('Seu navegador não suporta leitura de texto.')
     return
   }
-  
+
   window.speechSynthesis.cancel()
 
   const container = document.querySelector('.q-page-container')

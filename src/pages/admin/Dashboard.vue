@@ -20,37 +20,46 @@
     <!-- KPIs -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- KPI 1: Servidores -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+      <router-link to="/admin/usuarios" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 cursor-pointer">
         <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
           <q-icon name="groups" size="24px" />
         </div>
         <div>
           <span class="block text-xs font-medium text-slate-500">Servidores</span>
-          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">1.482</span>
+          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">
+            <q-spinner v-if="loading" size="20px" color="primary" />
+            <template v-else>{{ kpis.totalServidores }}</template>
+          </span>
         </div>
-      </div>
+      </router-link>
 
       <!-- KPI 2: Cursos publicados -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+      <router-link to="/admin/cursos" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-emerald-300 hover:shadow-md transition-all flex items-center gap-4 cursor-pointer">
         <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
           <q-icon name="menu_book" size="24px" />
         </div>
         <div>
           <span class="block text-xs font-medium text-slate-500">Cursos publicados</span>
-          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">48</span>
+          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">
+            <q-spinner v-if="loading" size="20px" color="primary" />
+            <template v-else>{{ kpis.totalCursos }}</template>
+          </span>
         </div>
-      </div>
+      </router-link>
 
       <!-- KPI 3: Gestores ativos -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+      <router-link to="/admin/usuarios" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-amber-300 hover:shadow-md transition-all flex items-center gap-4 cursor-pointer">
         <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
           <q-icon name="admin_panel_settings" size="24px" />
         </div>
         <div>
           <span class="block text-xs font-medium text-slate-500">Gestores ativos</span>
-          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">12</span>
+          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">
+            <q-spinner v-if="loading" size="20px" color="primary" />
+            <template v-else>{{ kpis.totalGestores }}</template>
+          </span>
         </div>
-      </div>
+      </router-link>
 
       <!-- KPI 4: Secretarias -->
       <router-link to="/admin/secretarias" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 cursor-pointer">
@@ -59,7 +68,10 @@
         </div>
         <div>
           <span class="block text-xs font-medium text-slate-500">Secretarias</span>
-          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">18</span>
+          <span class="text-2xl font-bold text-pmvc-dark leading-tight block mt-1">
+            <q-spinner v-if="loading" size="20px" color="primary" />
+            <template v-else>{{ kpis.totalSecretarias }}</template>
+          </span>
         </div>
       </router-link>
     </div>
@@ -159,7 +171,34 @@
 </template>
 
 <script setup>
-// Sem necessidade de scripts complexos nesta tela estática no momento.
+import { ref, onMounted } from 'vue'
+import { api } from 'src/boot/axios'
+
+const loading = ref(true)
+const kpis = ref({
+  totalServidores: 0,
+  totalCursos: 0,
+  totalGestores: 0,
+  totalSecretarias: 0,
+})
+
+async function carregarIndicadores() {
+  loading.value = true
+  try {
+    const { data } = await api.get('/analytics/admin-summary')
+    if (data) {
+      kpis.value = data
+    }
+  } catch (error) {
+    console.error('Erro ao carregar indicadores administrativos:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  carregarIndicadores()
+})
 </script>
 
 <style scoped>
