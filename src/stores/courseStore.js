@@ -248,6 +248,15 @@ export const useCourseStore = defineStore('course', {
         throw error;
       }
     },
+    async fetchLearningPathEnrollments(id) {
+      try {
+        const { data } = await api.get(`/learning-paths/${id}/inscritos`);
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Erro ao buscar inscritos da trilha:', error);
+        return [];
+      }
+    },
     async createLearningPath(payload) {
       try {
         const { data } = await api.post('/learning-paths', payload);

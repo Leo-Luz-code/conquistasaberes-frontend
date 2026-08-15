@@ -112,9 +112,9 @@
                     class="text-pmvc-dark hover:text-pmvc-blue hover:bg-slate-50"
                   >
                     <q-item-section avatar>
-                      <q-icon name="person_outline" size="xs" />
+                      <q-icon name="badge" size="xs" />
                     </q-item-section>
-                    <q-item-section>Meu Perfil</q-item-section>
+                    <q-item-section>Passaporte Digital</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -234,12 +234,11 @@ const configurarMenu = () => {
     links.value = [
       { title: 'Administração', icon: 'dashboard', link: '/admin/dashboard' },
       { title: 'Painel Executivo', icon: 'analytics', link: '/gestor/dashboard' },
-      { title: 'Gestão de Cursos', icon: 'edit_note', link: '/admin/cursos' },
       { title: 'Banco de Talentos', icon: 'badge', link: '/admin/talentos' },
-      { title: 'Badges & Conquistas', icon: 'military_tech', link: '/admin/badges' },
       { title: 'Catálogo de Cursos', icon: 'school', link: '/servidor/cursos' },
+      { title: 'Trilhas de Aprendizagem', icon: 'alt_route', link: '/servidor/trilhas' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+      { title: 'Passaporte Digital', icon: 'badge', link: '/perfil' },
     ]
   } else if (authStore.isGestor) {
     links.value = [
@@ -251,7 +250,7 @@ const configurarMenu = () => {
       { title: 'Meus Certificados', icon: 'workspace_premium', link: '/servidor/certificados' },
       { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
       { title: 'Fórum', icon: 'forum', link: '/servidor/forum' },
-      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+      { title: 'Passaporte Digital', icon: 'badge', link: '/perfil' },
     ]
   } else {
     links.value = [
@@ -265,7 +264,7 @@ const configurarMenu = () => {
       { title: 'Notícias UniVC', icon: 'newspaper', link: '/servidor/noticias' },
       { title: 'Norminha', icon: 'star', link: '/servidor/norminha' },
       { title: 'Ranking & XP', icon: 'emoji_events', link: '/servidor/ranking' },
-      { title: 'Meu Perfil', icon: 'person', link: '/perfil' },
+      { title: 'Passaporte Digital', icon: 'badge', link: '/perfil' },
     ]
   }
 }

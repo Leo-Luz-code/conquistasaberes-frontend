@@ -149,10 +149,11 @@ const routes = [
         component: () => import('pages/servidor/Forum.vue'),
         meta: { requiredLogin: true },
       },
-      // ---------- COMUM: Perfil do Servidor ----------
+      // ---------- COMUM: Passaporte Digital do Servidor (Antigo Perfil) ----------
       {
         name: 'perfil',
         path: '/perfil',
+        alias: ['/servidor/passaporte', '/passaporte'],
         component: () => import('pages/servidor/PerfilServidor.vue'),
         meta: { requiredLogin: true },
       },
