@@ -27,11 +27,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Tag                      | Release date |
 |--------------------------|--------------|
+| [1.0.5](#105-2026-08-15) | 2026-08-15   |
 | [1.0.4](#104-2026-08-15) | 2026-08-15   |
 | [1.0.3](#103-2026-08-15) | 2026-08-15   |
 | [1.0.2](#102-2026-08-15) | 2026-08-15   |
 | [1.0.1](#101-2026-08-14) | 2026-08-14   |
 | [1.0.0](#100-2026-08-14) | 2026-08-14   |
+
+
+## [1.0.5] - 2026-08-15
+
+### Fixed
+- **Ícone do KPI de Servidores Ativos (`DashboardGestor.vue`):**
+  - Substituído o identificador de ícone para `how_to_reg`, garantindo renderização e estilização correta do card de métricas de servidores ativos.
 
 
 ## [1.0.4] - 2026-08-15
