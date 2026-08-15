@@ -27,8 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Tag                      | Release date |
 |--------------------------|--------------|
+| [1.0.2](#102-2026-08-15) | 2026-08-15   |
 | [1.0.1](#101-2026-08-14) | 2026-08-14   |
 | [1.0.0](#100-2026-08-14) | 2026-08-14   |
+
+
+## [1.0.2] - 2026-08-15
+
+### Added
+- **Landing Page Institucional (`LandingPage.vue`):**
+  - Criação de portal público oficial acessível em `/landing`, `/inicio` e `/portal`.
+  - Hero institucional com estatísticas de cursos e trilhas, apresentação da Norminha IA e botão de login.
+  - Seção dedicada de governança pública e transparência com links oficiais para o **Fala.BR PMVC (CGU)** e **Portal da Transparência de Vitória da Conquista**.
 
 
 ## [1.0.1] - 2026-08-14

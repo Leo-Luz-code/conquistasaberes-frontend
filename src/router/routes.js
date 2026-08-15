@@ -3,6 +3,15 @@
 // Fluxo: Login SSO → LGPD → Dashboard → Cursos → Aula → Quiz → Certificado
 // =============================================================================
 const routes = [
+  // ===================== ROTA PÚBLICA: LANDING PAGE =====================
+  {
+    name: 'landing',
+    path: '/landing',
+    alias: ['/inicio', '/portal'],
+    component: () => import('pages/public/LandingPage.vue'),
+    meta: { public: true },
+  },
+
   // ===================== ROTA PÚBLICA: LOGIN SSO =====================
   {
     name: 'login',

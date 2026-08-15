@@ -12,21 +12,21 @@
       ></div>
 
       <!-- Topo: Brasão e Nome Oficial -->
-      <div class="relative z-10 flex items-center gap-3">
+      <router-link to="/landing" class="relative z-10 flex items-center gap-3 group w-fit">
         <img
           src="~assets/images/brasao-pmvc-2025.png"
           alt="Brasão PMVC"
-          class="h-12 sm:h-14 drop-shadow-md"
+          class="h-12 sm:h-14 drop-shadow-md group-hover:scale-105 transition-transform"
         />
         <div class="flex flex-col">
           <span class="font-extrabold text-white text-base sm:text-lg leading-tight tracking-tight">
             Prefeitura Municipal
           </span>
-          <span class="text-xs sm:text-sm text-blue-200 font-medium">
-            Vitória da Conquista - BA
+          <span class="text-xs sm:text-sm text-blue-200 font-medium group-hover:text-amber-300 transition-colors">
+            Vitória da Conquista - BA • Portal Institucional
           </span>
         </div>
-      </div>
+      </router-link>
 
       <!-- Centro: Título, Badge e Descrição -->
       <div class="relative z-10 my-10 lg:my-0 max-w-xl space-y-4">
