@@ -8,12 +8,21 @@ import { setServerDetectedIp } from 'src/utils/media';
  * Se o frontend for acessado por http://192.168.X.X:8080, o backend conectará automaticamente em http://192.168.X.X:3001.
  */
 function getDynamicApiBaseUrl() {
+  const envUrl = process.env.API_BASE_URL || 'http://localhost:3006/';
+
   if (typeof window !== 'undefined' && window.location) {
-    const protocol = window.location.protocol || 'http:';
-    const hostname = window.location.hostname || 'localhost';
-    return `${protocol}//${hostname}:3001/`;
+    try {
+      const parsed = new URL(envUrl);
+      const protocol = window.location.protocol || parsed.protocol;
+      const hostname = window.location.hostname || parsed.hostname;
+      const port = parsed.port ? `:${parsed.port}` : '';
+      const pathname = parsed.pathname.endsWith('/') ? parsed.pathname : `${parsed.pathname}/`;
+      return `${protocol}//${hostname}${port}${pathname}`;
+    } catch {
+      return envUrl;
+    }
   }
-  return process.env.API_BASE_URL || 'http://localhost:3001/';
+  return envUrl;
 }
 
 // Instância Axios com base URL dinâmica da API AVA UniVC
