@@ -6,7 +6,7 @@
         :column="columns"
         :rows="rows"
         :acoes="acoes"
-        routeAdd="/usuarios/adicionar"
+        routeAdd="/admin/usuarios/novo"
         titleButtonAdd="Adicionar Usuário"
         @getUsers="getUsers"
         :itemsPerPage="10"
@@ -28,8 +28,9 @@ import TableList from 'src/components/tables/TableList.vue';
 import showModal from 'src/utils/quasarPlugins/dialogMessage';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from 'src/stores/authStore';
 
-const level_access = sessionStorage.getItem('access_level');
+const authStore = useAuthStore();
 const $q = useQuasar();
 const max_pages = ref(0);
 const router = useRouter();
@@ -45,8 +46,9 @@ const filters = ref([
     model: modelsFilters.value.nivel,
     options: [
       { label: 'Todos', value: '' },
-      { label: 'Administrador', value: 'ADMIN' },
-      { label: 'Usuário', value: 'USUARIO' },
+      { label: 'Administrador', value: 'ADMIN_RH_CETI' },
+      { label: 'Gestor', value: 'GESTOR_SECRETARIA' },
+      { label: 'Servidor', value: 'SERVIDOR' },
     ],
     actions: (val) => {
       modelsFilters.value.nivel = val || ''; 
@@ -75,14 +77,14 @@ const acoes = ref([
     color: 'primary',
     administrator: true,
     action: (row) => {
-      router.push(`/usuarios/editar/${row.id}`);
+      router.push(`/admin/usuarios/editar/${row.id}`);
     },
   },
   {
     label: 'Excluir',
     icon: 'delete',
     color: 'negative',
-    administrator: level_access === 'ADMIN' ? true : false,
+    administrator: authStore.isAdmin,
     action: (row) => {
       deleteUser(row);
     },
@@ -99,24 +101,35 @@ const columns = ref([
     sortable: true,
   },
   {
-    name: 'login',
+    name: 'matricula',
     align: 'center',
-    label: 'Login',
-    field: 'login',
+    label: 'Matrícula',
+    field: 'matricula',
+    sortable: true,
+  },
+  {
+    name: 'email',
+    align: 'center',
+    label: 'E-mail',
+    field: 'email',
     sortable: true,
   },
   {
     name: 'nivel',
     align: 'center',
     label: 'Nível',
-    field: 'nivel',
+    field: row => {
+      if (row.role === 'ADMIN_RH_CETI') return 'Administrador';
+      if (row.role === 'GESTOR_SECRETARIA') return 'Gestor';
+      return 'Servidor';
+    },
     sortable: true,
   },
   {
     name: 'situacao',
     align: 'center',
     label: 'Situação',
-    field: 'situacao',
+    field: row => row.statusAtivo ? 'Ativo' : 'Inativo',
     sortable: true,
   },
   {
@@ -124,7 +137,7 @@ const columns = ref([
     field: 'acoes',
     align: 'center',
     label: 'Ações',
-    sortable: true,
+    sortable: false,
   },
 ]);
 const rows = ref([]);

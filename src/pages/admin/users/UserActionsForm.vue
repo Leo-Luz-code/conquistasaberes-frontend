@@ -3,7 +3,7 @@
     <CetiCard :title="define_title" iconName="person_add">
       <FormUser
         :userId="id ? id : null"
-        :administrator="level_access === 'ADMIN' ? true : false"
+        :administrator="authStore.isAdmin"
         :labelButtonSave="id ? 'Atualizar' : 'Cadastrar'"
         :showBackButton="true"
         @submitData="submitData"
@@ -20,11 +20,12 @@ import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
 import { computed, onMounted, ref } from 'vue';
+import { useAuthStore } from 'src/stores/authStore';
 
 const $q = useQuasar();
 const router = useRouter();
 const route = useRoute();
-const level_access = sessionStorage.getItem('access_level');
+const authStore = useAuthStore();
 const { id } = route.params;
 const define_title = computed(() => {
   if (id) {
@@ -41,7 +42,7 @@ async function createUser(data) {
     const { status } = await api.post('usuarios', data);
     if (status == 201) {
       showNotification('positive', 'Usuário cadastrado com sucesso!', 'top');
-      router.push('/usuarios');
+      router.push('/admin/usuarios');
     }
     $q.loading.hide();
   } catch (error) {
@@ -61,7 +62,7 @@ async function updateUser(data) {
     const { status } = await api.patch(`usuarios/${id}`, data);
     if (status == 200) {
       showNotification('positive', 'Usuário atualizado com sucesso!', 'top');
-      router.push('/usuarios');
+      router.push('/admin/usuarios');
     }
     $q.loading.hide();
   } catch (error) {

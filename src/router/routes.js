@@ -3,6 +3,15 @@
 // Fluxo: Login SSO → LGPD → Dashboard → Cursos → Aula → Quiz → Certificado
 // =============================================================================
 const routes = [
+  // ===================== ROTA PÚBLICA: LANDING PAGE =====================
+  {
+    name: 'landing',
+    path: '/landing',
+    alias: ['/inicio', '/portal'],
+    component: () => import('pages/public/LandingPage.vue'),
+    meta: { public: true },
+  },
+
   // ===================== ROTA PÚBLICA: LOGIN SSO =====================
   {
     name: 'login',
@@ -16,6 +25,20 @@ const routes = [
     name: 'validar-certificado',
     path: '/validar-certificado',
     component: () => import('pages/public/ValidarCertificado.vue'),
+    meta: { public: true },
+  },
+
+  // ===================== ROTAS PÚBLICAS: CHECK-IN QR CODE =====================
+  {
+    name: 'checkin-evento',
+    path: '/checkin/evento/:id',
+    component: () => import('pages/public/CheckinEvento.vue'),
+    meta: { public: true },
+  },
+  {
+    name: 'checkin-aula',
+    path: '/checkin/aula/:id',
+    component: () => import('pages/public/CheckinAula.vue'),
     meta: { public: true },
   },
 
@@ -39,7 +62,7 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
-      // ---------- SERVIDOR: Dashboard Principal ----------
+      // ---------- SERVIDOR: Dashboard Principal (Início) ----------
       {
         name: 'dashboard-servidor',
         path: '/servidor/dashboard',
@@ -47,11 +70,52 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
+      // ---------- SERVIDOR: Notícias UniVC ----------
+      {
+        name: 'noticias',
+        path: '/servidor/noticias',
+        component: () => import('pages/servidor/Noticias.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Norminha IA ----------
+      {
+        name: 'norminha',
+        path: '/servidor/norminha',
+        component: () => import('pages/servidor/Norminha.vue'),
+        meta: { requiredLogin: true },
+      },
+
       // ---------- SERVIDOR: Catálogo de Cursos ----------
+      // ---------- SERVIDOR: Trilhas de Aprendizagem ----------
+      {
+        name: 'trilhas-aprendizagem',
+        path: '/servidor/trilhas',
+        component: () => import('pages/servidor/TrilhasAprendizagem.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Detalhe de uma Trilha ----------
+      {
+        name: 'trilha-detalhes',
+        path: '/servidor/trilhas/:id',
+        component: () => import('pages/servidor/TrilhaDetalhes.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Cursos ----------
       {
         name: 'catalogo-cursos',
         path: '/servidor/cursos',
         component: () => import('pages/servidor/CatalogoCursos.vue'),
+        meta: { requiredLogin: true },
+      },
+
+      // ---------- SERVIDOR: Eventos e Palestras ----------
+      {
+        name: 'eventos-palestras',
+        path: '/servidor/eventos',
+        component: () => import('pages/servidor/EventosPalestras.vue'),
         meta: { requiredLogin: true },
       },
 
@@ -79,6 +143,14 @@ const routes = [
         meta: { requiredLogin: true },
       },
 
+      // ---------- SERVIDOR: Biblioteca -----------------
+      {
+        name: 'biblioteca',
+        path: '/servidor/biblioteca',
+        component: () => import('pages/servidor/Biblioteca.vue'),
+        meta: { requiredLogin: true },
+      },
+
       // ---------- SERVIDOR: Fórum Comunitário ----------
       {
         name: 'forum',
@@ -86,23 +158,43 @@ const routes = [
         component: () => import('pages/servidor/Forum.vue'),
         meta: { requiredLogin: true },
       },
-
-      // ---------- COMUM: Perfil do Servidor ----------
+      // ---------- COMUM: Passaporte Digital do Servidor (Antigo Perfil) ----------
       {
         name: 'perfil',
         path: '/perfil',
+        alias: ['/servidor/passaporte', '/passaporte'],
         component: () => import('pages/servidor/PerfilServidor.vue'),
         meta: { requiredLogin: true },
       },
 
-      // ---------- GESTOR/ADMIN: Dashboard Analytics ----------
+      // ---------- GESTOR/: Dashboard Analytics ----------
       {
         name: 'dashboard-gestor',
         path: '/gestor/dashboard',
         component: () => import('pages/gestor/DashboardGestor.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
-
+      // ---------- ADMIN: Painel de Administração ----------
+      {
+        name: 'dashboard-admin',
+        path: '/admin/dashboard',
+        component: () => import('pages/admin/Dashboard.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Secretarias ----------
+      {
+        name: 'admin-secretarias',
+        path: '/admin/secretarias',
+        component: () => import('pages/admin/GestaoSecretarias.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Notícias ----------
+      {
+        name: 'admin-noticias',
+        path: '/admin/noticias',
+        component: () => import('pages/admin/GestaoNoticias.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
       // ---------- ADMIN: Gestão de Cursos e Conteúdos ----------
       {
         name: 'admin-cursos',
@@ -110,11 +202,70 @@ const routes = [
         component: () => import('pages/admin/courses/AdminCursosList.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
       },
+      // ---------- ADMIN/GESTOR: Gestão de Eventos ----------
+      {
+        name: 'admin-eventos',
+        path: '/admin/eventos',
+        component: () => import('pages/admin/events/AdminEventosList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true, },
+      },
+      // ---------- ADMIN/GESTOR: Inscritos do Evento ----------
+      {
+        name: 'admin-evento-inscritos',
+        path: '/admin/eventos/:id/inscritos',
+        component: () => import('pages/admin/events/AdminEventoInscritos.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true, },
+      },
+      // ---------- ADMIN/GESTOR: Banco de Talentos ----------
+      {
+        name: 'admin-talentos',
+        path: '/admin/talentos',
+        component: () => import('pages/admin/TalentBank.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
       {
         name: 'admin-curso-conteudo',
         path: '/admin/cursos/:id/conteudo',
         component: () => import('pages/admin/courses/GerenciadorConteudo.vue'),
         meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Servidores ----------
+      {
+        name: 'admin-usuarios',
+        path: '/admin/usuarios',
+        component: () => import('pages/admin/users/ListUsers.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      {
+        name: 'admin-usuarios-novo',
+        path: '/admin/usuarios/novo',
+        component: () => import('pages/admin/users/UserActionsForm.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      {
+        name: 'admin-usuarios-editar',
+        path: '/admin/usuarios/editar/:id',
+        component: () => import('pages/admin/users/UserActionsForm.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
+      },
+      {
+        name: 'admin-biblioteca',
+        path: '/admin/biblioteca',
+        component: () => import('pages/admin/library/AdminBibliotecaList.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      {
+        name: 'admin-certificados',
+        path: '/admin/certificados',
+        component: () => import('pages/admin/certificates/AdminGestaoCertificados.vue'),
+        meta: { requiredLogin: true, requiredGestorLevel: true },
+      },
+      // ---------- ADMIN: Gestão de Badges & Conquistas ----------
+      {
+        name: 'admin-badges',
+        path: '/admin/badges',
+        component: () => import('pages/admin/gamification/AdminBadgesList.vue'),
+        meta: { requiredLogin: true, requiredAdminLevel: true },
       },
     ],
   },
@@ -125,6 +276,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
   },
-];
+]
 
-export default routes;
+export default routes

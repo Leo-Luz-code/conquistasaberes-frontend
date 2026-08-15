@@ -25,6 +25,13 @@ export const useAuthStore = defineStore('auth', {
     lgpdAccepted: (state) => state.user?.lgpdAccepted || false,
     userId: (state) => state.user?.id || '',
 
+    canShowEvolution: (state) => state.user?.role === 'SERVIDOR',
+    canShowAchievements: (state) => state.user?.role === 'SERVIDOR',
+
+    isManagementUser: (state) =>
+      state.user?.role === 'GESTOR_SECRETARIA' ||
+      state.user?.role === 'ADMIN_RH_CETI',
+
     // Verificações de Role (RBAC)
     isAdmin: (state) => state.user?.role === 'ADMIN_RH_CETI',
     isGestor: (state) => state.user?.role === 'GESTOR_SECRETARIA',

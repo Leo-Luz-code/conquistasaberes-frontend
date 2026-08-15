@@ -184,6 +184,18 @@
                             <q-item-section side>
                               <div class="row q-gutter-xs">
                                 <q-btn
+                                  v-if="lesson.tipo === 'AULA_PRESENCIAL'"
+                                  flat
+                                  round
+                                  dense
+                                  icon="qr_code_scanner"
+                                  color="deep-purple-7"
+                                  size="sm"
+                                  @click="openPresencasModal(lesson)"
+                                >
+                                  <q-tooltip>Presenças & QR Code</q-tooltip>
+                                </q-btn>
+                                <q-btn
                                   flat
                                   round
                                   dense
@@ -330,7 +342,7 @@
               </div>
 
               <!-- Tipo de Conteúdo -->
-              <div class="col-12 col-sm-7">
+              <div class="col-12 col-sm-5">
                 <q-select
                   v-model="lessonForm.tipo"
                   :options="tiposAulaOptions"
@@ -347,7 +359,7 @@
               </div>
 
               <!-- Duração Estimada -->
-              <div class="col-12 col-sm-5">
+              <div class="col-12 col-sm-4">
                 <q-input
                   v-model.number="lessonForm.duracaoMin"
                   label="Duração (minutos) *"
@@ -359,6 +371,28 @@
                 >
                   <template v-slot:prepend>
                     <q-icon name="timer" color="primary" />
+                  </template>
+                </q-input>
+              </div>
+
+              <!-- XP Concedido -->
+              <div class="col-12 col-sm-3">
+                <q-input
+                  v-model.number="lessonForm.xp"
+                  label="Pontos XP *"
+                  type="number"
+                  outlined
+                  dense
+                  min="0"
+                  max="100"
+                  :rules="[
+                    val => (val !== null && val !== '') || 'Obrigatório',
+                    val => val <= 100 || 'Máximo 100 XP',
+                    val => val >= 0 || 'Mínimo 0 XP'
+                  ]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="star" color="amber-6" />
                   </template>
                 </q-input>
               </div>
@@ -444,43 +478,95 @@
               <!-- TIPO 4: QUIZ DE FIXAÇÃO -->
               <div v-if="lessonForm.tipo === 'QUIZ'" class="col-12">
                 <div class="q-pa-md bg-purple-1 rounded-borders">
-                  <div class="text-subtitle2 text-purple-9 text-weight-bold q-mb-sm row items-center">
-                    <q-icon name="quiz" class="q-mr-xs" size="20px" /> Construtor do Quiz de Fixação
+                  <div class="row items-center justify-between q-mb-md">
+                    <div class="text-subtitle2 text-purple-9 text-weight-bold row items-center">
+                      <q-icon name="quiz" class="q-mr-xs" size="20px" /> Construtor do Quiz de Fixação
+                    </div>
+                    <q-btn
+                      color="purple-7"
+                      icon="add"
+                      label="Adicionar Pergunta"
+                      size="sm"
+                      unelevated
+                      @click="quizBuilder.push({ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 })"
+                    />
                   </div>
 
-                  <!-- Pergunta -->
+                  <div
+                    v-for="(questao, qIdx) in quizBuilder"
+                    :key="qIdx"
+                    class="q-mb-md q-pa-md bg-white rounded-borders shadow-1"
+                  >
+                    <div class="row items-center justify-between q-mb-sm">
+                      <div class="text-subtitle2 text-weight-bold text-grey-8">Pergunta {{ qIdx + 1 }}</div>
+                      <q-btn
+                        v-if="quizBuilder.length > 1"
+                        flat round dense
+                        icon="delete"
+                        color="negative"
+                        @click="quizBuilder.splice(qIdx, 1)"
+                      >
+                        <q-tooltip>Remover Pergunta</q-tooltip>
+                      </q-btn>
+                    </div>
+
+                    <!-- Pergunta -->
+                    <q-input
+                      v-model="questao.pergunta"
+                      label="Enunciado da Pergunta *"
+                      outlined
+                      dense
+                      bg-color="white"
+                      class="q-mb-sm"
+                      :rules="[val => !!val || 'Informe a pergunta do quiz']"
+                    />
+
+                    <!-- Alternativas -->
+                    <div class="text-caption text-weight-bold text-grey-8 q-mb-xs">
+                      Opções de Resposta (Marque a opção correta):
+                    </div>
+                    <div
+                      v-for="(opcao, idx) in questao.opcoes"
+                      :key="idx"
+                      class="row items-center q-mb-xs bg-grey-1 q-pa-xs rounded-borders"
+                    >
+                      <q-radio
+                        v-model="questao.respostaCorreta"
+                        :val="idx"
+                        color="positive"
+                      />
+                      <q-input
+                        v-model="questao.opcoes[idx]"
+                        :label="`Alternativa ${String.fromCharCode(65 + idx)}`"
+                        dense
+                        borderless
+                        class="col q-ml-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- TIPO 5: AULA PRESENCIAL -->
+              <div v-if="lessonForm.tipo === 'AULA_PRESENCIAL'" class="col-12">
+                <div class="q-pa-md bg-purple-1 rounded-borders border border-purple-2 space-y-3">
+                  <div class="text-subtitle2 text-deep-purple-9 text-weight-bold row items-center">
+                    <q-icon name="groups" class="q-mr-xs" size="20px" /> Configuração da Aula Presencial
+                  </div>
+                  <p class="text-caption text-grey-8 q-my-none">
+                    Esta aula presencial terá o registro de presença via <strong>QR Code</strong>. O sistema gera automaticamente uma página pública de check-in para que os servidores confirmem a presença pelo celular.
+                  </p>
                   <q-input
-                    v-model="quizBuilder.pergunta"
-                    label="Enunciado da Pergunta *"
+                    v-model="lessonForm.texto"
+                    label="Orientações / Local da Aula (Opcional)"
+                    placeholder="Ex: Auditório Central da Prefeitura ou Sala 3"
                     outlined
                     dense
                     bg-color="white"
-                    class="q-mb-sm"
-                    :rules="[val => !!val || 'Informe a pergunta do quiz']"
-                  />
-
-                  <!-- Alternativas -->
-                  <div class="text-caption text-weight-bold text-grey-8 q-mb-xs">
-                    Opções de Resposta (Marque a opção correta):
-                  </div>
-                  <div
-                    v-for="(opcao, idx) in quizBuilder.opcoes"
-                    :key="idx"
-                    class="row items-center q-mb-xs bg-white q-pa-xs rounded-borders shadow-1"
                   >
-                    <q-radio
-                      v-model="quizBuilder.respostaCorreta"
-                      :val="idx"
-                      color="positive"
-                    />
-                    <q-input
-                      v-model="quizBuilder.opcoes[idx]"
-                      :label="`Alternativa ${String.fromCharCode(65 + idx)}`"
-                      dense
-                      borderless
-                      class="col q-ml-sm"
-                    />
-                  </div>
+                    <template v-slot:prepend>
+                      <q-icon name="room" color="deep-purple-7" />
+                    </template>
+                  </q-input>
                 </div>
               </div>
             </div>
@@ -502,6 +588,152 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- =================================================================== -->
+    <!-- DIALOG: CONTROLE DE PRESENÇAS DA AULA PRESENCIAL (QR CODE) -->
+    <!-- =================================================================== -->
+    <q-dialog v-model="showPresencasModal" max-width="850px">
+      <q-card style="width: 850px; max-width: 95vw" class="rounded-borders shadow-3">
+        <!-- Cabeçalho -->
+        <q-card-section class="bg-deep-purple-8 text-white row items-center justify-between q-py-sm q-px-md">
+          <div class="text-subtitle1 text-weight-bold row items-center">
+            <q-icon name="qr_code_scanner" class="q-mr-sm" size="22px" />
+            Controle de Presença: {{ selectedLessonForPresencas?.titulo }}
+          </div>
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pa-md space-y-4">
+          <!-- Topo com QR Code e Resumo -->
+          <div class="row q-col-gutter-md items-center">
+            <!-- Coluna QR Code -->
+            <div class="col-12 col-md-5 text-center">
+              <div class="p-3 bg-white rounded-xl border border-slate-200 inline-block shadow-sm">
+                <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" alt="QR Code da Aula" style="width: 180px; height: 180px" />
+                <div v-else style="width: 180px; height: 180px" class="row items-center justify-center">
+                  <q-spinner color="deep-purple" size="40px" />
+                </div>
+              </div>
+              <div class="q-mt-sm row q-gutter-xs justify-center">
+                <q-btn
+                  size="sm"
+                  unelevated
+                  color="deep-purple-7"
+                  icon="content_copy"
+                  label="Copiar Link"
+                  @click="copiarLinkAula"
+                />
+                <q-btn
+                  size="sm"
+                  outline
+                  color="deep-purple-7"
+                  icon="open_in_new"
+                  label="Abrir Check-in"
+                  :href="publicLessonUrl"
+                  target="_blank"
+                />
+              </div>
+            </div>
+
+            <!-- Coluna Métricas e Instrução -->
+            <div class="col-12 col-md-7">
+              <div class="text-caption text-grey-7 q-mb-sm">
+                Exiba este QR Code durante a aula para que os servidores matriculados confirmem sua presença pelo celular.
+              </div>
+
+              <div class="row q-col-gutter-sm q-mb-md">
+                <div class="col-6">
+                  <div class="q-pa-sm bg-purple-1 rounded-borders text-center">
+                    <div class="text-caption text-purple-9 text-weight-bold">Matriculados</div>
+                    <div class="text-h6 text-weight-bolder text-purple-9">{{ attendancesData?.totalMatriculados || 0 }}</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="q-pa-sm bg-green-1 rounded-borders text-center">
+                    <div class="text-caption text-green-9 text-weight-bold">Presentes</div>
+                    <div class="text-h6 text-weight-bolder text-green-9">{{ attendancesData?.totalPresentes || 0 }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input Busca -->
+              <q-input
+                v-model="filtroBuscaPresenca"
+                placeholder="Filtrar servidor por nome ou matrícula..."
+                dense
+                outlined
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+                <template v-slot:append>
+                  <q-btn flat round dense icon="refresh" size="sm" @click="carregarPresencasAula">
+                    <q-tooltip>Atualizar</q-tooltip>
+                  </q-btn>
+                </template>
+              </q-input>
+            </div>
+          </div>
+
+          <!-- Tabela de Presenças dos Matriculados -->
+          <div class="q-mt-md">
+            <div class="text-subtitle2 text-weight-bold text-grey-8 q-mb-xs">
+              Lista de Servidores Matriculados no Curso
+            </div>
+
+            <div v-if="loadingAttendances" class="row justify-center q-pa-md">
+              <q-spinner color="deep-purple" size="32px" />
+            </div>
+
+            <div v-else-if="matriculadosFiltrados.length > 0" class="border rounded-borders overflow-hidden" style="max-height: 260px; overflow-y: auto;">
+              <q-list separator dense>
+                <q-item v-for="item in matriculadosFiltrados" :key="item.userId" class="q-py-sm">
+                  <q-item-section avatar>
+                    <q-avatar
+                      size="32px"
+                      :color="item.presencaConfirmada ? 'green-1' : 'grey-2'"
+                      :text-color="item.presencaConfirmada ? 'green-9' : 'grey-7'"
+                      class="text-weight-bold"
+                    >
+                      {{ item.nome ? item.nome[0].toUpperCase() : '?' }}
+                    </q-avatar>
+                  </q-item-section>
+
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold text-grey-9">
+                      {{ item.nome }}
+                      <span class="text-caption text-grey-6 font-normal q-ml-xs">({{ item.matricula }})</span>
+                    </q-item-label>
+                    <q-item-label caption class="text-grey-6">
+                      {{ item.secretaria }} · {{ item.email }}
+                    </q-item-label>
+                  </q-item-section>
+
+                  <q-item-section side>
+                    <q-badge
+                      v-if="item.presencaConfirmada"
+                      color="positive"
+                      class="q-pa-xs text-weight-bold"
+                    >
+                      <q-icon name="check_circle" class="q-mr-xs" />
+                      Presente {{ item.presencaEm ? `(${formatarDataHora(item.presencaEm)})` : '' }}
+                    </q-badge>
+                    <q-badge v-else color="grey-5" outline class="q-pa-xs">
+                      <q-icon name="schedule" class="q-mr-xs" />
+                      Pendente
+                    </q-badge>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+
+            <div v-else class="text-center text-grey-6 q-pa-md border-dashed rounded-borders">
+              Nenhum servidor matriculado localizado.
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -510,6 +742,8 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useCourseStore } from 'src/stores/courseStore';
 import { useQuasar } from 'quasar';
+import QRCode from 'qrcode';
+import { getAppOrigin } from 'src/utils/media';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -524,6 +758,33 @@ const savingModule = ref(false);
 const savingLesson = ref(false);
 const uploadingPdf = ref(false);
 const pdfFile = ref(null);
+
+// Presenças Modal State
+const showPresencasModal = ref(false);
+const selectedLessonForPresencas = ref(null);
+const attendancesData = ref(null);
+const loadingAttendances = ref(false);
+const qrCodeDataUrl = ref('');
+const filtroBuscaPresenca = ref('');
+
+const publicLessonUrl = computed(() => {
+  if (!selectedLessonForPresencas.value) return '';
+  const origin = getAppOrigin();
+  return `${origin}/#/checkin/aula/${selectedLessonForPresencas.value.id}`;
+});
+
+const matriculadosFiltrados = computed(() => {
+  const list = attendancesData.value?.attendances || [];
+  if (!filtroBuscaPresenca.value.trim()) return list;
+  const q = filtroBuscaPresenca.value.toLowerCase();
+  return list.filter((item) => {
+    return (
+      (item.nome || '').toLowerCase().includes(q) ||
+      (item.matricula || '').toLowerCase().includes(q) ||
+      (item.email || '').toLowerCase().includes(q)
+    );
+  });
+});
 
 // Estado reativo para módulo expandido (inicializado de forma determinística)
 const expandedModuleId = ref(null);
@@ -567,20 +828,20 @@ const lessonForm = ref({
   texto: '',
   quizData: '',
   duracaoMin: 10,
+  xp: 10,
   ordem: 1,
 });
 
-const quizBuilder = ref({
-  pergunta: '',
-  opcoes: ['', '', '', ''],
-  respostaCorreta: 0,
-});
+const quizBuilder = ref([
+  { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }
+]);
 
 const tiposAulaOptions = [
   { label: 'Vídeo (YouTube / URL)', value: 'VIDEO' },
   { label: 'Texto Formatado (Artigo)', value: 'TEXTO' },
   { label: 'Documento PDF (Apostila)', value: 'PDF' },
   { label: 'Quiz de Fixação', value: 'QUIZ' },
+  { label: 'Aula Presencial (QR Code)', value: 'AULA_PRESENCIAL' },
 ];
 
 onMounted(async () => {
@@ -600,6 +861,66 @@ onMounted(async () => {
     }
   }
 });
+
+// ================= PRESENÇAS DE AULA =================
+const openPresencasModal = async (lesson) => {
+  selectedLessonForPresencas.value = lesson;
+  showPresencasModal.value = true;
+  filtroBuscaPresenca.value = '';
+
+  // Gerar QR Code
+  try {
+    qrCodeDataUrl.value = await QRCode.toDataURL(publicLessonUrl.value, {
+      width: 280,
+      margin: 2,
+      color: {
+        dark: '#512DA8',
+        light: '#FFFFFF',
+      },
+    });
+  } catch (err) {
+    console.error('Erro ao gerar QR Code da aula:', err);
+  }
+
+  await carregarPresencasAula();
+};
+
+const carregarPresencasAula = async () => {
+  if (!selectedLessonForPresencas.value) return;
+  loadingAttendances.value = true;
+  try {
+    attendancesData.value = await courseStore.fetchLessonAttendances(selectedLessonForPresencas.value.id);
+  } catch (err) {
+    console.error('Erro ao carregar presenças:', err);
+    $q.notify({
+      type: 'negative',
+      message: 'Não foi possível carregar as presenças da aula.',
+    });
+  } finally {
+    loadingAttendances.value = false;
+  }
+};
+
+const copiarLinkAula = () => {
+  if (!publicLessonUrl.value) return;
+  navigator.clipboard.writeText(publicLessonUrl.value);
+  $q.notify({
+    type: 'positive',
+    icon: 'check',
+    message: 'Link de check-in da aula copiado!',
+  });
+};
+
+const formatarDataHora = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 
 // ================= MÓDULOS =================
 const openModuleModal = (mod = null) => {
@@ -677,17 +998,19 @@ const openLessonModal = (moduleId, lesson = null) => {
       texto: lesson.texto || '',
       quizData: lesson.quizData || '',
       duracaoMin: lesson.duracaoMin || 10,
+      xp: lesson.xp ?? 10,
       ordem: lesson.ordem || 1,
     };
 
     if (lesson.tipo === 'QUIZ' && lesson.quizData) {
       try {
-        quizBuilder.value = JSON.parse(lesson.quizData);
+        const parsed = JSON.parse(lesson.quizData);
+        quizBuilder.value = Array.isArray(parsed) ? parsed : [parsed];
       } catch (e) {
-        quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+        quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
       }
     } else {
-      quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+      quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
     }
   } else {
     isEditingLesson.value = false;
@@ -702,9 +1025,10 @@ const openLessonModal = (moduleId, lesson = null) => {
       texto: '',
       quizData: '',
       duracaoMin: 10,
+      xp: 10,
       ordem: existingCount + 1,
     };
-    quizBuilder.value = { pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 };
+    quizBuilder.value = [{ pergunta: '', opcoes: ['', '', '', ''], respostaCorreta: 0 }];
   }
   showLessonModal.value = true;
 };
@@ -774,6 +1098,7 @@ const getLessonTypeLabel = (tipo) => {
     case 'TEXTO': return 'Texto / Leitura';
     case 'PDF': return 'Apostila PDF';
     case 'QUIZ': return 'Quiz';
+    case 'AULA_PRESENCIAL': return 'Aula Presencial';
     default: return tipo;
   }
 };
@@ -784,6 +1109,7 @@ const getLessonIcon = (tipo) => {
     case 'TEXTO': return 'article';
     case 'PDF': return 'picture_as_pdf';
     case 'QUIZ': return 'quiz';
+    case 'AULA_PRESENCIAL': return 'groups';
     default: return 'menu_book';
   }
 };
@@ -794,6 +1120,7 @@ const getLessonColor = (tipo) => {
     case 'TEXTO': return 'blue-7';
     case 'PDF': return 'deep-orange-7';
     case 'QUIZ': return 'purple-7';
+    case 'AULA_PRESENCIAL': return 'deep-purple-7';
     default: return 'primary';
   }
 };

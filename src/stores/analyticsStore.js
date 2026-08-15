@@ -12,10 +12,14 @@ export const useAnalyticsStore = defineStore('analytics', {
   }),
 
   actions: {
-    async fetchDashboard() {
+    async fetchDashboard(secretariaId = null) {
       this.loading = true;
       try {
-        const { data } = await api.get('/analytics/dashboard');
+        const params = {};
+        if (secretariaId && secretariaId !== 'TODAS') {
+          params.secretariaId = secretariaId;
+        }
+        const { data } = await api.get('/analytics/dashboard', { params });
         this.dashboard = data;
         return data;
       } catch (error) {

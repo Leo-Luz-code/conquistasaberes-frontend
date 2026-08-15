@@ -10,11 +10,14 @@ import { Notify } from 'quasar';
 export const useCourseStore = defineStore('course', {
   state: () => ({
     courses: [],
+    myCourses: [],
     secretarias: [],
     currentCourse: null,
+    courseRatings: null,
     enrollments: [],
     recommendations: [],
     learningPaths: [],
+    eixos: [],
     loading: false,
     loadingDetail: false,
   }),
@@ -25,6 +28,36 @@ export const useCourseStore = defineStore('course', {
   },
 
   actions: {
+    async fetchMyCourses() {
+      try {
+        const syncFlag = !sessionStorage.getItem('myCoursesSynced');
+        const { data } = await api.get('/courses/my-courses', { params: { sync: syncFlag } });
+        
+        if (syncFlag) {
+          sessionStorage.setItem('myCoursesSynced', 'true');
+        }
+        
+        console.log(data);
+        this.myCourses = Array.isArray(data) ? data : [];
+        return this.myCourses;
+      } catch (error) {
+        console.error('Erro ao buscar meus cursos:', error);
+        this.myCourses = [];
+        return [];
+      }
+    },
+    async fetchCourseRatings(courseId) {
+      try {
+        const { data } = await api.get(`/courses/${courseId}/ratings`);
+        this.courseRatings = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar avaliações do curso:', error);
+        this.courseRatings = null;
+        return null;
+      }
+    },
+
     // Listar cursos com filtros opcionais
     async fetchCourses(filters = {}) {
       this.loading = true;
@@ -87,6 +120,25 @@ export const useCourseStore = defineStore('course', {
           icon: 'error',
           position: 'top',
           message: 'Erro ao se inscrever no curso.',
+        });
+        throw error;
+      }
+    },
+
+    async rateCourse(courseId, { rating, comment }) {
+      try {
+        await api.post(`/courses/${courseId}/rate`, { rating, comment });
+        Notify.create({
+          color: 'positive',
+          icon: 'star',
+          position: 'top',
+          message: 'Obrigado pelo seu feedback!',
+        });
+        await this.fetchMyCourses();
+      } catch (error) {
+        Notify.create({
+          color: 'negative',
+          message: 'Erro ao salvar avaliação.',
         });
         throw error;
       }
@@ -170,6 +222,119 @@ export const useCourseStore = defineStore('course', {
       } catch (error) {
         console.error('Erro ao buscar trilhas:', error);
         return [];
+      }
+    },
+    async fetchAdminLearningPaths() {
+      try {
+        const { data } = await api.get('/learning-paths/admin/all');
+        this.learningPaths = Array.isArray(data) ? data : [];
+        return this.learningPaths;
+      } catch (error) {
+        console.error('Erro ao buscar trilhas para administração:', error);
+        return [];
+      }
+    },
+    async enrollLearningPath(id) {
+      try {
+        const { data } = await api.post(`/learning-paths/${id}/enroll`);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Inscrição na trilha realizada com sucesso!' });
+        await Promise.all([
+          this.fetchLearningPaths(),
+          this.fetchMyCourses(true),
+        ]);
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao se inscrever na trilha.' });
+        throw error;
+      }
+    },
+    async fetchLearningPathEnrollments(id) {
+      try {
+        const { data } = await api.get(`/learning-paths/${id}/inscritos`);
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Erro ao buscar inscritos da trilha:', error);
+        return [];
+      }
+    },
+    async createLearningPath(payload) {
+      try {
+        const { data } = await api.post('/learning-paths', payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Trilha criada com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar trilha.' });
+        throw error;
+      }
+    },
+    async updateLearningPath(id, payload) {
+      try {
+        const { data } = await api.put(`/learning-paths/${id}`, payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Trilha atualizada!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar trilha.' });
+        throw error;
+      }
+    },
+    async deleteLearningPath(id) {
+      try {
+        await api.delete(`/learning-paths/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Trilha removida!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir trilha.' });
+        throw error;
+      }
+    },
+    async linkCoursesToPath(trilhaId, courseIds) {
+      try {
+        const { data } = await api.patch(`/learning-paths/${trilhaId}/courses`, { courseIds });
+        Notify.create({ color: 'positive', icon: 'link', message: 'Cursos vinculados com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao vincular cursos.' });
+        throw error;
+      }
+    },
+
+    // Eixos
+    async fetchEixos() {
+      try {
+        const { data } = await api.get('/eixos');
+        this.eixos = data;
+        return data;
+      } catch (error) {
+        console.error('Erro ao buscar eixos:', error);
+        return [];
+      }
+    },
+    async createEixo(payload) {
+      try {
+        const { data } = await api.post('/eixos', payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Eixo criado com sucesso!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao criar eixo.' });
+        throw error;
+      }
+    },
+    async updateEixo(id, payload) {
+      try {
+        const { data } = await api.put(`/eixos/${id}`, payload);
+        Notify.create({ color: 'positive', icon: 'check', message: 'Eixo atualizado!' });
+        return data;
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao atualizar eixo.' });
+        throw error;
+      }
+    },
+    async deleteEixo(id) {
+      try {
+        await api.delete(`/eixos/${id}`);
+        Notify.create({ color: 'positive', icon: 'delete', message: 'Eixo removido!' });
+      } catch (error) {
+        Notify.create({ color: 'negative', icon: 'error', message: 'Erro ao excluir eixo.' });
+        throw error;
       }
     },
 
@@ -312,6 +477,31 @@ export const useCourseStore = defineStore('course', {
         throw error;
       }
     },
+
+    // =========================================================================
+    // PRESENÇAS E CONTROLE DE INSCRITOS
+    // =========================================================================
+
+    async confirmLessonCheckin(lessonId, matricula) {
+      const { data } = await api.post(`/courses/lessons/${lessonId}/checkin`, { matricula });
+      return data;
+    },
+
+    async fetchLessonPublicInfo(lessonId) {
+      const { data } = await api.get(`/courses/lessons/${lessonId}/public-info`);
+      return data;
+    },
+
+    async fetchLessonAttendances(lessonId) {
+      const { data } = await api.get(`/courses/lessons/${lessonId}/attendances`);
+      return data;
+    },
+
+    async fetchCourseEnrollments(courseId) {
+      const { data } = await api.get(`/courses/${courseId}/enrollments`);
+      return Array.isArray(data) ? data : [];
+    },
   },
 });
+
 

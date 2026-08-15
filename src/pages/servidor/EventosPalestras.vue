@@ -1,0 +1,909 @@
+<template>
+  <q-page class="q-pa-md q-pa-lg-lg">
+    <div class="q-mx-auto" style="max-width: 1280px">
+      <!-- Cabeçalho -->
+      <div class="row items-center justify-between q-col-gutter-md q-mb-lg">
+        <div class="col-12 col-sm">
+          <div class="text-h4 text-weight-bold text-grey-9">
+            Eventos e Palestras
+          </div>
+
+          <div class="text-caption text-grey-6 q-mt-xs">
+            Programação institucional de capacitação, palestras e encontros.
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-auto">
+          <q-tabs
+            v-model="abaAtiva"
+            dense
+            no-caps
+            inline-label
+            indicator-color="primary"
+            active-color="primary"
+            class="text-grey-7"
+          >
+            <q-tab
+              name="todos"
+              icon="event"
+              :label="`Todos os eventos (${eventos.length})`"
+            />
+
+            <q-tab
+              name="meus"
+              icon="bookmark"
+              :label="`Meus eventos (${totalInscritos})`"
+            />
+          </q-tabs>
+        </div>
+      </div>
+
+      <!-- Busca + Filtros -->
+      <q-card
+        flat
+        bordered
+        class="q-pa-md q-mb-md"
+      >
+        <div class="row q-col-gutter-sm">
+          <div class="col-12 col-sm">
+            <q-input
+              v-model="busca"
+              dense
+              debounce="300"
+              outlined
+              clearable
+              placeholder="Buscar por título ou local..."
+            >
+              <template #prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+
+          <div class="col-12 col-sm-3">
+            <q-select
+              v-model="tipoFiltro"
+              dense
+              outlined
+              emit-value
+              map-options
+              clearable
+              :options="opcoesTipo"
+              label="Tipo"
+            />
+          </div>
+
+          <div class="col-12 col-sm-3">
+            <q-select
+              v-model="periodoFiltro"
+              dense
+              outlined
+              emit-value
+              map-options
+              :options="opcoesPeriodo"
+              label="Período"
+            />
+          </div>
+        </div>
+      </q-card>
+
+      <!-- Filtros ativos -->
+      <div
+        v-if="filtrosAtivos.length"
+        class="row items-center q-gutter-xs q-mb-md"
+      >
+        <q-chip
+          v-for="chip in filtrosAtivos"
+          :key="chip.key"
+          removable
+          dense
+          color="blue-1"
+          text-color="primary"
+          @remove="chip.limpar"
+        >
+          {{ chip.label }}
+        </q-chip>
+
+        <q-btn
+          flat
+          dense
+          no-caps
+          size="sm"
+          label="Limpar tudo"
+          color="grey-7"
+          @click="limparFiltros"
+        />
+      </div>
+
+      <!-- Loading -->
+      <div
+        v-if="eventStore.loading"
+        class="flex flex-center q-py-xl"
+      >
+        <q-spinner-dots
+          color="primary"
+          size="50px"
+        />
+      </div>
+
+      <!-- Grid -->
+      <div
+        v-else-if="eventosPaginados.length"
+        class="row q-col-gutter-lg"
+      >
+        <div
+          v-for="evento in eventosPaginados"
+          :key="evento.id"
+          class="col-12 col-md-6"
+        >
+          <div
+            class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all overflow-hidden flex flex-col justify-between h-full group"
+          >
+            <div>
+              <!-- Capa Compacta com Badges Flutuantes -->
+              <div class="relative overflow-hidden w-full bg-slate-100 h-32 sm:h-36">
+                <img
+                  v-if="evento.capaUrl"
+                  :src="getMediaUrl(evento.capaUrl)"
+                  :alt="evento.titulo"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div
+                  v-else
+                  class="w-full h-full flex items-center justify-center text-slate-400 bg-gradient-to-br from-slate-100 to-slate-200"
+                >
+                  <div class="flex items-center gap-2 text-slate-400">
+                    <q-icon name="event" size="28px" class="text-slate-300" />
+                    <span class="text-xs font-semibold">Sem imagem de capa</span>
+                  </div>
+                </div>
+
+                <!-- Badges sobrepostos na capa -->
+                <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                  <span
+                    class="px-2.5 py-0.5 bg-[#0F4C81]/90 text-white rounded-lg text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-sm shadow-sm"
+                  >
+                    {{ evento.categoria || 'Palestra' }}
+                  </span>
+                  <span
+                    class="px-2 py-0.5 bg-white/90 text-slate-700 rounded-lg text-[10px] font-bold backdrop-blur-sm shadow-sm"
+                  >
+                    {{ formatModality(evento.modalidade) }}
+                  </span>
+                </div>
+
+                <!-- Badge de Inscrito no topo direito -->
+                <div
+                  v-if="isEventoInscrito(evento)"
+                  class="absolute top-2.5 right-2.5 px-2.5 py-0.5 bg-emerald-500 text-white rounded-lg text-[10px] font-extrabold flex items-center gap-1 shadow-sm"
+                >
+                  <q-icon name="check_circle" size="13px" />
+                  <span>Inscrito</span>
+                </div>
+              </div>
+
+              <!-- Corpo com Data e Detalhes -->
+              <div class="flex flex-row items-stretch">
+                <!-- Coluna de Data Compacta -->
+                <div
+                  class="w-20 sm:w-24 shrink-0 bg-[#0F4C81] text-white flex flex-col items-center justify-center p-2.5 text-center"
+                >
+                  <span
+                    class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300"
+                  >
+                    {{ rotuloTemporal(evento) }}
+                  </span>
+                  <span class="text-xl sm:text-2xl font-black leading-tight my-0.5">
+                    {{ rotuloDia(evento) }}
+                  </span>
+                  <span class="text-[10px] font-bold text-blue-200 capitalize">
+                    {{ rotuloMes(evento) }}
+                  </span>
+                </div>
+
+                <!-- Conteúdo textual compacto -->
+                <div class="flex-1 p-3.5 sm:p-4 flex flex-col justify-between min-w-0">
+                  <div>
+                    <h3 class="font-extrabold text-slate-900 text-sm sm:text-base leading-snug line-clamp-1 group-hover:text-[#0F4C81] transition-colors">
+                      {{ evento.titulo }}
+                    </h3>
+
+                    <p
+                      v-if="evento.descricao"
+                      class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed"
+                    >
+                      {{ evento.descricao }}
+                    </p>
+
+                    <!-- Informações rápidas -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500 mt-2.5">
+                      <div class="flex items-center gap-1">
+                        <q-icon name="schedule" size="14px" class="text-slate-400" />
+                        <span>{{ formatHorario(evento) }}</span>
+                      </div>
+
+                      <div class="flex items-center gap-1">
+                        <q-icon
+                          :name="evento.modalidade === 'ONLINE' ? 'language' : 'place'"
+                          size="14px"
+                          class="text-slate-400"
+                        />
+                        <span class="truncate max-w-[130px]">{{ formatLocal(evento) }}</span>
+                      </div>
+
+                      <div v-if="evento.vagas" class="flex items-center gap-1">
+                        <q-icon name="groups" size="14px" class="text-slate-400" />
+                        <span>{{ evento.vagas }} vagas</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rodapé com Secretaria e Botão Moderno de Ação -->
+            <div class="px-3.5 sm:px-4 py-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span v-if="evento.secretaria" class="text-[11px] font-semibold text-slate-500 truncate">
+                🏛️ {{ evento.secretaria.sigla || evento.secretaria.nome }}
+              </span>
+              <span v-else class="text-[11px] text-slate-400">PMVC</span>
+
+              <div class="flex items-center gap-2">
+                <!-- Botão Principal quando não inscrito -->
+                <q-btn
+                  v-if="!isEventoInscrito(evento)"
+                  unelevated
+                  no-caps
+                  :loading="eventStore.enrolling[evento.id]"
+                  :disable="rotuloTemporal(evento) === 'ENCERRADO' || eventStore.enrolling[evento.id]"
+                  color="primary"
+                  class="rounded-xl px-4 py-1.5 font-extrabold text-xs shadow-sm bg-[#0F4C81] hover:bg-[#153a63] text-white transition-all"
+                  icon="event_available"
+                  label="Inscrever-se"
+                  @click="toggleInscricao(evento)"
+                />
+
+                <!-- Se já inscrito -->
+                <template v-else>
+                  <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold rounded-xl flex items-center gap-1">
+                    <q-icon name="check_circle" size="15px" class="text-emerald-600" />
+                    Inscrito
+                  </span>
+
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    icon="event_busy"
+                    color="negative"
+                    size="sm"
+                    class="bg-red-50/70 hover:bg-red-100 text-red-600 rounded-lg p-1 transition-colors"
+                    :loading="eventStore.enrolling[evento.id]"
+                    :disable="eventStore.enrolling[evento.id]"
+                    @click="toggleInscricao(evento)"
+                  >
+                    <q-tooltip>Cancelar Inscrição</q-tooltip>
+                  </q-btn>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vazio -->
+      <q-card
+        v-else
+        flat
+        bordered
+        class="q-py-xl"
+      >
+        <div class="column items-center q-gutter-sm">
+          <q-icon
+            :name="
+              abaAtiva === 'meus'
+                ? 'bookmark_border'
+                : 'event_busy'
+            "
+            size="40px"
+            color="grey-5"
+          />
+
+          <div class="text-body2 text-grey-7 text-weight-medium">
+            {{
+              abaAtiva === 'meus'
+                ? 'Você ainda não se inscreveu em nenhum evento.'
+                : 'Nenhum evento encontrado com esses filtros.'
+            }}
+          </div>
+
+          <q-btn
+            v-if="filtrosAtivos.length"
+            flat
+            no-caps
+            dense
+            label="Limpar filtros"
+            color="primary"
+            @click="limparFiltros"
+          />
+        </div>
+      </q-card>
+
+      <!-- Paginação -->
+      <div
+        v-if="eventosFiltrados.length"
+        class="row items-center justify-end q-gutter-sm text-caption text-grey-7 q-mt-lg"
+      >
+        <span>Registros por página:</span>
+
+        <q-select
+          v-model="porPagina"
+          dense
+          borderless
+          emit-value
+          map-options
+          :options="opcoesPorPagina"
+          options-dense
+          style="min-width: 56px"
+          class="text-grey-8"
+        />
+
+        <span class="q-ml-sm">
+          {{ inicioRegistro }}-{{ fimRegistro }}
+          de {{ eventosFiltrados.length }}
+        </span>
+
+        <q-btn
+          flat
+          round
+          dense
+          icon="chevron_left"
+          color="grey-7"
+          :disable="pagina <= 1"
+          @click="pagina--"
+        />
+
+        <q-btn
+          flat
+          round
+          dense
+          icon="chevron_right"
+          color="grey-7"
+          :disable="pagina >= totalPaginas"
+          @click="pagina++"
+        />
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import {
+  computed,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
+
+import { useQuasar } from 'quasar'
+import { useEventStore } from 'src/stores/eventStore'
+import { getMediaUrl } from 'src/utils/media'
+
+const $q = useQuasar()
+const eventStore = useEventStore()
+
+const abaAtiva = ref('todos')
+const busca = ref('')
+const tipoFiltro = ref(null)
+const periodoFiltro = ref('todos')
+
+const pagina = ref(1)
+const porPagina = ref(5)
+
+const opcoesPorPagina = [
+  { label: '5', value: 5 },
+  { label: '10', value: 10 },
+  { label: '15', value: 15 },
+  { label: '20', value: 20 },
+]
+
+const opcoesPeriodo = [
+  {
+    label: 'Todos os períodos',
+    value: 'todos',
+  },
+  {
+    label: 'Próximos 7 dias',
+    value: '7dias',
+  },
+  {
+    label: 'Próximos 30 dias',
+    value: '30dias',
+  },
+  {
+    label: 'Este mês',
+    value: 'estemes',
+  },
+]
+
+const eventos = computed(() => eventStore.events)
+
+/**
+ * IDs dos eventos em que o usuário está inscrito.
+ */
+const eventosInscritosIds = computed(() => {
+  const inscritos = eventStore.enrolledEvents || []
+
+  return new Set(
+    inscritos
+      .map((item) => {
+        return (
+          item?.eventId ??
+          item?.eventoId ??
+          item?.evento?.id ??
+          item?.event?.id ??
+          item?.id
+        )
+      })
+      .filter(
+        (id) =>
+          id !== undefined &&
+          id !== null,
+      )
+      .map((id) => String(id)),
+  )
+})
+
+/**
+ * Fonte única para verificar inscrição.
+ */
+function isEventoInscrito(evento) {
+  if (!evento?.id) {
+    return false
+  }
+
+  return (
+    eventosInscritosIds.value.has(
+      String(evento.id),
+    ) ||
+    evento.inscrito === true
+  )
+}
+
+/**
+ * Tipos disponíveis no filtro.
+ */
+const opcoesTipo = computed(() => {
+  const tipos = [
+    ...new Set(
+      eventos.value
+        .map((evento) => evento.categoria)
+        .filter(Boolean),
+    ),
+  ]
+
+  return tipos.map((tipo) => ({
+    label: tipo,
+    value: tipo,
+  }))
+})
+
+/**
+ * Total de inscrições.
+ */
+const totalInscritos = computed(
+  () => eventStore.enrolledEvents?.length || 0,
+)
+
+/**
+ * Verifica se o evento está dentro do período selecionado.
+ */
+const dentroDoPeriodo = (evento) => {
+  if (periodoFiltro.value === 'todos') {
+    return true
+  }
+
+  const agora = new Date()
+  agora.setHours(0, 0, 0, 0)
+
+  const inicio = new Date(evento.dataInicio)
+
+  if (periodoFiltro.value === '7dias') {
+    const limite = new Date(agora)
+    limite.setDate(limite.getDate() + 7)
+
+    return inicio >= agora && inicio <= limite
+  }
+
+  if (periodoFiltro.value === '30dias') {
+    const limite = new Date(agora)
+    limite.setDate(limite.getDate() + 30)
+
+    return inicio >= agora && inicio <= limite
+  }
+
+  if (periodoFiltro.value === 'estemes') {
+    return (
+      inicio.getMonth() === agora.getMonth() &&
+      inicio.getFullYear() === agora.getFullYear()
+    )
+  }
+
+  return true
+}
+
+/**
+ * Eventos filtrados.
+ */
+const eventosFiltrados = computed(() => {
+  return eventos.value
+    .filter((evento) =>
+      abaAtiva.value === 'meus'
+        ? isEventoInscrito(evento)
+        : true,
+    )
+
+    .filter((evento) => {
+      const termo = busca.value
+        ?.trim()
+        .toLowerCase()
+
+      if (!termo) {
+        return true
+      }
+
+      return (
+        evento.titulo
+          ?.toLowerCase()
+          .includes(termo) ||
+        evento.local
+          ?.toLowerCase()
+          .includes(termo)
+      )
+    })
+
+    .filter(
+      (evento) =>
+        !tipoFiltro.value ||
+        evento.categoria === tipoFiltro.value,
+    )
+
+    .filter((evento) =>
+      dentroDoPeriodo(evento),
+    )
+
+    .sort(
+      (a, b) =>
+        new Date(a.dataInicio) -
+        new Date(b.dataInicio),
+    )
+})
+
+/**
+ * Total de páginas.
+ */
+const totalPaginas = computed(() =>
+  Math.max(
+    1,
+    Math.ceil(
+      eventosFiltrados.value.length /
+        porPagina.value,
+    ),
+  ),
+)
+
+/**
+ * Eventos da página atual.
+ */
+const eventosPaginados = computed(() => {
+  const inicio =
+    (pagina.value - 1) *
+    porPagina.value
+
+  return eventosFiltrados.value.slice(
+    inicio,
+    inicio + porPagina.value,
+  )
+})
+
+/**
+ * Primeiro registro exibido.
+ */
+const inicioRegistro = computed(() => {
+  if (!eventosFiltrados.value.length) {
+    return 0
+  }
+
+  return (
+    (pagina.value - 1) *
+      porPagina.value +
+    1
+  )
+})
+
+/**
+ * Último registro exibido.
+ */
+const fimRegistro = computed(() =>
+  Math.min(
+    pagina.value * porPagina.value,
+    eventosFiltrados.value.length,
+  ),
+)
+
+/**
+ * Volta para a primeira página quando
+ * algum filtro é alterado.
+ */
+watch(
+  [
+    abaAtiva,
+    busca,
+    tipoFiltro,
+    periodoFiltro,
+    porPagina,
+  ],
+  () => {
+    pagina.value = 1
+  },
+)
+
+/**
+ * Filtros ativos.
+ */
+const filtrosAtivos = computed(() => {
+  const chips = []
+
+  if (busca.value) {
+    chips.push({
+      key: 'busca',
+      label: `Busca: "${busca.value}"`,
+      limpar: () => {
+        busca.value = ''
+      },
+    })
+  }
+
+  if (tipoFiltro.value) {
+    chips.push({
+      key: 'tipo',
+      label: tipoFiltro.value,
+      limpar: () => {
+        tipoFiltro.value = null
+      },
+    })
+  }
+
+  if (periodoFiltro.value !== 'todos') {
+    const opcao = opcoesPeriodo.find(
+      (item) =>
+        item.value === periodoFiltro.value,
+    )
+
+    if (opcao) {
+      chips.push({
+        key: 'periodo',
+        label: opcao.label,
+        limpar: () => {
+          periodoFiltro.value = 'todos'
+        },
+      })
+    }
+  }
+
+  return chips
+})
+
+function limparFiltros() {
+  busca.value = ''
+  tipoFiltro.value = null
+  periodoFiltro.value = 'todos'
+}
+
+const nomesMes = [
+  'jan',
+  'fev',
+  'mar',
+  'abr',
+  'mai',
+  'jun',
+  'jul',
+  'ago',
+  'set',
+  'out',
+  'nov',
+  'dez',
+]
+
+function rotuloDia(evento) {
+  const inicio = new Date(
+    evento.dataInicio,
+  )
+
+  if (!evento.dataFim) {
+    return String(
+      inicio.getDate(),
+    ).padStart(2, '0')
+  }
+
+  const fim = new Date(
+    evento.dataFim,
+  )
+
+  if (
+    inicio.getMonth() ===
+    fim.getMonth()
+  ) {
+    return `${String(
+      inicio.getDate(),
+    ).padStart(2, '0')} a ${String(
+      fim.getDate(),
+    ).padStart(2, '0')}`
+  }
+
+  return `${String(
+    inicio.getDate(),
+  ).padStart(2, '0')} ${
+    nomesMes[inicio.getMonth()]
+  } a ${String(
+    fim.getDate(),
+  ).padStart(2, '0')} ${
+    nomesMes[fim.getMonth()]
+  }`
+}
+
+function rotuloMes(evento) {
+  return nomesMes[
+    new Date(
+      evento.dataInicio,
+    ).getMonth()
+  ]
+}
+
+function rotuloTemporal(evento) {
+  const agora = new Date()
+  agora.setHours(0, 0, 0, 0)
+
+  const inicio = new Date(
+    evento.dataInicio,
+  )
+
+  const diffDias = Math.round(
+    (inicio - agora) /
+      (1000 * 60 * 60 * 24),
+  )
+
+  if (diffDias < 0) {
+    return 'ENCERRADO'
+  }
+
+  if (diffDias <= 7) {
+    return 'PRÓXIMO'
+  }
+
+  return 'EM BREVE'
+}
+
+function formatHorario(evento) {
+  if (!evento.dataInicio) {
+    return '-'
+  }
+
+  const inicio = new Date(
+    evento.dataInicio,
+  ).toLocaleTimeString(
+    'pt-BR',
+    {
+      hour: '2-digit',
+      minute: '2-digit',
+    },
+  )
+
+  if (!evento.dataFim) {
+    return inicio
+  }
+
+  const fim = new Date(
+    evento.dataFim,
+  ).toLocaleTimeString(
+    'pt-BR',
+    {
+      hour: '2-digit',
+      minute: '2-digit',
+    },
+  )
+
+  return `${inicio} às ${fim}`
+}
+
+function formatLocal(evento) {
+  if (
+    evento.modalidade === 'ONLINE'
+  ) {
+    return 'Online'
+  }
+
+  if (
+    evento.modalidade === 'HIBRIDO'
+  ) {
+    return evento.local
+      ? `${evento.local} · Híbrido`
+      : 'Híbrido'
+  }
+
+  return (
+    evento.local ||
+    'Local não informado'
+  )
+}
+
+function formatModality(modalidade) {
+  if (!modalidade) return 'Presencial'
+  if (modalidade === 'ONLINE') return 'Online'
+  if (modalidade === 'HIBRIDO') return 'Híbrido'
+  return 'Presencial'
+}
+
+/**
+ * Inscrição / cancelamento.
+ */
+async function toggleInscricao(evento) {
+  const inscrito =
+    isEventoInscrito(evento)
+
+  try {
+    if (inscrito) {
+      await eventStore.unenroll(
+        evento.id,
+      )
+
+      $q.notify({
+        color: 'info',
+        icon: 'info',
+        message: `Inscrição cancelada para "${evento.titulo}".`,
+        position: 'top',
+      })
+
+      return
+    }
+
+    await eventStore.enroll(
+      evento.id,
+    )
+
+    $q.notify({
+      color: 'positive',
+      icon: 'check_circle',
+      message: `Inscrição confirmada para "${evento.titulo}"!`,
+      position: 'top',
+    })
+  } catch (error) {
+    const message =
+      error?.response?.data?.message ||
+      'Não foi possível realizar a operação.'
+
+    $q.notify({
+      type: 'negative',
+      message,
+      position: 'top',
+    })
+  }
+}
+
+/**
+ * Carrega os eventos.
+ */
+onMounted(async () => {
+  try {
+    await eventStore.fetchEvents()
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message:
+        error?.response?.data?.message ||
+        'Não foi possível carregar os eventos.',
+      position: 'top',
+    })
+  }
+})
+</script>

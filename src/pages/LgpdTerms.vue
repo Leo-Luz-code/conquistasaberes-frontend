@@ -64,7 +64,7 @@ async function handleAccept() {
   loading.value = true;
   try {
     await authStore.acceptLgpd();
-    router.push('/servidor/dashboard');
+    router.push('/');
   } catch (error) {
     console.error('Erro ao aceitar LGPD:', error);
   } finally {

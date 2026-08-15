@@ -60,6 +60,12 @@ export default route(function () {
         return;
       }
 
+      // Verificar nível Admin
+      if (to.meta.requiredAdminLevel && !authStore.isAdmin) {
+        next({ name: 'error' });
+        return;
+      }
+
       next();
     } catch (error) {
       console.error('Erro no router guard:', error);

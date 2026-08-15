@@ -70,23 +70,6 @@
               </q-input>
             </div>
 
-            <!-- Categoria -->
-            <div class="col-12 col-sm-4">
-              <q-select
-                v-model="form.categoria"
-                :options="categorias"
-                label="Categoria / Área *"
-                outlined
-                dense
-                emit-value
-                map-options
-              >
-                <template v-slot:prepend>
-                  <q-icon name="category" color="primary" />
-                </template>
-              </q-select>
-            </div>
-
             <!-- Público-Alvo / Secretaria -->
             <div class="col-12 col-sm-4">
               <q-select
@@ -100,6 +83,24 @@
               >
                 <template v-slot:prepend>
                   <q-icon name="account_balance" color="primary" />
+                </template>
+              </q-select>
+            </div>
+
+            <!-- Trilha de Aprendizagem -->
+            <div class="col-12 col-sm-4">
+              <q-select
+                v-model="form.trilhaId"
+                :options="trilhaOptions"
+                label="Trilha de Aprendizagem"
+                outlined
+                dense
+                emit-value
+                map-options
+                :hint="`Eixo temático: ${eixoVinculado}`"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="route" color="primary" />
                 </template>
               </q-select>
             </div>
@@ -147,7 +148,7 @@
                 <div v-if="form.capaUrl" class="q-mt-sm row items-center q-gutter-sm">
                   <span class="text-caption text-grey-7">Pré-visualização:</span>
                   <q-img
-                    :src="form.capaUrl"
+                    :src="getMediaUrl(form.capaUrl)"
                     style="max-width: 120px; height: 60px"
                     class="rounded-borders shadow-1"
                     fit="cover"
@@ -190,6 +191,7 @@
 import { ref, watch, computed } from 'vue'
 import { useCourseStore } from 'src/stores/courseStore'
 import { useQuasar } from 'quasar'
+import { getMediaUrl } from 'src/utils/media'
 
 const props = defineProps({
   modelValue: {
@@ -213,15 +215,6 @@ const capaFile = ref(null)
 
 const isEditing = computed(() => !!(props.course && props.course.id))
 
-const categorias = [
-  'Geral',
-  'Tecnologia & Transformação Digital',
-  'Saúde Pública',
-  'Educação Municipal',
-  'Gestão Pública & RH',
-  'LGPD & Transparência',
-]
-
 const secretariaOptions = computed(() => {
   const options = [{ label: '🏛️ Toda a Prefeitura (Curso Geral)', value: null }]
   if (courseStore.secretarias && courseStore.secretarias.length > 0) {
@@ -235,6 +228,27 @@ const secretariaOptions = computed(() => {
   return options
 })
 
+const trilhaOptions = computed(() => {
+  const options = [{ label: 'Nenhuma (Curso Geral / Avulso)', value: null }]
+  if (courseStore.learningPaths && courseStore.learningPaths.length > 0) {
+    courseStore.learningPaths.forEach((t) => {
+      const eixoNome = t.eixo?.nomeEixo || t.eixoNome || ''
+      const label = eixoNome ? `${t.tituloTrilha} (${eixoNome})` : t.tituloTrilha
+      options.push({
+        label,
+        value: t.id,
+      })
+    })
+  }
+  if (props.course?.trilha && !options.some((o) => o.value === props.course.trilha.id)) {
+    options.push({
+      label: props.course.trilha.tituloTrilha,
+      value: props.course.trilha.id,
+    })
+  }
+  return options
+})
+
 const form = ref({
   titulo: '',
   descricao: '',
@@ -242,7 +256,14 @@ const form = ref({
   categoria: 'Geral',
   capaUrl: '',
   secretariaId: null,
+  trilhaId: null,
   isPublished: true,
+})
+
+const eixoVinculado = computed(() => {
+  if (!form.value.trilhaId) return 'Geral'
+  const trilha = courseStore.learningPaths?.find((t) => t.id === form.value.trilhaId)
+  return trilha?.eixo?.nomeEixo || trilha?.eixoNome || 'Geral'
 })
 
 // Atualizar o formulário quando a prop course mudar ou o modal abrir
@@ -251,6 +272,7 @@ watch(
   async (isOpen) => {
     if (isOpen) {
       courseStore.fetchSecretarias()
+      courseStore.fetchAdminLearningPaths()
       capaFile.value = null
       if (props.course) {
         form.value = {
@@ -260,6 +282,7 @@ watch(
           categoria: props.course.categoria || 'Geral',
           capaUrl: props.course.capaUrl || '',
           secretariaId: props.course.secretariaId || null,
+          trilhaId: props.course.trilhaId || null,
           isPublished: props.course.isPublished !== undefined ? props.course.isPublished : true,
         }
       } else {
@@ -270,6 +293,7 @@ watch(
           categoria: 'Geral',
           capaUrl: '',
           secretariaId: null,
+          trilhaId: null,
           isPublished: true,
         }
       }
@@ -305,6 +329,11 @@ const handleCapaUpload = async (file) => {
 const handleSubmit = async () => {
   saving.value = true
   try {
+    // Define a categoria dinamicamente a partir do eixo da trilha vinculada
+    form.value.categoria = form.value.trilhaId
+      ? (courseStore.learningPaths?.find((t) => t.id === form.value.trilhaId)?.eixo?.nomeEixo || 'Geral')
+      : 'Geral'
+
     if (isEditing.value) {
       await courseStore.updateCourse(props.course.id, form.value)
     } else {
