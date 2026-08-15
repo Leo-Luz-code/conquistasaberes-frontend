@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 > Given a version number `MAJOR.MINOR.PATCH`, increment the:
+>
 > 1. MAJOR version when you make incompatible API changes,
 > 2. MINOR version when you add functionality in a backwards-compatible manner, and
 > 3. PATCH version when you make backwards-compatible bug fixes.
@@ -14,25 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changelog entry snippet
 
-``` markdown
+```markdown
 ## [X.Y.Z] - yyyy-mm-dd
 
 ### Added
+
 ### Fixed
+
 ### Changed
+
 ### Removed
 ```
 
 ## Version summary
 
 | Tag                      | Release date |
-|--------------------------|--------------|
+| ------------------------ | ------------ |
 | [1.0.0](#100-2026-08-14) | 2026-08-14   |
-
 
 ## [1.0.0] - 2026-08-14
 
 ### Added
+
 - **Passaporte Digital do Servidor (`PerfilServidor.vue`):**
   - Nova credencial oficial com identidade visual institucional da PMVC e brasão do município.
   - Integração consolidada da jornada formativa: Nível, XP acumulado, posição no ranking geral e progresso para o próximo nível.
@@ -44,16 +48,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Boot Plugin ApexCharts (`src/boot/apexcharts.js`):**
   - Registro global do componente `VueApexCharts` no Quasar Framework para renderização estável dos gráficos.
 
+### Fixed
+
+- **Dashboard do Admin**
+  - Corrigido botão de "Novo Curso"
+
 ### Changed
+
 - **Dashboard do Servidor (`DashboardServidor.vue`):**
   - Integração 100% dinâmica com dados reais das Pinia Stores (`courseStore`, `gamificationStore`, `certificateStore`, `authStore`).
-  - KPIs reais de *Cursos Disponíveis*, *Cursos em Andamento*, *Cursos Concluídos* e *Certificados Emitidos*.
-  - Botão inteligente *"Continuar curso atual"* que direciona diretamente para a última capacitação em andamento do servidor.
+  - KPIs reais de _Cursos Disponíveis_, _Cursos em Andamento_, _Cursos Concluídos_ e _Certificados Emitidos_.
+  - Botão inteligente _"Continuar curso atual"_ que direciona diretamente para a última capacitação em andamento do servidor.
   - Progresso Geral da Jornada conectado aos cursos e trilhas matriculados no banco.
-  - Atalhos Rápidos com rotas e botões 100% funcionais para *Minhas Trilhas* (`/servidor/trilhas`), *Meus Cursos* (`/servidor/cursos`), *Biblioteca* (`/servidor/biblioteca`), *Fórum* (`/servidor/forum`), *Eventos e Palestras* (`/servidor/eventos`), *Certificados* (`/servidor/certificados`), *Passaporte Digital* (`/perfil`) e *Norminha IA* (`/servidor/norminha`).
+  - Atalhos Rápidos com rotas e botões 100% funcionais para _Minhas Trilhas_ (`/servidor/trilhas`), _Meus Cursos_ (`/servidor/cursos`), _Biblioteca_ (`/servidor/biblioteca`), _Fórum_ (`/servidor/forum`), _Eventos e Palestras_ (`/servidor/eventos`), _Certificados_ (`/servidor/certificados`), _Passaporte Digital_ (`/perfil`) e _Norminha IA_ (`/servidor/norminha`).
 - **Dashboard do Gestor (`DashboardGestor.vue`):**
   - Correção da escala do gráfico de conclusão por curso (`yaxis.min: 0, max: 100`), iniciando estritamente em 0% sem valores negativos.
-  - Atualização dos rótulos do card de *Trilhas de Aprendizagem* explicitando a taxa de adesão de servidores por trilha.
+  - Atualização dos rótulos do card de _Trilhas de Aprendizagem_ explicitando a taxa de adesão de servidores por trilha.
 - **Navegação Global (`MainLayout.vue`):**
   - Atualização dos menus lateral e do avatar de "Meu Perfil" para **"Passaporte Digital"** com ícone de credencial (`badge`).
 - **Gestão de Trilhas (`AdminTrilhasList.vue`):**
