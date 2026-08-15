@@ -162,7 +162,7 @@
           >
             <img
               v-if="event.capaUrl"
-              :src="event.capaUrl"
+              :src="getMediaUrl(event.capaUrl)"
               :alt="event.titulo"
               class="w-full h-full object-cover"
             />
@@ -503,6 +503,7 @@ import {
 import { useQuasar } from 'quasar'
 import { useEventStore } from 'src/stores/eventStore'
 import { useRouter } from 'vue-router'
+import { getMediaUrl } from 'src/utils/media'
 import EventoFormModal from '../../../components/modals/EventoFormModal.vue'
 
 const $q = useQuasar()

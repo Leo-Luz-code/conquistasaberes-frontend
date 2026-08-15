@@ -237,14 +237,21 @@
 
             <!-- Badge desbloqueada -->
             <div
-              class="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105"
+              class="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 overflow-hidden"
               :class="
                 badge.earned
                   ? 'bg-amber-100 text-amber-600'
                   : 'bg-slate-200 text-slate-400'
               "
             >
+              <img
+                v-if="isImageUrl(badge.icone)"
+                :src="getMediaUrl(badge.icone)"
+                :alt="badge.nome"
+                class="w-full h-full object-cover"
+              />
               <q-icon
+                v-else
                 :name="badge.icone || 'military_tech'"
                 size="30px"
               />
@@ -540,10 +547,24 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useGamificationStore } from 'src/stores/gamificationStore'
+import { getMediaUrl } from 'src/utils/media'
 
 const gamificationStore = useGamificationStore()
 
 const loadingLeaderboard = ref(false)
+
+function isImageUrl(icone) {
+  if (!icone) return false
+  const trimmed = icone.trim()
+  return (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('/uploads/') ||
+    trimmed.startsWith('uploads/') ||
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('blob:')
+  )
+}
 
 const topUsers = computed(
   () => gamificationStore.leaderboard?.topUsers || [],

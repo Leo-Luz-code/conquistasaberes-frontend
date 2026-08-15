@@ -166,7 +166,7 @@ export const useEventStore = defineStore('event', () => {
 
     return {
       ...event,
-
+      capaUrl: event.capaUrl || event.capa_url || event.capa || null,
       inscrito:
         event.inscrito ??
         event.isEnrolled ??

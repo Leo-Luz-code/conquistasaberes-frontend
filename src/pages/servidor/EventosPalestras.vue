@@ -136,230 +136,158 @@
           :key="evento.id"
           class="col-12 col-md-6"
         >
-          <q-card
-            flat
-            bordered
-            class="full-height overflow-hidden"
+          <div
+            class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all overflow-hidden flex flex-col justify-between h-full group"
           >
-            <!-- Imagem de capa -->
-            <q-img
-              v-if="evento.capaUrl"
-              :src="evento.capaUrl"
-              :alt="evento.titulo"
-              ratio="16/7"
-              fit="cover"
-            >
-              <template #error>
-                <div class="absolute-full flex flex-center bg-grey-2">
-                  <q-icon
-                    name="image_not_supported"
-                    size="40px"
-                    color="grey-5"
-                  />
-                </div>
-              </template>
-            </q-img>
-
-            <!-- Placeholder quando não existe capa -->
-            <div
-              v-else
-              class="bg-grey-2 flex flex-center"
-              style="height: 180px"
-            >
-              <div class="column items-center text-grey-5">
-                <q-icon
-                  name="event"
-                  size="48px"
+            <div>
+              <!-- Capa Compacta com Badges Flutuantes -->
+              <div class="relative overflow-hidden w-full bg-slate-100 h-32 sm:h-36">
+                <img
+                  v-if="evento.capaUrl"
+                  :src="getMediaUrl(evento.capaUrl)"
+                  :alt="evento.titulo"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
+                <div
+                  v-else
+                  class="w-full h-full flex items-center justify-center text-slate-400 bg-gradient-to-br from-slate-100 to-slate-200"
+                >
+                  <div class="flex items-center gap-2 text-slate-400">
+                    <q-icon name="event" size="28px" class="text-slate-300" />
+                    <span class="text-xs font-semibold">Sem imagem de capa</span>
+                  </div>
+                </div>
 
-                <div class="text-caption q-mt-sm">
-                  Sem imagem de capa
+                <!-- Badges sobrepostos na capa -->
+                <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                  <span
+                    class="px-2.5 py-0.5 bg-[#0F4C81]/90 text-white rounded-lg text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-sm shadow-sm"
+                  >
+                    {{ evento.categoria || 'Palestra' }}
+                  </span>
+                  <span
+                    class="px-2 py-0.5 bg-white/90 text-slate-700 rounded-lg text-[10px] font-bold backdrop-blur-sm shadow-sm"
+                  >
+                    {{ formatModality(evento.modalidade) }}
+                  </span>
+                </div>
+
+                <!-- Badge de Inscrito no topo direito -->
+                <div
+                  v-if="isEventoInscrito(evento)"
+                  class="absolute top-2.5 right-2.5 px-2.5 py-0.5 bg-emerald-500 text-white rounded-lg text-[10px] font-extrabold flex items-center gap-1 shadow-sm"
+                >
+                  <q-icon name="check_circle" size="13px" />
+                  <span>Inscrito</span>
+                </div>
+              </div>
+
+              <!-- Corpo com Data e Detalhes -->
+              <div class="flex flex-row items-stretch">
+                <!-- Coluna de Data Compacta -->
+                <div
+                  class="w-20 sm:w-24 shrink-0 bg-[#0F4C81] text-white flex flex-col items-center justify-center p-2.5 text-center"
+                >
+                  <span
+                    class="text-[9px] font-extrabold uppercase tracking-wider text-amber-300"
+                  >
+                    {{ rotuloTemporal(evento) }}
+                  </span>
+                  <span class="text-xl sm:text-2xl font-black leading-tight my-0.5">
+                    {{ rotuloDia(evento) }}
+                  </span>
+                  <span class="text-[10px] font-bold text-blue-200 capitalize">
+                    {{ rotuloMes(evento) }}
+                  </span>
+                </div>
+
+                <!-- Conteúdo textual compacto -->
+                <div class="flex-1 p-3.5 sm:p-4 flex flex-col justify-between min-w-0">
+                  <div>
+                    <h3 class="font-extrabold text-slate-900 text-sm sm:text-base leading-snug line-clamp-1 group-hover:text-[#0F4C81] transition-colors">
+                      {{ evento.titulo }}
+                    </h3>
+
+                    <p
+                      v-if="evento.descricao"
+                      class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed"
+                    >
+                      {{ evento.descricao }}
+                    </p>
+
+                    <!-- Informações rápidas -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500 mt-2.5">
+                      <div class="flex items-center gap-1">
+                        <q-icon name="schedule" size="14px" class="text-slate-400" />
+                        <span>{{ formatHorario(evento) }}</span>
+                      </div>
+
+                      <div class="flex items-center gap-1">
+                        <q-icon
+                          :name="evento.modalidade === 'ONLINE' ? 'language' : 'place'"
+                          size="14px"
+                          class="text-slate-400"
+                        />
+                        <span class="truncate max-w-[130px]">{{ formatLocal(evento) }}</span>
+                      </div>
+
+                      <div v-if="evento.vagas" class="flex items-center gap-1">
+                        <q-icon name="groups" size="14px" class="text-slate-400" />
+                        <span>{{ evento.vagas }} vagas</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Corpo do evento -->
-            <div class="row no-wrap">
-              <!-- Data -->
-              <div
-                class="col-auto bg-primary text-white column items-center justify-center q-pa-md text-center"
-                style="width: 112px"
-              >
-                <q-icon
-                  name="calendar_today"
-                  color="amber-4"
-                  size="22px"
+            <!-- Rodapé com Secretaria e Botão Moderno de Ação -->
+            <div class="px-3.5 sm:px-4 py-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span v-if="evento.secretaria" class="text-[11px] font-semibold text-slate-500 truncate">
+                🏛️ {{ evento.secretaria.sigla || evento.secretaria.nome }}
+              </span>
+              <span v-else class="text-[11px] text-slate-400">PMVC</span>
+
+              <div class="flex items-center gap-2">
+                <!-- Botão Principal quando não inscrito -->
+                <q-btn
+                  v-if="!isEventoInscrito(evento)"
+                  unelevated
+                  no-caps
+                  :loading="eventStore.enrolling[evento.id]"
+                  :disable="rotuloTemporal(evento) === 'ENCERRADO' || eventStore.enrolling[evento.id]"
+                  color="primary"
+                  class="rounded-xl px-4 py-1.5 font-extrabold text-xs shadow-sm bg-[#0F4C81] hover:bg-[#153a63] text-white transition-all"
+                  icon="event_available"
+                  label="Inscrever-se"
+                  @click="toggleInscricao(evento)"
                 />
 
-                <div
-                  class="text-caption text-weight-bold text-blue-2 q-mt-xs"
-                >
-                  {{ rotuloTemporal(evento) }}
-                </div>
-
-                <div class="text-h5 text-weight-bold q-my-xs">
-                  {{ rotuloDia(evento) }}
-                </div>
-
-                <div
-                  class="text-caption text-weight-bold text-blue-1 text-lowercase"
-                >
-                  {{ rotuloMes(evento) }}
-                </div>
-              </div>
-
-              <!-- Conteúdo -->
-              <q-card-section class="col column justify-between">
-                <div>
-                  <!-- Categorias -->
-                  <div class="row items-center q-gutter-xs q-mb-sm">
-                    <q-chip
-                      dense
-                      color="warning"
-                      text-color="white"
-                      size="sm"
-                    >
-                      {{ evento.categoria || 'Evento' }}
-                    </q-chip>
-
-                    <q-chip
-                      v-if="isEventoInscrito(evento)"
-                      dense
-                      color="positive"
-                      text-color="white"
-                      icon="check_circle"
-                      size="sm"
-                    >
-                      Inscrito
-                    </q-chip>
-                  </div>
-
-                  <!-- Título -->
-                  <div class="text-subtitle1 text-weight-bold text-grey-9">
-                    {{ evento.titulo }}
-                  </div>
-
-                  <!-- Descrição -->
-                  <div
-                    v-if="evento.descricao"
-                    class="text-caption text-grey-7 q-mt-sm"
-                  >
-                    {{ evento.descricao }}
-                  </div>
-
-                  <!-- Informações -->
-                  <div class="text-caption text-grey-7 q-mt-md">
-                    <!-- Horário -->
-                    <div class="row items-center q-gutter-xs">
-                      <q-icon
-                        name="schedule"
-                        size="16px"
-                      />
-
-                      <span>
-                        {{ formatHorario(evento) }}
-                      </span>
-                    </div>
-
-                    <!-- Local -->
-                    <div class="row items-center q-gutter-xs q-mt-xs">
-                      <q-icon
-                        :name="
-                          evento.modalidade === 'ONLINE'
-                            ? 'language'
-                            : 'place'
-                        "
-                        size="16px"
-                      />
-
-                      <span>
-                        {{ formatLocal(evento) }}
-                      </span>
-                    </div>
-
-                    <!-- Secretaria -->
-                    <div
-                      v-if="evento.secretaria"
-                      class="row items-center q-gutter-xs q-mt-xs"
-                    >
-                      <q-icon
-                        name="account_balance"
-                        size="16px"
-                      />
-
-                      <span>
-                        {{
-                          evento.secretaria.nome ||
-                          evento.secretaria.sigla
-                        }}
-                      </span>
-                    </div>
-
-                    <!-- Vagas -->
-                    <div
-                      v-if="evento.vagas"
-                      class="row items-center q-gutter-xs q-mt-xs"
-                    >
-                      <q-icon
-                        name="groups"
-                        size="16px"
-                      />
-
-                      <span>
-                        {{ evento.vagas }} vagas
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Ações -->
-                <div class="row items-center q-gutter-sm q-mt-md">
-                  <q-btn
-                    :color="
-                      isEventoInscrito(evento)
-                        ? 'positive'
-                        : 'primary'
-                    "
-                    unelevated
-                    no-caps
-                    dense
-                    :loading="eventStore.enrolling[evento.id]"
-                    :disable="
-                      rotuloTemporal(evento) === 'ENCERRADO' ||
-                      eventStore.enrolling[evento.id]
-                    "
-                    :label="
-                      isEventoInscrito(evento)
-                        ? 'Inscrito'
-                        : 'Inscrever-se'
-                    "
-                    :icon="
-                      isEventoInscrito(evento)
-                        ? 'check_circle'
-                        : 'event_available'
-                    "
-                    @click="toggleInscricao(evento)"
-                  />
+                <!-- Se já inscrito -->
+                <template v-else>
+                  <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold rounded-xl flex items-center gap-1">
+                    <q-icon name="check_circle" size="15px" class="text-emerald-600" />
+                    Inscrito
+                  </span>
 
                   <q-btn
-                    v-if="isEventoInscrito(evento)"
                     flat
                     round
                     dense
                     icon="event_busy"
-                    color="grey-6"
+                    color="negative"
+                    size="sm"
+                    class="bg-red-50/70 hover:bg-red-100 text-red-600 rounded-lg p-1 transition-colors"
                     :loading="eventStore.enrolling[evento.id]"
                     :disable="eventStore.enrolling[evento.id]"
                     @click="toggleInscricao(evento)"
                   >
-                    <q-tooltip>
-                      Cancelar inscrição
-                    </q-tooltip>
+                    <q-tooltip>Cancelar Inscrição</q-tooltip>
                   </q-btn>
-                </div>
-              </q-card-section>
+                </template>
+              </div>
             </div>
-          </q-card>
+          </div>
         </div>
       </div>
 
@@ -459,6 +387,7 @@ import {
 
 import { useQuasar } from 'quasar'
 import { useEventStore } from 'src/stores/eventStore'
+import { getMediaUrl } from 'src/utils/media'
 
 const $q = useQuasar()
 const eventStore = useEventStore()
@@ -906,6 +835,13 @@ function formatLocal(evento) {
     evento.local ||
     'Local não informado'
   )
+}
+
+function formatModality(modalidade) {
+  if (!modalidade) return 'Presencial'
+  if (modalidade === 'ONLINE') return 'Online'
+  if (modalidade === 'HIBRIDO') return 'Híbrido'
+  return 'Presencial'
 }
 
 /**

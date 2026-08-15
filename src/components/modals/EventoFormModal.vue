@@ -180,11 +180,13 @@
               outlined
               dense
               label="Capa do evento"
-              accept="image/png,image/jpeg,image/webp"
+              accept="image/png,image/jpeg,image/webp,image/*"
               max-file-size="5242880"
               clearable
               use-chips
               hide-bottom-space
+              :loading="uploadingCapa"
+              @update:model-value="handleCapaUpload"
               @rejected="onFileRejected"
             >
               <template #prepend>
@@ -200,14 +202,26 @@
           <!-- Preview -->
           <div
             v-if="form.capaUrl && !imageError"
-            class="mt-3 rounded-xl overflow-hidden border border-slate-200 h-32 bg-slate-50"
+            class="mt-3 rounded-xl overflow-hidden border border-slate-200 h-32 bg-slate-50 relative group"
           >
             <img
-              :src="form.capaUrl"
+              :src="getMediaUrl(form.capaUrl)"
               alt="Pré-visualização da capa"
               class="w-full h-full object-cover"
               @error="imageError = true"
             />
+            <q-btn
+              round
+              dense
+              flat
+              color="negative"
+              icon="delete"
+              size="sm"
+              class="absolute top-2 right-2 bg-white/80 hover:bg-white shadow-sm"
+              @click="removerCapa"
+            >
+              <q-tooltip>Remover imagem de capa</q-tooltip>
+            </q-btn>
           </div>
 
           <div
@@ -288,8 +302,11 @@ import {
 } from 'vue'
 
 import { useQuasar } from 'quasar'
+import { useCourseStore } from 'src/stores/courseStore'
+import { getMediaUrl } from 'src/utils/media'
 
 const $q = useQuasar()
+const courseStore = useCourseStore()
 
 const props = defineProps({
   modelValue: {
@@ -315,6 +332,8 @@ const emit = defineEmits([
 
 const submitting = ref(false)
 const imageError = ref(false)
+const capaFile = ref(null)
+const uploadingCapa = ref(false)
 
 const dialog = computed({
   get: () => props.modelValue,
@@ -356,6 +375,7 @@ watch(
   () => props.event,
   (event) => {
     imageError.value = false
+    capaFile.value = null
 
     if (event) {
       form.value = {
@@ -403,6 +423,7 @@ watch(
     if (value && !props.event) {
       form.value = createEmptyForm()
       imageError.value = false
+      capaFile.value = null
     }
   },
 )
@@ -422,6 +443,45 @@ watch(
     imageError.value = false
   },
 )
+
+async function handleCapaUpload(file) {
+  if (!file) return
+  uploadingCapa.value = true
+  imageError.value = false
+  try {
+    const res = await courseStore.uploadFile(file)
+    if (res?.url) {
+      form.value.capaUrl = res.url
+      $q.notify({
+        color: 'positive',
+        icon: 'cloud_done',
+        message: 'Upload da capa realizado com sucesso!',
+      })
+    }
+  } catch (err) {
+    console.error('Erro no upload da capa:', err)
+    $q.notify({
+      color: 'negative',
+      icon: 'error',
+      message: 'Erro ao fazer upload da imagem.',
+    })
+  } finally {
+    uploadingCapa.value = false
+  }
+}
+
+function onFileRejected() {
+  $q.notify({
+    type: 'negative',
+    message: 'Arquivo inválido ou excede o tamanho máximo de 5 MB.',
+  })
+}
+
+function removerCapa() {
+  form.value.capaUrl = ''
+  capaFile.value = null
+  imageError.value = false
+}
 
 function createEmptyForm() {
   return {

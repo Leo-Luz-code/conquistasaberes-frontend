@@ -34,6 +34,13 @@ export function getBackendBaseUrl() {
 export function getMediaUrl(url) {
   if (!url) return '';
   const trimmed = String(url).trim();
+
+  // Se o caminho contiver /uploads/, redireciona dinamicamente para o backend atual
+  if (trimmed.includes('/uploads/')) {
+    const uploadPath = trimmed.substring(trimmed.indexOf('/uploads/'));
+    return `${getBackendBaseUrl()}${uploadPath}`;
+  }
+
   if (
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
