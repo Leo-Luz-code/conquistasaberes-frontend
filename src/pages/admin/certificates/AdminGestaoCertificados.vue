@@ -8,14 +8,26 @@
           Público.
         </p>
       </div>
-      <q-btn
-        unelevated
-        no-caps
-        icon="workspace_premium"
-        label="Emitir certificado"
-        class="bg-pmvc-blue text-white rounded-lg px-4 py-2 font-semibold shadow-sm hover:bg-pmvc-lightBlue transition-colors self-start sm:self-auto"
-        @click="showEmitirModal = true"
-      />
+      <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+        <q-btn
+          outline
+          no-caps
+          color="primary"
+          icon="verified"
+          label="Validar Certificado"
+          to="/validar-certificado"
+          target="_blank"
+          class="rounded-lg px-4 py-2 font-semibold bg-white shadow-sm"
+        />
+        <q-btn
+          unelevated
+          no-caps
+          icon="workspace_premium"
+          label="Emitir certificado"
+          class="bg-pmvc-blue text-white rounded-lg px-4 py-2 font-semibold shadow-sm hover:bg-pmvc-lightBlue transition-colors"
+          @click="showEmitirModal = true"
+        />
+      </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -146,6 +158,16 @@
         >
         <template #body-cell-acoes="props"
           ><q-td :props="props" class="text-right"
+            ><q-btn
+              flat
+              round
+              dense
+              icon="verified"
+              size="sm"
+              class="text-pmvc-gray hover:text-emerald-600"
+              :to="`/validar-certificado?hash=${props.row.codigoValidacao}`"
+              target="_blank"
+              ><q-tooltip>Validar Publicamente</q-tooltip></q-btn
             ><q-btn
               flat
               round
