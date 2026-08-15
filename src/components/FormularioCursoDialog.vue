@@ -70,23 +70,6 @@
               </q-input>
             </div>
 
-            <!-- Categoria -->
-            <div class="col-12 col-sm-4">
-              <q-select
-                v-model="form.categoria"
-                :options="categorias"
-                label="Categoria / Área *"
-                outlined
-                dense
-                emit-value
-                map-options
-              >
-                <template v-slot:prepend>
-                  <q-icon name="category" color="primary" />
-                </template>
-              </q-select>
-            </div>
-
             <!-- Público-Alvo / Secretaria -->
             <div class="col-12 col-sm-4">
               <q-select
@@ -109,11 +92,12 @@
               <q-select
                 v-model="form.trilhaId"
                 :options="trilhaOptions"
-                label="Trilha (Opcional)"
+                label="Trilha de Aprendizagem"
                 outlined
                 dense
                 emit-value
                 map-options
+                :hint="`Eixo temático: ${eixoVinculado}`"
               >
                 <template v-slot:prepend>
                   <q-icon name="route" color="primary" />
@@ -231,15 +215,6 @@ const capaFile = ref(null)
 
 const isEditing = computed(() => !!(props.course && props.course.id))
 
-const categorias = [
-  'Geral',
-  'Tecnologia & Transformação Digital',
-  'Saúde Pública',
-  'Educação Municipal',
-  'Gestão Pública & RH',
-  'LGPD & Transparência',
-]
-
 const secretariaOptions = computed(() => {
   const options = [{ label: '🏛️ Toda a Prefeitura (Curso Geral)', value: null }]
   if (courseStore.secretarias && courseStore.secretarias.length > 0) {
@@ -254,11 +229,13 @@ const secretariaOptions = computed(() => {
 })
 
 const trilhaOptions = computed(() => {
-  const options = [{ label: 'Nenhuma (Avulso)', value: null }]
+  const options = [{ label: 'Nenhuma (Curso Geral / Avulso)', value: null }]
   if (courseStore.learningPaths && courseStore.learningPaths.length > 0) {
     courseStore.learningPaths.forEach((t) => {
+      const eixoNome = t.eixo?.nomeEixo || t.eixoNome || ''
+      const label = eixoNome ? `${t.tituloTrilha} (${eixoNome})` : t.tituloTrilha
       options.push({
-        label: t.tituloTrilha,
+        label,
         value: t.id,
       })
     })
@@ -281,6 +258,12 @@ const form = ref({
   secretariaId: null,
   trilhaId: null,
   isPublished: true,
+})
+
+const eixoVinculado = computed(() => {
+  if (!form.value.trilhaId) return 'Geral'
+  const trilha = courseStore.learningPaths?.find((t) => t.id === form.value.trilhaId)
+  return trilha?.eixo?.nomeEixo || trilha?.eixoNome || 'Geral'
 })
 
 // Atualizar o formulário quando a prop course mudar ou o modal abrir
@@ -346,6 +329,11 @@ const handleCapaUpload = async (file) => {
 const handleSubmit = async () => {
   saving.value = true
   try {
+    // Define a categoria dinamicamente a partir do eixo da trilha vinculada
+    form.value.categoria = form.value.trilhaId
+      ? (courseStore.learningPaths?.find((t) => t.id === form.value.trilhaId)?.eixo?.nomeEixo || 'Geral')
+      : 'Geral'
+
     if (isEditing.value) {
       await courseStore.updateCourse(props.course.id, form.value)
     } else {
