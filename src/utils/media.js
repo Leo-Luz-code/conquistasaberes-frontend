@@ -19,12 +19,20 @@ export function getServerDetectedIp() {
  * Retorna a URL base do backend de forma dinâmica
  */
 export function getBackendBaseUrl() {
+  const envUrl = process.env.API_BASE_URL || 'http://localhost:3006';
+
   if (typeof window !== 'undefined' && window.location) {
-    const protocol = window.location.protocol || 'http:';
-    const hostname = window.location.hostname || 'localhost';
-    return `${protocol}//${hostname}:3001`;
+    try {
+      const parsed = new URL(envUrl);
+      const protocol = window.location.protocol || parsed.protocol;
+      const hostname = window.location.hostname || parsed.hostname;
+      const port = parsed.port ? `:${parsed.port}` : '';
+      return `${protocol}//${hostname}${port}`;
+    } catch {
+      return envUrl.replace(/\/$/, '');
+    }
   }
-  return 'http://localhost:3001';
+  return envUrl.replace(/\/$/, '');
 }
 
 /**
