@@ -22,18 +22,6 @@
           </div>
         </router-link>
 
-        <!-- Links de Navegação (Desktop) -->
-        <nav class="hidden md:flex items-center gap-5 lg:gap-8 text-sm font-semibold text-slate-600">
-          <a href="#sobre" class="hover:text-[#0F4C81] transition-colors">Sobre</a>
-          <a href="#funcionalidades" class="hover:text-[#0F4C81] transition-colors">Pilares</a>
-          <a href="#trilhas" class="hover:text-[#0F4C81] transition-colors">Trilhas</a>
-          <a href="#norminha" class="hover:text-[#0F4C81] transition-colors flex items-center gap-1.5 text-[#0F4C81]">
-            <q-icon name="auto_awesome" size="14px" class="text-amber-500" />
-            Norminha IA
-          </a>
-          <a href="#transparencia" class="hover:text-[#0F4C81] transition-colors">Transparência</a>
-        </nav>
-
         <!-- Botões de Ação do Header -->
         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
           <router-link
