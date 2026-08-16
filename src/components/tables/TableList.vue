@@ -197,13 +197,15 @@
       </template>
     </q-table>
 
-    <div class="flex justify-center mt-6 table-list-pagination">
+    <div v-if="Number(maxPages) > 0" class="flex justify-center items-center mt-6 table-list-pagination">
       <q-pagination
         v-model="pagination_initial.page"
-        @update:model-value="findInfomaion"
-        :max="Number(maxPages)"
+        @update:model-value="onPageChange"
+        :max="Math.max(1, Number(maxPages || 1))"
+        :max-pages="7"
         direction-links
-        color="grey-10"
+        boundary-links
+        color="grey-8"
         active-color="primary"
         active-text-color="white"
         rounded
@@ -213,7 +215,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 
@@ -235,6 +237,7 @@ const props = defineProps({
   routeAdd: String,
   itemsPerPage: { type: Number, default: 10 },
   maxPages: { type: Number, default: 0 },
+  currentPage: { type: Number, default: 1 },
   rowKey: { type: String, default: 'id' },
   showAddButton: { type: Boolean, default: true }
 });
@@ -245,10 +248,19 @@ const filter = ref('');
 const pagination_initial = ref({
   sortBy: 'nome',
   descending: false,
-  page: 1,
+  page: props.currentPage || 1,
   rowsPerPage: props.itemsPerPage,
   rowsNumber: 0,
 });
+
+watch(
+  () => props.currentPage,
+  (newPage) => {
+    if (newPage && newPage !== pagination_initial.value.page) {
+      pagination_initial.value.page = newPage;
+    }
+  }
+);
 
 const focusSearchInput = () => {
   searchInput.value?.focus();
@@ -295,7 +307,13 @@ function clearAllFilters() {
 }
 
 function findInfomaion() {
-  emits('getUsers', filter.value, pagination_initial.value.page);
+  pagination_initial.value.page = 1;
+  emits('getUsers', filter.value, 1);
+}
+
+function onPageChange(newPage) {
+  pagination_initial.value.page = newPage;
+  emits('getUsers', filter.value, newPage);
 }
 
 function onSort(col) {
