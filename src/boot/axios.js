@@ -1,10 +1,8 @@
 import { boot } from 'quasar/wrappers';
 import axios from 'axios';
 import { Notify } from 'quasar';
-const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3001/';
-
-// Instância Axios com base URL configurada pelas variáveis de ambiente
-const api = axios.create({ baseURL: apiBaseUrl });
+// Instância Axios com base URL configurada 100% via variável de ambiente
+const api = axios.create({ baseURL: process.env.API_BASE_URL });
 
 export default boot(async ({ app, router }) => {
 

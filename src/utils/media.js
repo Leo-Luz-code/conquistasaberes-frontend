@@ -7,7 +7,7 @@
  * Retorna a URL base do backend configurada via variáveis de ambiente
  */
 export function getBackendBaseUrl() {
-  const envUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+  const envUrl = process.env.API_BASE_URL || '';
   return envUrl.replace(/\/$/, '');
 }
 

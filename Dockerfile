@@ -17,6 +17,10 @@ RUN npm ci --ignore-scripts
 # Copia todo o código fonte
 COPY . .
 
+# Recebe as variáveis de ambiente informadas no build
+ARG API_BASE_URL
+ARG BASE_URL
+
 ENV API_BASE_URL=${API_BASE_URL}
 ENV BASE_URL=${BASE_URL}
 
