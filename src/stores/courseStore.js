@@ -37,11 +37,9 @@ export const useCourseStore = defineStore('course', {
           sessionStorage.setItem('myCoursesSynced', 'true');
         }
         
-        console.log(data);
         this.myCourses = Array.isArray(data) ? data : [];
         return this.myCourses;
       } catch (error) {
-        console.error('Erro ao buscar meus cursos:', error);
         this.myCourses = [];
         return [];
       }
@@ -52,7 +50,6 @@ export const useCourseStore = defineStore('course', {
         this.courseRatings = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar avaliações do curso:', error);
         this.courseRatings = null;
         return null;
       }
@@ -71,7 +68,6 @@ export const useCourseStore = defineStore('course', {
         this.courses = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar cursos:', error);
         return [];
       } finally {
         this.loading = false;
@@ -86,7 +82,6 @@ export const useCourseStore = defineStore('course', {
         this.currentCourse = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar detalhes do curso:', error);
         Notify.create({
           color: 'negative',
           icon: 'error',
@@ -208,7 +203,6 @@ export const useCourseStore = defineStore('course', {
         this.recommendations = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar recomendações:', error);
         return [];
       }
     },
@@ -220,7 +214,6 @@ export const useCourseStore = defineStore('course', {
         this.learningPaths = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar trilhas:', error);
         return [];
       }
     },
@@ -230,7 +223,6 @@ export const useCourseStore = defineStore('course', {
         this.learningPaths = Array.isArray(data) ? data : [];
         return this.learningPaths;
       } catch (error) {
-        console.error('Erro ao buscar trilhas para administração:', error);
         return [];
       }
     },
@@ -253,7 +245,6 @@ export const useCourseStore = defineStore('course', {
         const { data } = await api.get(`/learning-paths/${id}/inscritos`);
         return Array.isArray(data) ? data : [];
       } catch (error) {
-        console.error('Erro ao buscar inscritos da trilha:', error);
         return [];
       }
     },
@@ -304,7 +295,6 @@ export const useCourseStore = defineStore('course', {
         this.eixos = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar eixos:', error);
         return [];
       }
     },
@@ -348,7 +338,6 @@ export const useCourseStore = defineStore('course', {
         this.secretarias = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar secretarias:', error);
         return [];
       }
     },
@@ -360,7 +349,6 @@ export const useCourseStore = defineStore('course', {
         this.courses = data;
         return data;
       } catch (error) {
-        console.error('Erro ao buscar cursos admin:', error);
         Notify.create({ color: 'negative', message: 'Erro ao carregar lista de cursos admin.' });
         return [];
       } finally {

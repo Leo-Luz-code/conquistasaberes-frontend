@@ -1,17 +1,17 @@
 <template>
   <div class="min-h-screen bg-slate-50 flex flex-col justify-between font-sans text-slate-800">
     <!-- Barra Superior / Topo Institucional -->
-    <header class="bg-[#0F4C81] text-white py-4 px-6 shadow-sm border-b border-[#0C3B66]">
-      <div class="max-w-4xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-            <q-icon name="groups" size="24px" class="text-amber-400" />
+    <header class="bg-[#0F4C81] text-white py-3 sm:py-4 px-4 sm:px-6 shadow-sm border-b border-[#0C3B66]">
+      <div class="max-w-4xl mx-auto flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+            <q-icon name="groups" size="22px" class="text-amber-400 sm:text-[24px]" />
           </div>
           <div>
-            <div class="text-xs uppercase tracking-wider font-semibold text-blue-200">
+            <div class="text-[10px] sm:text-xs uppercase tracking-wider font-semibold text-blue-200">
               Prefeitura de Vitória da Conquista
             </div>
-            <div class="text-base sm:text-lg font-extrabold tracking-tight">
+            <div class="text-sm sm:text-lg font-extrabold tracking-tight">
               AVA UniVC · Aula Presencial
             </div>
           </div>
@@ -27,23 +27,23 @@
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="flex-1 max-w-xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center my-6 space-y-6">
+    <main class="flex-1 max-w-xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center my-4 sm:my-6 space-y-4 sm:space-y-6">
       <!-- Loading State -->
       <div v-if="loadingLesson" class="text-center py-12 space-y-4">
         <q-spinner-dots color="primary" size="48px" />
-        <p class="text-sm text-slate-500 font-medium">Carregando dados da aula...</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium">Carregando dados da aula...</p>
       </div>
 
       <!-- Erro ao Carregar Aula -->
       <div
         v-else-if="!lessonData"
-        class="bg-white rounded-3xl border border-dashed border-red-200 p-8 text-center space-y-3 shadow-sm"
+        class="bg-white rounded-2xl sm:rounded-3xl border border-dashed border-red-200 p-6 sm:p-8 text-center space-y-3 shadow-sm"
       >
-        <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mx-auto">
-          <q-icon name="meeting_room" size="32px" />
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+          <q-icon name="meeting_room" size="28px" class="sm:text-[32px]" />
         </div>
-        <h2 class="text-lg font-bold text-slate-800">Aula não encontrada</h2>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800">Aula não encontrada</h2>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
           O link de presença pode estar incorreto ou a aula não está mais disponível.
         </p>
       </div>
@@ -51,23 +51,23 @@
       <!-- Card da Aula + Formulário de Presença -->
       <template v-else>
         <!-- Card Informativo da Aula e Curso -->
-        <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-4">
+        <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-4 sm:p-7 shadow-sm space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between gap-2 flex-wrap">
-            <span class="px-3 py-1 bg-deep-purple-50 text-deep-purple-800 border border-deep-purple-100 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-              <q-icon name="groups" size="14px" />
+            <span class="px-2.5 sm:px-3 py-0.5 sm:py-1 bg-deep-purple-50 text-deep-purple-800 border border-deep-purple-100 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+              <q-icon name="groups" size="14px" class="shrink-0" />
               Aula Presencial
             </span>
-            <span class="text-xs font-semibold text-slate-500 flex items-center gap-1">
-              <q-icon name="timer" size="14px" class="text-slate-400" />
+            <span class="text-[11px] sm:text-xs font-semibold text-slate-500 flex items-center gap-1">
+              <q-icon name="timer" size="14px" class="text-slate-400 shrink-0" />
               {{ lessonData.duracaoMin || 15 }} min · +{{ lessonData.xp || 10 }} XP
             </span>
           </div>
 
-          <div class="space-y-1.5">
-            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          <div class="space-y-1 sm:space-y-1.5">
+            <div class="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">
               Curso: {{ lessonData.curso?.titulo || 'Curso Municipal' }}
             </div>
-            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+            <h1 class="text-lg sm:text-2xl font-extrabold text-slate-900 leading-snug sm:leading-tight">
               {{ lessonData.titulo }}
             </h1>
             <p v-if="lessonData.modulo" class="text-xs text-slate-500 font-medium">
@@ -79,10 +79,10 @@
             v-if="lessonData.dataHoraAgendada"
             class="pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl"
           >
-            <q-icon name="event" size="18px" class="text-[#0F4C81]" />
+            <q-icon name="event" size="18px" class="text-[#0F4C81] shrink-0" />
             <div>
               <div class="text-[10px] font-bold text-slate-400 uppercase">Horário Agendado</div>
-              <div class="font-bold text-slate-800">{{ formatarDataHora(lessonData.dataHoraAgendada) }}</div>
+              <div class="font-bold text-slate-800 text-[11px] sm:text-xs">{{ formatarDataHora(lessonData.dataHoraAgendada) }}</div>
             </div>
           </div>
         </div>
@@ -90,26 +90,26 @@
         <!-- Tela de Sucesso -->
         <div
           v-if="checkinResult && checkinResult.success"
-          class="bg-white rounded-3xl border border-emerald-200 p-7 sm:p-8 shadow-sm space-y-6 text-center animate-fade-in"
+          class="bg-white rounded-2xl sm:rounded-3xl border border-emerald-200 p-5 sm:p-8 shadow-sm space-y-5 sm:space-y-6 text-center animate-fade-in"
         >
-          <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto ring-8 ring-emerald-50">
-            <q-icon name="check" size="36px" />
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto ring-8 ring-emerald-50">
+            <q-icon name="check" size="32px" class="sm:text-[36px]" />
           </div>
 
-          <div class="space-y-2">
-            <h2 class="text-xl font-extrabold text-emerald-900 leading-snug">
+          <div class="space-y-1.5 sm:space-y-2">
+            <h2 class="text-lg sm:text-xl font-extrabold text-emerald-900 leading-snug">
               {{ checkinResult.alreadyConfirmed ? 'Presença já Registrada!' : 'Presença Confirmada!' }}
             </h2>
-            <p class="text-xs text-slate-600 max-w-sm mx-auto">
+            <p class="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
               {{ checkinResult.message }}
             </p>
           </div>
 
           <!-- Detalhes do Servidor Confirmado -->
-          <div class="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-100 text-left space-y-2 text-xs">
-            <div class="flex justify-between items-center py-1 border-b border-emerald-100">
+          <div class="bg-emerald-50/60 rounded-2xl p-3.5 sm:p-4 border border-emerald-100 text-left space-y-2 text-xs">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center py-1 border-b border-emerald-100 gap-0.5 sm:gap-2">
               <span class="text-slate-500 font-medium">Servidor(a):</span>
-              <span class="font-extrabold text-slate-900">{{ checkinResult.servidorNome }}</span>
+              <span class="font-extrabold text-slate-900 text-right sm:text-left">{{ checkinResult.servidorNome }}</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-emerald-100">
               <span class="text-slate-500 font-medium">Matrícula:</span>
@@ -123,13 +123,13 @@
               <span class="text-slate-500 font-medium">Progresso no Curso:</span>
               <span class="font-extrabold text-[#0F4C81]">{{ checkinResult.courseProgress }}%</span>
             </div>
-            <div class="flex justify-between items-center py-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center py-1 gap-0.5 sm:gap-2">
               <span class="text-slate-500 font-medium">Data/Hora do Registro:</span>
-              <span class="font-bold text-emerald-800">{{ formatarTimestamp(checkinResult.timestamp) }}</span>
+              <span class="font-bold text-emerald-800 sm:text-right">{{ formatarTimestamp(checkinResult.timestamp) }}</span>
             </div>
           </div>
 
-          <div class="pt-2 flex flex-col gap-2">
+          <div class="pt-2 flex flex-col gap-2.5">
             <q-btn
               outline
               color="primary"
@@ -148,9 +148,9 @@
         </div>
 
         <!-- Formulário de Check-in -->
-        <div v-else class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+        <div v-else class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-8 shadow-sm space-y-4 sm:space-y-5">
           <div class="space-y-1">
-            <h2 class="text-lg font-extrabold text-slate-900">
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
               Registrar Presença na Aula
             </h2>
             <p class="text-xs text-slate-500 leading-relaxed">
@@ -161,7 +161,7 @@
           <!-- Mensagem de Erro -->
           <div
             v-if="errorMessage"
-            class="p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5 text-xs text-red-700 leading-snug"
+            class="p-3 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5 text-xs text-red-700 leading-snug"
           >
             <q-icon name="error_outline" size="18px" class="text-red-500 shrink-0 mt-0.5" />
             <div class="flex-1">{{ errorMessage }}</div>
@@ -169,7 +169,7 @@
 
           <form @submit.prevent="submeterCheckin" class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label class="block text-[11px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Matrícula ou CPF *
               </label>
               <div class="relative">
@@ -210,7 +210,7 @@
     </main>
 
     <!-- Rodapé -->
-    <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
+    <footer class="py-3 sm:py-4 px-4 text-center text-[11px] sm:text-xs text-slate-400 border-t border-slate-200 bg-white">
       Prefeitura Municipal de Vitória da Conquista · Gestão de Pessoas & Inovação Digital
     </footer>
   </div>
