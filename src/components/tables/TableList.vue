@@ -88,7 +88,8 @@
       :rows="rows"
       :columns="column"
       :row-key="rowKey"
-      v-model="pagination_initial"
+      v-model:pagination="pagination_initial"
+      :rows-per-page-options="[0]"
       flat
       hide-pagination
       :sort-method="customSort"
@@ -249,7 +250,7 @@ const pagination_initial = ref({
   sortBy: 'nome',
   descending: false,
   page: props.currentPage || 1,
-  rowsPerPage: props.itemsPerPage,
+  rowsPerPage: 0,
   rowsNumber: 0,
 });
 

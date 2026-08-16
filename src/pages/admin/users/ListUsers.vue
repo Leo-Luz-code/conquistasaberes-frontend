@@ -204,6 +204,9 @@ async function getUsers(pesquisa = '', page = 1) {
 async function clearFilters() {
   modelsFilters.value.nivel = '';
   modelsFilters.value.situacao = '';
+  filters.value.forEach((f) => {
+    f.model = '';
+  });
   currentSearch.value = '';
   currentPage.value = 1;
   await getUsers('', 1);
