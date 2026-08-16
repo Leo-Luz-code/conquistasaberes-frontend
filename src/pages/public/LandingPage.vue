@@ -1,29 +1,29 @@
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-amber-400 selection:text-slate-900">
+  <div class="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-amber-400 selection:text-slate-900 overflow-x-hidden">
     <!-- ========================================================= -->
     <!-- NAVBAR SUPERIOR FIXA / INSTITUCIONAL -->
     <!-- ========================================================= -->
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
         <!-- Logo e Brasão -->
-        <router-link to="/landing" class="flex items-center gap-3 group">
+        <router-link to="/landing" class="flex items-center gap-2.5 sm:gap-3 group shrink-0">
           <img
             src="~assets/images/brasao-pmvc-2025.png"
             alt="Brasão de Vitória da Conquista"
-            class="h-11 sm:h-12 w-auto drop-shadow-sm group-hover:scale-105 transition-transform"
+            class="h-9 sm:h-12 w-auto drop-shadow-sm group-hover:scale-105 transition-transform"
           />
           <div class="flex flex-col">
-            <span class="text-xl sm:text-2xl font-extrabold text-[#0F4C81] leading-none tracking-tight">
+            <span class="text-lg sm:text-2xl font-extrabold text-[#0F4C81] leading-none tracking-tight">
               AVA <span class="text-[#F2B705]">UniVC</span>
             </span>
-            <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 tracking-wider uppercase mt-0.5">
+            <span class="text-[9px] sm:text-[11px] font-bold text-slate-500 tracking-wider uppercase mt-0.5">
               Universidade do Servidor
             </span>
           </div>
         </router-link>
 
         <!-- Links de Navegação (Desktop) -->
-        <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-semibold text-slate-600">
+        <nav class="hidden md:flex items-center gap-5 lg:gap-8 text-sm font-semibold text-slate-600">
           <a href="#sobre" class="hover:text-[#0F4C81] transition-colors">Sobre</a>
           <a href="#funcionalidades" class="hover:text-[#0F4C81] transition-colors">Pilares</a>
           <a href="#trilhas" class="hover:text-[#0F4C81] transition-colors">Trilhas</a>
@@ -35,10 +35,10 @@
         </nav>
 
         <!-- Botões de Ação do Header -->
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
           <router-link
             to="/validar-certificado"
-            class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-700 hover:text-[#0F4C81] hover:bg-slate-100 rounded-xl transition-all"
+            class="hidden sm:inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs font-bold text-slate-700 hover:text-[#0F4C81] hover:bg-slate-100 rounded-xl transition-all"
           >
             <q-icon name="verified" size="16px" class="text-emerald-600" />
             <span>Validar Certificado</span>
@@ -46,9 +46,9 @@
 
           <router-link
             to="/login"
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F4C81] hover:bg-[#0C3B66] text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95"
+            class="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-[#0F4C81] hover:bg-[#0C3B66] text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95"
           >
-            <span>Entrar no AVA</span>
+            <span>Entrar</span>
             <q-icon name="arrow_forward" size="16px" />
           </router-link>
         </div>
@@ -58,32 +58,32 @@
     <!-- ========================================================= -->
     <!-- HERO SECTION (PRIMEIRA DOBRA) -->
     <!-- ========================================================= -->
-    <section class="relative bg-gradient-to-b from-[#0F4C81] via-[#0D416E] to-[#0A2F50] text-white py-16 sm:py-24 overflow-hidden">
+    <section class="relative bg-gradient-to-b from-[#0F4C81] via-[#0D416E] to-[#0A2F50] text-white py-12 sm:py-20 lg:py-24 overflow-hidden">
       <!-- Elementos Decorativos de Fundo -->
       <div class="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:28px_28px] opacity-10 pointer-events-none"></div>
-      <div class="absolute top-0 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-0 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           <!-- Textos do Hero -->
-          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#F2B705] text-xs sm:text-sm font-bold shadow-sm">
-              <q-icon name="school" size="16px" />
-              <span>Plataforma Oficial de Capacitação Municipal • PMVC</span>
+          <div class="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#F2B705] text-xs sm:text-sm font-bold shadow-sm max-w-full text-left">
+              <q-icon name="school" size="16px" class="shrink-0" />
+              <span class="truncate">Plataforma Oficial de Capacitação Municipal • PMVC</span>
             </div>
 
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-none text-white">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-none text-white">
               Transformando o Conhecimento em <span class="text-[#F2B705]">Excelência</span> no Serviço Público.
             </h1>
 
-            <p class="text-sm sm:text-base lg:text-lg text-blue-100 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            <p class="text-xs sm:text-sm lg:text-base text-blue-100 leading-relaxed max-w-2xl mx-auto lg:mx-0">
               A Universidade do Servidor de Vitória da Conquista unifica cursos, trilhas formativas, emissão de certificados autenticados e inteligência artificial para o desenvolvimento contínuo dos servidores municipais.
             </p>
 
-            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4">
               <router-link
                 to="/login"
-                class="w-full sm:w-auto px-8 py-4 bg-[#F2B705] hover:bg-amber-400 text-[#0F4C81] font-extrabold text-sm sm:text-base rounded-2xl shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 active:scale-95"
+                class="w-full sm:w-auto px-7 py-3.5 sm:py-4 bg-[#F2B705] hover:bg-amber-400 text-[#0F4C81] font-extrabold text-xs sm:text-sm md:text-base rounded-2xl shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <span>Acessar a Plataforma</span>
                 <q-icon name="arrow_forward" size="18px" />
@@ -91,7 +91,7 @@
 
               <router-link
                 to="/validar-certificado"
-                class="w-full sm:w-auto px-6 py-4 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-sm sm:text-base rounded-2xl backdrop-blur-sm transition-colors flex items-center justify-center gap-2"
+                class="w-full sm:w-auto px-6 py-3.5 sm:py-4 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-xs sm:text-sm md:text-base rounded-2xl backdrop-blur-sm transition-colors flex items-center justify-center gap-2"
               >
                 <q-icon name="qr_code_scanner" size="18px" />
                 <span>Validar Certificado</span>
@@ -99,43 +99,43 @@
             </div>
 
             <!-- Métricas Rápidas no Hero -->
-            <div class="pt-8 grid grid-cols-3 gap-3 sm:gap-6 border-t border-white/15 max-w-lg mx-auto lg:mx-0">
+            <div class="pt-6 sm:pt-8 grid grid-cols-3 gap-2.5 sm:gap-6 border-t border-white/15 max-w-lg mx-auto lg:mx-0">
               <div class="bg-white/5 backdrop-blur-md rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                <span class="text-2xl sm:text-3xl font-extrabold text-white block leading-none mb-1">{{ stats.cursosLabel }}</span>
-                <span class="text-[11px] sm:text-xs text-blue-200 font-medium">Cursos Ativos</span>
+                <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white block leading-none mb-1">{{ stats.cursosLabel }}</span>
+                <span class="text-[10px] sm:text-xs text-blue-200 font-medium">Cursos Ativos</span>
               </div>
               <div class="bg-white/5 backdrop-blur-md rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                <span class="text-2xl sm:text-3xl font-extrabold text-[#F2B705] block leading-none mb-1">{{ stats.trilhasLabel }}</span>
-                <span class="text-[11px] sm:text-xs text-blue-200 font-medium">Trilhas de Carreira</span>
+                <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#F2B705] block leading-none mb-1">{{ stats.trilhasLabel }}</span>
+                <span class="text-[10px] sm:text-xs text-blue-200 font-medium">Trilhas de Carreira</span>
               </div>
               <div class="bg-white/5 backdrop-blur-md rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 block leading-none mb-1">100%</span>
-                <span class="text-[11px] sm:text-xs text-blue-200 font-medium">Digital & Gratuito</span>
+                <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-emerald-400 block leading-none mb-1">100%</span>
+                <span class="text-[10px] sm:text-xs text-blue-200 font-medium">Digital & Gratuito</span>
               </div>
             </div>
           </div>
 
           <!-- Card Ilustrativo Hero: Passaporte & Norminha Preview -->
-          <div class="lg:col-span-5 flex justify-center">
-            <div class="relative w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+          <div class="lg:col-span-5 flex justify-center w-full">
+            <div class="relative w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5 sm:space-y-6">
               <!-- Header do Mockup -->
               <div class="flex items-center justify-between border-b border-white/15 pb-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-2xl bg-white text-[#0F4C81] flex items-center justify-center font-extrabold text-xl shadow-md border-2 border-[#F2B705]">
+                  <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white text-[#0F4C81] flex items-center justify-center font-extrabold text-lg sm:text-xl shadow-md border-2 border-[#F2B705] shrink-0">
                     VC
                   </div>
                   <div>
-                    <h2 class="font-extrabold text-white text-base leading-tight">Passaporte do Servidor</h2>
-                    <span class="text-xs text-[#F2B705] font-semibold">Identidade Digital de Qualificação</span>
+                    <h2 class="font-extrabold text-white text-sm sm:text-base leading-tight">Passaporte do Servidor</h2>
+                    <span class="text-[11px] text-[#F2B705] font-semibold">Identidade Digital de Qualificação</span>
                   </div>
                 </div>
-                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/30">
+                <span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/30 shrink-0">
                   Ativo
                 </span>
               </div>
 
               <!-- Indicadores do Mockup -->
-              <div class="space-y-3">
+              <div class="space-y-2.5 sm:space-y-3">
                 <div class="bg-white/10 p-3 rounded-2xl flex items-center justify-between text-xs">
                   <span class="text-blue-200 flex items-center gap-1.5 font-medium">
                     <q-icon name="military_tech" size="16px" class="text-[#F2B705]" />
@@ -179,27 +179,27 @@
     <!-- ========================================================= -->
     <!-- SEÇÃO: PILARES & FUNCIONALIDADES -->
     <!-- ========================================================= -->
-    <section id="funcionalidades" class="py-20 bg-white">
+    <section id="funcionalidades" class="py-16 sm:py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-[#0F4C81] bg-blue-50 px-3 py-1 rounded-full">
+        <div class="text-center max-w-3xl mx-auto space-y-3 mb-12 sm:mb-16">
+          <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#0F4C81] bg-blue-50 px-3 py-1 rounded-full">
             Inovação em Gestão de Pessoas
           </span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Pilares da Educação Corporativa Municipal
           </h2>
-          <p class="text-sm sm:text-base text-slate-500">
+          <p class="text-xs sm:text-sm md:text-base text-slate-500">
             Projetado sob medida para responder a todas as necessidades de capacitação, engajamento e valorização dos servidores de Vitória da Conquista.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Pilar 1: Trilhas de Aprendizagem -->
           <div class="p-6 rounded-3xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#0F4C81]/30 hover:shadow-xl transition-all space-y-4 group">
             <div class="w-12 h-12 rounded-2xl bg-blue-100 text-[#0F4C81] flex items-center justify-center group-hover:scale-110 transition-transform">
               <q-icon name="alt_route" size="26px" />
             </div>
-            <h3 class="text-lg font-extrabold text-slate-900">Trilhas por Carreira</h3>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Trilhas por Carreira</h3>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Jornadas formativas organizadas por carreiras e secretarias (Saúde, Educação, Finanças, Serviços Públicos).
             </p>
@@ -210,7 +210,7 @@
             <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
               <q-icon name="emoji_events" size="26px" />
             </div>
-            <h3 class="text-lg font-extrabold text-slate-900">Gamificação & Passaporte</h3>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Gamificação & Passaporte</h3>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Ganho de pontos de XP, subida de níveis, conquista de badges e ranking intersecretarial que estimulam o engajamento.
             </p>
@@ -221,7 +221,7 @@
             <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center group-hover:scale-110 transition-transform">
               <q-icon name="smart_toy" size="26px" />
             </div>
-            <h3 class="text-lg font-extrabold text-slate-900">Embaixadora Norminha IA</h3>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Embaixadora Norminha IA</h3>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Assistente virtual treinada nas legislações e procedimentos da PMVC para orientar estudos e tirar dúvidas em tempo real.
             </p>
@@ -232,7 +232,7 @@
             <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
               <q-icon name="workspace_premium" size="26px" />
             </div>
-            <h3 class="text-lg font-extrabold text-slate-900">Certificação com QR Code</h3>
+            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Certificação com QR Code</h3>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Emissão automática de certificados em PDF com hash único de validação e verificação de autenticidade pública.
             </p>
@@ -244,17 +244,17 @@
     <!-- ========================================================= -->
     <!-- SEÇÃO: TRILHAS EM DESTAQUE -->
     <!-- ========================================================= -->
-    <section id="trilhas" class="py-20 bg-slate-100 border-y border-slate-200">
+    <section id="trilhas" class="py-16 sm:py-20 bg-slate-100 border-y border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-12">
           <div>
-            <span class="text-xs font-extrabold uppercase tracking-widest text-[#0F4C81]">Catálogo de Formação</span>
-            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Trilhas de Aprendizagem em Alta</h2>
-            <p class="text-sm text-slate-500 mt-1">Capacitações desenhadas para as demandas reais da administração municipal.</p>
+            <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-[#0F4C81]">Catálogo de Formação</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Trilhas de Aprendizagem em Alta</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Capacitações desenhadas para as demandas reais da administração municipal.</p>
           </div>
           <router-link
             to="/login"
-            class="inline-flex items-center gap-2 text-sm font-bold text-[#0F4C81] hover:text-[#0C3B66]"
+            class="inline-flex items-center gap-2 text-sm font-bold text-[#0F4C81] hover:text-[#0C3B66] shrink-0"
           >
             <span>Ver todas as trilhas</span>
             <q-icon name="arrow_forward" size="16px" />
@@ -269,7 +269,7 @@
                 <q-icon name="hub" size="22px" />
               </div>
               <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Governo Digital</span>
-              <h3 class="text-lg font-extrabold text-slate-900">Inovação e Transformação Digital na PMVC</h3>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Inovação e Transformação Digital na PMVC</h3>
               <p class="text-xs text-slate-500 leading-relaxed">
                 Fundamentos de serviços digitais, modernização de processos e atendimento ágil ao munícipe.
               </p>
@@ -289,7 +289,7 @@
                 <q-icon name="security" size="22px" />
               </div>
               <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Segurança & Conformidade</span>
-              <h3 class="text-lg font-extrabold text-slate-900">LGPD Aplicada ao Setor Público Municipal</h3>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900">LGPD Aplicada ao Setor Público Municipal</h3>
               <p class="text-xs text-slate-500 leading-relaxed">
                 Boas práticas de proteção de dados dos cidadãos, termos de consentimento e segurança da informação.
               </p>
@@ -309,7 +309,7 @@
                 <q-icon name="sentiment_very_satisfied" size="22px" />
               </div>
               <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Atendimento Humanizado</span>
-              <h3 class="text-lg font-extrabold text-slate-900">Excelência no Atendimento ao Cidadão Conquistense</h3>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Excelência no Atendimento ao Cidadão Conquistense</h3>
               <p class="text-xs text-slate-500 leading-relaxed">
                 Técnicas de comunicação não-violenta, acolhimento humanizado e escuta ativa nos órgãos da prefeitura.
               </p>
@@ -328,10 +328,10 @@
     <!-- ========================================================= -->
     <!-- SEÇÃO: NORMINHA IA (DESTAQUE ESPECIAL) -->
     <!-- ========================================================= -->
-    <section id="norminha" class="py-20 bg-white">
+    <section id="norminha" class="py-16 sm:py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-br from-blue-50 via-indigo-50/50 to-slate-50 rounded-3xl border border-blue-200 p-8 sm:p-12 flex flex-col lg:flex-row items-center gap-10">
-          <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-xl shrink-0 border-4 border-white bg-white">
+        <div class="bg-gradient-to-br from-blue-50 via-indigo-50/50 to-slate-50 rounded-3xl border border-blue-200 p-6 sm:p-10 lg:p-12 flex flex-col lg:flex-row items-center gap-8 lg:gap-10 text-center lg:text-left">
+          <div class="w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-3xl overflow-hidden shadow-xl shrink-0 border-4 border-white bg-white">
             <img
               src="~assets/images/norminha_avatar.jpg"
               alt="Norminha - Embaixadora IA"
@@ -339,8 +339,8 @@
             />
           </div>
 
-          <div class="flex-1 space-y-4 text-center lg:text-left">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F4C81] text-white text-xs font-bold shadow-sm">
+          <div class="space-y-4 flex-1">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F4C81] text-white text-xs font-bold shadow-sm mx-auto lg:mx-0">
               <q-icon name="auto_awesome" size="14px" />
               <span>Inteligência Artificial Municipal</span>
             </div>
@@ -349,14 +349,14 @@
               Conheça a Norminha: Sua Tutora e Guia de Aprendizagem
             </h2>
 
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
               Inspirada no espírito de acolhimento e compromisso com o cidadão, a Norminha é a inteligência artificial desenvolvida para auxiliar você durante as aulas, tirar dúvidas conceituais, recomendar trilhas ideais para o seu cargo e acompanhar sua progressão funcional.
             </p>
 
             <div class="pt-2">
               <router-link
                 to="/login"
-                class="inline-flex items-center gap-2 px-6 py-3 bg-[#0F4C81] hover:bg-[#0C3B66] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#0F4C81] hover:bg-[#0C3B66] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md w-full sm:w-auto"
               >
                 <span>Conversar com a Norminha no AVA</span>
                 <q-icon name="chat" size="16px" />
@@ -368,36 +368,36 @@
     </section>
 
     <!-- ========================================================= -->
-    <!-- SEÇÃO: TRANSPARÊNCIA, OUVIDORIA E CIDADANIA (LINKS OBRIGATÓRIOS) -->
+    <!-- SEÇÃO: TRANSPARÊNCIA, OUVIDORIA E CIDADANIA -->
     <!-- ========================================================= -->
-    <section id="transparencia" class="py-20 bg-slate-900 text-white">
+    <section id="transparencia" class="py-16 sm:py-20 bg-slate-900 text-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
+        <div class="text-center max-w-3xl mx-auto space-y-3 mb-12 sm:mb-14">
           <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold">
             <q-icon name="gavel" size="14px" />
             <span>Governança Pública & Cidadania</span>
           </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             Transparência, Controle Social e Ouvidoria
           </h2>
-          <p class="text-sm text-slate-400">
+          <p class="text-xs sm:text-sm text-slate-400">
             A Prefeitura de Vitória da Conquista preza pelo acesso à informação, integridade e diálogo permanente com a sociedade.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <!-- Card 1: Fala.BR PMVC (Ouvidoria e Acesso à Informação) -->
+          <!-- Card 1: Fala.BR PMVC -->
           <a
             href="https://falabr.cgu.gov.br/v2/?uf=BA&municipio=Vit%C3%B3ria+da+Conquista"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-8 rounded-3xl bg-slate-800/80 border border-slate-700 hover:border-emerald-500/60 hover:bg-slate-800 transition-all flex flex-col justify-between space-y-6 group"
+            class="p-6 sm:p-8 rounded-3xl bg-slate-800/80 border border-slate-700 hover:border-emerald-500/60 hover:bg-slate-800 transition-all flex flex-col justify-between space-y-6 group"
           >
             <div class="space-y-3">
               <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <q-icon name="record_voice_over" size="26px" />
               </div>
-              <h3 class="text-xl font-extrabold text-white group-hover:text-emerald-400 transition-colors">
+              <h3 class="text-lg sm:text-xl font-extrabold text-white group-hover:text-emerald-400 transition-colors">
                 Fala.BR • Ouvidoria e e-SIC PMVC
               </h3>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -416,13 +416,13 @@
             href="https://vitoriadaconquista-ba.portaltp.com.br/"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-8 rounded-3xl bg-slate-800/80 border border-slate-700 hover:border-[#F2B705]/60 hover:bg-slate-800 transition-all flex flex-col justify-between space-y-6 group"
+            class="p-6 sm:p-8 rounded-3xl bg-slate-800/80 border border-slate-700 hover:border-[#F2B705]/60 hover:bg-slate-800 transition-all flex flex-col justify-between space-y-6 group"
           >
             <div class="space-y-3">
               <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-[#F2B705] flex items-center justify-center group-hover:scale-110 transition-transform">
                 <q-icon name="account_balance" size="26px" />
               </div>
-              <h3 class="text-xl font-extrabold text-white group-hover:text-[#F2B705] transition-colors">
+              <h3 class="text-lg sm:text-xl font-extrabold text-white group-hover:text-[#F2B705] transition-colors">
                 Portal da Transparência Municipal
               </h3>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -442,7 +442,7 @@
     <!-- ========================================================= -->
     <!-- FOOTER INSTITUCIONAL -->
     <!-- ========================================================= -->
-    <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-800 text-xs">
+    <footer class="bg-slate-950 text-slate-400 py-10 sm:py-12 border-t border-slate-800 text-xs">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Coluna 1: Brasão e Descrição -->
@@ -454,11 +454,11 @@
                 class="h-10 w-auto"
               />
               <div>
-                <span class="font-extrabold text-white text-base">Prefeitura Municipal de Vitória da Conquista</span>
+                <span class="font-extrabold text-white text-sm sm:text-base">Prefeitura Municipal de Vitória da Conquista</span>
                 <span class="block text-slate-500 text-[11px]">AVA UniVC • Universidade do Servidor</span>
               </div>
             </div>
-            <p class="text-slate-400 max-w-md leading-relaxed">
+            <p class="text-slate-400 max-w-md leading-relaxed text-xs sm:text-sm">
               Plataforma desenvolvida para o fortalecimento da gestão pública, capacitação continuada e valorização do servidor municipal através de soluções digitais eficientes.
             </p>
           </div>
@@ -496,7 +496,7 @@
           </div>
         </div>
 
-        <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
+        <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px] text-center sm:text-left">
           <p>© {{ new Date().getFullYear() }} Prefeitura Municipal de Vitória da Conquista - BA. Todos os direitos reservados.</p>
           <p>Conformidade WCAG 2.1 e Lei Geral de Proteção de Dados (LGPD nº 13.709/2018).</p>
         </div>
