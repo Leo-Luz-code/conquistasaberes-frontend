@@ -53,7 +53,7 @@ export default defineConfig((/* ctx */) => {
       // analyze: true,
       // Injeta variáveis do .env no bundle Vite/Quasar
       env: {
-        API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3006/',
+        API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3001/',
         BASE_URL: process.env.BASE_URL || 'http://localhost:8080/',
         PORT: process.env.PORT || '8080',
       },
