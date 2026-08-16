@@ -49,7 +49,7 @@ export const useCertificateStore = defineStore('certificate', {
     // URL de download do certificado PDF
     getDownloadUrl(hash) {
       if (!hash) return '#';
-      const base = api.defaults?.baseURL || 'http://localhost:3001/';
+      const base = api.defaults?.baseURL || process.env.API_BASE_URL || '';
       const cleanBase = base.endsWith('/') ? base : `${base}/`;
       return `${cleanBase}certificates/download/${encodeURIComponent(hash.trim())}`;
     },

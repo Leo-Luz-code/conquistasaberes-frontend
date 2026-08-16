@@ -11,6 +11,7 @@
         @getUsers="getUsers"
         :itemsPerPage="10"
         :maxPages="max_pages"
+        :currentPage="currentPage"
         :filters="filters"
         @clearFilters="clearFilters"
       >
@@ -32,7 +33,9 @@ import { useAuthStore } from 'src/stores/authStore';
 
 const authStore = useAuthStore();
 const $q = useQuasar();
-const max_pages = ref(0);
+const max_pages = ref(1);
+const currentPage = ref(1);
+const currentSearch = ref('');
 const router = useRouter();
 
 const modelsFilters = ref({
@@ -51,8 +54,9 @@ const filters = ref([
       { label: 'Servidor', value: 'SERVIDOR' },
     ],
     actions: (val) => {
-      modelsFilters.value.nivel = val || ''; 
-      getUsers();
+      modelsFilters.value.nivel = val || '';
+      currentPage.value = 1;
+      getUsers(currentSearch.value, 1);
     },
   },
   {
@@ -65,7 +69,8 @@ const filters = ref([
     ],
     actions: (val) => {
       modelsFilters.value.situacao = val || '';
-      getUsers();
+      currentPage.value = 1;
+      getUsers(currentSearch.value, 1);
     },
   },
 ]);
@@ -118,7 +123,7 @@ const columns = ref([
     name: 'nivel',
     align: 'center',
     label: 'Nível',
-    field: row => {
+    field: (row) => {
       if (row.role === 'ADMIN_RH_CETI') return 'Administrador';
       if (row.role === 'GESTOR_SECRETARIA') return 'Gestor';
       return 'Servidor';
@@ -129,7 +134,7 @@ const columns = ref([
     name: 'situacao',
     align: 'center',
     label: 'Situação',
-    field: row => row.statusAtivo ? 'Ativo' : 'Inativo',
+    field: (row) => (row.statusAtivo ? 'Ativo' : 'Inativo'),
     sortable: true,
   },
   {
@@ -143,15 +148,18 @@ const columns = ref([
 const rows = ref([]);
 
 onMounted(() => {
-  getUsers();
+  getUsers('', 1);
 });
 
-async function getUsers(pesquisa = '', page) {
+async function getUsers(pesquisa = '', page = 1) {
+  if (typeof pesquisa === 'string') {
+    currentSearch.value = pesquisa;
+  }
+  currentPage.value = Number(page) || 1;
+
   $q.loading.show({
     message: 'Buscando informações no servidor...',
   });
-
-  rows.value = [];
 
   const filtros = {
     nivel: modelsFilters.value.nivel,
@@ -159,7 +167,11 @@ async function getUsers(pesquisa = '', page) {
   };
 
   try {
-    let url = `usuarios?pagina=${page || 1}&itensPorPagina=10&busca=${pesquisa}`;
+    let url = `usuarios?pagina=${currentPage.value}&itensPorPagina=10`;
+
+    if (currentSearch.value && currentSearch.value.trim() !== '') {
+      url += `&busca=${encodeURIComponent(currentSearch.value.trim())}`;
+    }
 
     const filtrosAtivos = [];
     const valoresAtivos = [];
@@ -180,8 +192,10 @@ async function getUsers(pesquisa = '', page) {
 
     const { data } = await api.get(url);
 
-    rows.value = data.data;
-    max_pages.value = data.maxPag;
+    rows.value = data.data || [];
+    max_pages.value = Number(data.maxPag) || 1;
+  } catch (error) {
+    showNotification('negative', 'Erro ao buscar usuários', 'top', 3000);
   } finally {
     $q.loading.hide();
   }
@@ -190,7 +204,12 @@ async function getUsers(pesquisa = '', page) {
 async function clearFilters() {
   modelsFilters.value.nivel = '';
   modelsFilters.value.situacao = '';
-  await getUsers();
+  filters.value.forEach((f) => {
+    f.model = '';
+  });
+  currentSearch.value = '';
+  currentPage.value = 1;
+  await getUsers('', 1);
 }
 
 async function deleteUser(user) {
@@ -210,10 +229,10 @@ async function deleteUser(user) {
             3000,
           );
         }
-        getUsers();
+        getUsers(currentSearch.value, currentPage.value);
         $q.loading.hide();
       } catch (error) {
-        showNotification('negative', error.response.data.message, 'top', 3000);
+        showNotification('negative', error.response?.data?.message || 'Erro ao excluir usuário', 'top', 3000);
         $q.loading.hide();
       }
     },

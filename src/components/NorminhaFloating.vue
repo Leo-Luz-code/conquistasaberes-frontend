@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-4 right-6 z-[9999] flex flex-col items-end pointer-events-auto">
+  <div class="fixed bottom-4 right-4 sm:right-6 z-40 flex flex-col items-end pointer-events-auto">
     <!-- Modal/Dialog de Conversa com Norminha -->
     <transition
       enter-active-class="transition duration-200 ease-out"
@@ -11,7 +11,7 @@
     >
       <div
         v-if="isOpen"
-        class="mb-4 w-80 sm:w-96 h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
+        class="mb-3 w-[calc(100vw-2rem)] sm:w-96 max-h-[calc(100vh-6rem)] h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
       >
         <!-- Header do Chat (fixed height, shrink-0) -->
         <div class="bg-gradient-to-r from-[#0F4C81] to-[#0A3459] p-4 text-white flex items-center justify-between shrink-0 shadow-sm">
@@ -133,11 +133,31 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue';
 
 const isOpen = ref(false);
 const inputMsg = ref('');
 const chatContainer = ref(null);
+
+const handleGlobalOpen = (e) => {
+  isOpen.value = true;
+  if (e?.detail?.pergunta) {
+    selecionarSugestao({
+      pergunta: e.detail.pergunta,
+      resposta: e.detail.resposta || 'Estou aqui para te ajudar com isso! Veja as opções no menu.',
+    });
+  } else {
+    scrollToBottom();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('open-norminha-chat', handleGlobalOpen);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('open-norminha-chat', handleGlobalOpen);
+});
 
 const historicoMensagens = ref([
   {

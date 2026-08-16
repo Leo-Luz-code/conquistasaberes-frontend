@@ -1,40 +1,10 @@
 import { boot } from 'quasar/wrappers';
 import axios from 'axios';
 import { Notify } from 'quasar';
-import { setServerDetectedIp } from 'src/utils/media';
-
-/**
- * Resolve dinamicamente a URL da API backend baseado no host pelo qual o frontend foi acessado.
- * Se o frontend for acessado por http://192.168.X.X:8080, o backend conectará automaticamente em http://192.168.X.X:3001.
- */
-function getDynamicApiBaseUrl() {
-  if (typeof window !== 'undefined' && window.location) {
-    const protocol = window.location.protocol || 'http:';
-    const hostname = window.location.hostname || 'localhost';
-    return `${protocol}//${hostname}:3001/`;
-  }
-  return process.env.API_BASE_URL || 'http://localhost:3001/';
-}
-
-// Instância Axios com base URL dinâmica da API AVA UniVC
-const api = axios.create({ baseURL: getDynamicApiBaseUrl() });
+// Instância Axios com base URL configurada 100% via variável de ambiente
+const api = axios.create({ baseURL: process.env.API_BASE_URL });
 
 export default boot(async ({ app, router }) => {
-  // Inicialização assíncrona: detecta IP dinâmico da máquina para QR Codes locais
-  try {
-    api
-      .get('/auth/server-info')
-      .then((res) => {
-        if (res.data?.localIp) {
-          setServerDetectedIp(res.data.localIp);
-        }
-      })
-      .catch((err) => {
-        console.debug('IP dinâmico não obtido no bootstrap:', err?.message);
-      });
-  } catch (err) {
-    console.debug('Falha ao inicializar detecção de IP:', err);
-  }
 
   // Interceptor de Request: Injeta token JWT automaticamente
   api.interceptors.request.use(
